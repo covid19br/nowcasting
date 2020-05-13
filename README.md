@@ -2,17 +2,46 @@
 
 ## Estrutura do repositório
 
-Repositório para análises de nowcasting de COVID-19 a partir de microdados e exportar para a [página do observatório](https://covid19br.github.io/). Os outups finas são enviados para o repositório do site.  
+Repositório para análises de nowcasting de COVID-19 a partir de microdados e exportar para a [página do observatório](https://covid19br.github.io/). Os outups finais são enviados para o repositório do site do Observatório.  
 
     .
     ├── dados/                   # Dados com as saídas de nowcasting
-    ├── scripts/                 # Scripts em R para rodar as análises
-     └── fct/                    # Funções em R para executar nowcasting 
+    ├── _src/                    # Scripts em R para rodar as análises (source files)
+     └── fct/                    # Funções em R para executar nowcasting
+    ├── .gitignore 
     └── README.md
+
+### Diretório local `para_o_site/`
+
+Vá para o diretório da cópia local que você criou no passo anterior e execute:
+
+```
+git clone git@github.com:covid19br/covid19br.github.io.git para_o_site
+```
+Isso vai criar uma cópia do repositório do site do Observatório COVID-19 BR dentro da sua cópia local deste repositório. Não se preocupe, esse subdiretório será ignorado para fins de atualização aqui, pois está no `.gitignore.`
+Vai ficar apenas na sua máquina local. Isso é necessário para fazer o push dos outputs públicos para o repositório do site do Observatório.
+
+## Dependências
+
+Para executar o conjunto de scripts disponibilizados nesse repositório o usuário deverá instalar os seguintes programas:
+
+- R versão 3.6.3
+- JAGS versão 4.3.0
+
+Além disso, a execução dos scripts em R dependem da instalação dos pacotes a seguir:
+
+- **optparse** - execute install.packages("optparse")
+- **dplyr** - execute install.packages("dplyr")
+- **NobBS** - execute install.packages("NobBS")
+- **rmarkdown** - execute install.packages("rmarkdown")
+- **patchwork** - execute install.packages("patchwork")
+- **zoo** - execute install.packages("zoo")
+- **EpiEstim** - execute install.packages("EpiEstim")
+- **lubridate** - execute install.packages("lubridate")
 
 ## Sobre o método
 
-- *Nowcasting* com método “Bayesian smoothing” de McGough et al (2019), usando a função `NobBS` do
+- *Nowcasting* com método *Bayesian smoothing* de McGough et al (2019), usando a função `NobBS` do
 pacote R de mesmo nome (McGough et al 2020), com janela (argumento (`moving_window`) de 40 dias
 para nowcasting diário
 
