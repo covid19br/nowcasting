@@ -34,14 +34,14 @@ Para executar o conjunto de scripts disponibilizados nesse repositório o usuár
 
 Além disso, a execução dos scripts em R dependem da instalação dos pacotes a seguir:
 
-- **optparse** - execute install.packages("optparse")
-- **dplyr** - execute install.packages("dplyr")
-- **NobBS** - execute install.packages("NobBS")
-- **rmarkdown** - execute install.packages("rmarkdown")
-- **patchwork** - execute install.packages("patchwork")
-- **zoo** - execute install.packages("zoo")
-- **EpiEstim** - execute install.packages("EpiEstim")
-- **lubridate** - execute install.packages("lubridate")
+- dplyr 
+- EpiEstim 
+- foreign
+- lubridate 
+- NobBS 
+- patchwork 
+- optparse 
+- zoo
 
 ## Sobre o método
 

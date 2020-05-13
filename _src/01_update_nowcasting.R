@@ -6,15 +6,15 @@ library(lubridate)
 library(optparse)
 library(Hmisc)
 library(stringr)
-library(withr)
+#library(withr)
 
 ##############################################################################
 # Helper Functions ###########################################################
 ##############################################################################
 ## lista de nomes
-makeNamedList <- function(...) {
-  structure(list(...), names = as.list(substitute(list(...)))[-1L])
-}
+# makeNamedList <- function(...) {
+#   structure(list(...), names = as.list(substitute(list(...)))[-1L])
+# }
 ##############################################################################
 
 # if executed from command line, look for arguments
@@ -39,10 +39,10 @@ if (sys.nframe() == 0L) {
   parser_object <- OptionParser(usage = "Rscript %prog [Opções] [sigla UF]\n",
                                 option_list = option_list,
                                 description = "Script para atualizar análise e plots do site do OBSERVATORIO COVID-19 BR com resultados por município ou estado")
-  
-  opt <- parse_args(parser_object, args = commandArgs(trailingOnly = TRUE), 
+
+  opt <- parse_args(parser_object, args = commandArgs(trailingOnly = TRUE),
                     positional_arguments = TRUE)
-  
+
   ## aliases
 adm <- opt$options$escala
 sigla.adm <- opt$options$sigla
@@ -51,10 +51,10 @@ formato.data <- opt$options$formatoData
 #ö: isto ficou assim porque municipio SP ainda está independente o terminal vai perguntar estado e sigla. mas isso não muda a parametrizaçãõ de adm e sigla.adm
 }
 
-#if you are going to run this interactively uncomment: 
+#if you are going to run this interactively uncomment:
 #adm <- "municipio"
 #sigla.adm <- "SP"
-#data.base <- "2020-04-25"
+#data.base <- NULL
 #formato.data <- "%Y-%m-%d"
 if (!exists('sigla.adm')) {
   print("Sigla do estado não definida")
@@ -89,62 +89,4 @@ source('prepara_dados_nowcasting.R')
 # códigos de análise e plot genéricos (mas pode usar as variáveis `mun` e
 # `municipio` pra títulos de plot etc.%isso agora adm.sigla too
 source('analises_nowcasting.R')
-source('plots_nowcasting.R')
-
-## Data de Atualizacao
-print("Atualizando data de atualizacao...")
-web.path <- paste0("../web/", adm, "_", sigla.adm, "/")  
-file <- file(paste0(web.path, "last.update.", adm, "_", tolower(sigla.adm), ".txt")) # coloco o nome do municipio?#coloquei para diferenciar do de estados
-writeLines(c(paste(now())), file)
-close(file)
-
-################################################################# ###############
-## Atualiza gráficos por estado
-################################################################################
-print("Atualizando plots...")
-
-# Graficos a serem atualizados
-plots.para.atualizar <- makeNamedList(
-  # covid
-  plot.nowcast.covid,
-  plot.nowcast.cum.covid,
-  plot.estimate.R0.covid,
-  plot.tempo.dupl.covid, 
-  # srag
-  plot.nowcast.srag,
-  plot.nowcast.cum.srag,
-  plot.estimate.R0.srag,
-  plot.tempo.dupl.srag,
-  # obitos covid
-  plot.nowcast.ob.covid,
-  plot.nowcast.cum.ob.covid,
-  plot.tempo.dupl.ob.covid,
-  # obitos srag
-  plot.nowcast.ob.srag,
-  plot.nowcast.cum.ob.srag,
-  plot.tempo.dupl.ob.srag
-)
-
-# pegando apenas os plots que existem mesmo
-plots.true <- sapply(plots.para.atualizar, function(x) !is.null(x))
-
-filenames <- names(plots.para.atualizar)
-n <- 1:length(plots.para.atualizar)
-
-for (i in n[plots.true]) {
-  fig.name <- paste0(filenames[i],".", tolower(sigla.adm))
-  graph.html <- ggplotly(plots.para.atualizar[[i]]) %>%
-    layout(margin = list(l = 50, r = 20, b = 20, t = 20, pad = 4))
-  graph.svg <- plots.para.atualizar[[i]] +
-    theme(axis.text = element_text(size = 11, family = "Arial", face = "plain"),
-          # ticks
-          axis.title = element_text(size = 14, family = "Arial", face = "plain")) # title
-  with_dir(web.path, 
-           saveWidget(frameableWidget(graph.html), 
-                      file = paste0(fig.name, ".html"),
-                      selfcontained = FALSE,
-                      libdir = "./libs")) # HTML Interative Plot
-  ggsave(paste(web.path, fig.name, ".svg", sep = ""), 
-         plot = graph.svg, device = svg, scale = .8, width = 210, height = 142, units = "mm")
-}
-
+# source('plots_nowcasting.R')

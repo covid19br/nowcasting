@@ -2,7 +2,7 @@
 
 ## 0. Antes de fazer a análise
 
-Para os dados públicos, é possível seguir os passos abaixo.
+Para os dados públicos em `SIVEP-Gripe`, é possível seguir os passos abaixo.
 
 - Os arquivos de _nowcasting_ devem ter sido gerados usando o script `gera_nowcastings_SIVEP.R`
 
