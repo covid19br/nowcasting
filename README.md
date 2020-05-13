@@ -6,14 +6,18 @@ Repositório para análises de nowcasting de COVID-19 a partir de microdados e e
 
     .
     ├── dados/                   # Dados com as saídas de nowcasting
-    ├── _src/                    # Scripts em R para rodar as análises (source files)
-     └── fct/                    # Funções em R para executar nowcasting
+     ├── SIVEP-Gripe/               # Dados públicos do SIVEP-Gripe
+     ├── outputs_nowcasting/        # Output das análises de nowcasting
+     └── ...
+    ├── _src/                    # Scripts para rodar as análises (source files)
+     ├── fct/                       # Funções em R para executar nowcasting
+     └── ...
     ├── .gitignore 
     └── README.md
 
 ### Diretório local `para_o_site/`
 
-Vá para o diretório da cópia local que você criou no passo anterior e execute:
+Dentro da sua cópia local desde repositório, você precisará executar:
 
 ```
 git clone git@github.com:covid19br/covid19br.github.io.git para_o_site

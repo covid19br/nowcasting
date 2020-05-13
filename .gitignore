@@ -1,4 +1,5 @@
 # copia local do repo do site
 para_o_site/
 
-# .Rproj
+.Rproj
+.Rproj.user
