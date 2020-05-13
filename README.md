@@ -40,4 +40,4 @@ do Observatório COVID-19 BR](https://covid19br.github.io)
 - Cálculo dos tempos de R efetivo (R) a partir do limite superior do IC 95% dos valores estimados por
 nowcating. R e calculado pelo método de Wallinga & Teunis (2004), implementado no pacote **EpiEstim**
 (Cori et al 2020, função estimate_R). Utilizado o método que assume distribuição gama dos intervalos
-seriais, com parâmetros tomados de Nishiura et al. (2020).
+seriais, com parâmetros tomados de Nishiura et al. (2020)
