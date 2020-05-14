@@ -30,7 +30,7 @@ git clone git@github.com:covid19br/covid19br.github.io.git para_o_site
 Isso vai criar uma cópia do repositório do site do Observatório COVID-19 BR dentro da sua cópia local deste repositório. Não se preocupe, esse subdiretório será ignorado para fins de atualização aqui, pois está no `.gitignore.`
 Vai ficar apenas na sua máquina local. Isso é necessário para fazer o push dos outputs públicos para o repositório do site do Observatório.
 
-Os outputs gerados neste repositório devem ir para: `para_o_site/web/[escala]_[sigla escala]`
+Os outputs gerados neste repositório devem ir para: `para_o_site/web/[escala]_[sigla escala]/tabelas_nowcasting_para_grafico/`
 
 ## Dependências
 
