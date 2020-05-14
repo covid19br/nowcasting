@@ -1,8 +1,8 @@
-# Análises de nowcasting
+# Análises de _nowcasting_
 
 ## Estrutura do repositório
 
-Repositório para análises de nowcasting de COVID-19 a partir de microdados e exportar para a [página do observatório](https://covid19br.github.io/). Os outups finais são enviados para o repositório do site do Observatório.  
+Repositório para análises de _nowcasting_ de COVID-19 a partir de microdados e exportar para a [página do observatório](https://covid19br.github.io/). Os outputs finais são enviados para o repositório do site do Observatório.
 
     .
     ├── dados/                   # Dados com as saídas de nowcasting
@@ -15,21 +15,28 @@ Repositório para análises de nowcasting de COVID-19 a partir de microdados e e
     ├── .gitignore 
     └── README.md
 
+### Diretório `dados/outputs_nowcasting/`
+
+Esse diretório recebe os outputs de *nowcasting* gerados nos repositórios privados ou os outputs gerados a partir dos dados públicos da SIVEP-Gripe disponível em `dados/SIVEP-Gripe/`. 
+
 ### Diretório local `para_o_site/`
 
-Dentro da sua cópia local desde repositório, você precisará executar:
+Dentro da sua cópia local deste repositório, você precisará executar:
 
 ```
 git clone git@github.com:covid19br/covid19br.github.io.git para_o_site
 ```
+
 Isso vai criar uma cópia do repositório do site do Observatório COVID-19 BR dentro da sua cópia local deste repositório. Não se preocupe, esse subdiretório será ignorado para fins de atualização aqui, pois está no `.gitignore.`
 Vai ficar apenas na sua máquina local. Isso é necessário para fazer o push dos outputs públicos para o repositório do site do Observatório.
+
+Os outputs gerados neste repositório devem ir para: `para_o_site/web/[escala]_[sigla escala]`
 
 ## Dependências
 
 Para executar o conjunto de scripts disponibilizados nesse repositório o usuário deverá instalar os seguintes programas:
 
-- R versão 3.6.3
+- R versão >= 3.6.3
 - JAGS versão 4.3.0
 
 Além disso, a execução dos scripts em R dependem da instalação dos pacotes a seguir:
@@ -72,5 +79,5 @@ do Observatório COVID-19 BR](https://covid19br.github.io)
 
 - Cálculo dos tempos de R efetivo (R) a partir do limite superior do IC 95% dos valores estimados por
 nowcating. R e calculado pelo método de Wallinga & Teunis (2004), implementado no pacote **EpiEstim**
-(Cori et al 2020, função estimate_R). Utilizado o método que assume distribuição gama dos intervalos
+(Cori et al 2020, função `estimate_R`). Utilizado o método que assume distribuição gama dos intervalos
 seriais, com parâmetros tomados de Nishiura et al. (2020)
