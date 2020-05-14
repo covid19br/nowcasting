@@ -2,6 +2,8 @@ library(dplyr)
 source("funcoes.R")
 
 
+# Para srag todos os ouputs são cortados a partir de 15/03 quando passou a incluir covid
+dia.zero.srag <- "2020-03-15"
 
 ###############
 # 1. COVID ####
@@ -84,16 +86,11 @@ if (existe.srag) {
   td.now.srag <- td.now.srag[, c(1, 3, 2)]
   names(td.now.srag) <- c("estimativa", "ic.inf", "ic.sup")
 
-  ## 2.4. Corta a partir do dia com >= 10 casos ####
-  # corta so se da :P
-  dia.zero.srag <- time(lista.srag$now.pred.zoo)[min(which(lista.srag$now.pred.zoo$n.casos >= 10, arr.ind = TRUE))]
-  if (!is.na(dia.zero.srag)) {
-    now.srag.pred.zoo <- window(lista.srag$now.pred.zoo, start = dia.zero.srag)
-    now.srag.proj.zoo <- window(now.srag.proj.zoo, start = dia.zero.srag)
-    td.now.srag <- window(td.now.srag, start = dia.zero.srag)
-  } else {
-    now.srag.pred.zoo <- lista.srag$now.pred.zoo
-  }
+  ## 2.4. Corta a a partir de 15/03
+  dia.zero.srag <- "2020-03-15"
+  now.srag.pred.zoo <- window(lista.srag$now.pred.zoo, start = dia.zero.srag)
+  now.srag.proj.zoo <- window(now.srag.proj.zoo, start = dia.zero.srag)
+  td.now.srag <- window(td.now.srag, start = dia.zero.srag)
 
   ## 2.5. Gera df para grafico ####
   df.srag <- formata.now.df(now.srag.pred.zoo,
@@ -178,15 +175,11 @@ if (existe.ob.srag) {
   td.now.ob.srag <- td.now.ob.srag[, c(1, 3, 2)]
   names(td.now.ob.srag) <- c("estimativa", "ic.inf", "ic.sup")
 
-  ## 4.3. Corta a partir do dia com >= 10 casos ####
-  dia.zero.ob.srag <- time(lista.ob.srag$now.pred.zoo)[min(which(lista.ob.srag$now.pred.zoo$n.casos >= 10, arr.ind = TRUE))]
-  if (!is.na(dia.zero.ob.srag)) {
-    now.ob.srag.pred.zoo <- window(lista.ob.srag$now.pred.zoo, start = dia.zero.ob.srag)
-    now.ob.srag.proj.zoo  <- window(now.ob.srag.proj.zoo, start = dia.zero.ob.srag)
-    td.now.ob.srag <- window(td.now.ob.srag, start = dia.zero.ob.srag)
-  } else {
-    now.ob.srag.pred.zoo <- lista.ob.srag$now.pred.zoo
-  }
+  ## 4.3. Corta a a partir de 15/03
+  dia.zero.srag <- "2020-03-15"
+  now.ob.srag.pred.zoo <- window(lista.ob.srag$now.pred.zoo, start = dia.zero.srag)
+  now.ob.srag.proj.zoo  <- window(now.ob.srag.proj.zoo, start = dia.zero.srag)
+  td.now.ob.srag <- window(td.now.ob.srag, start = dia.zero.srag)
 
   ## 4.4. Gera df para grafico
   df.ob.srag <- formata.now.df(now.ob.srag.pred.zoo,
@@ -225,15 +218,10 @@ if (existe.ob.srag.proaim) {
   td.now.ob.srag.proaim <- td.now.ob.srag.proaim[, c(1, 3, 2)]
   names(td.now.ob.srag.proaim) <- c("estimativa", "ic.inf", "ic.sup")
 
-  ## 4.3. Corta a partir do dia com >= 10 casos ####
-  dia.zero.ob.srag.proaim <- time(lista.ob.srag.proaim$now.pred.zoo)[min(which(lista.ob.srag.proaim$now.pred.zoo$n.casos >= 10, arr.ind = TRUE))]
-  if (!is.na(dia.zero.ob.srag.proaim)) {
-    now.ob.srag.pred.zoo.proaim <- window(lista.ob.srag.proaim$now.pred.zoo, start = dia.zero.ob.srag.proaim)
-    now.ob.srag.proj.zoo.proaim  <- window(now.ob.srag.proj.zoo.proaim, start = dia.zero.ob.srag.proaim)
-    td.now.ob.srag.proaim <- window(td.now.ob.srag.proaim, start = dia.zero.ob.srag.proaim)
-  } else {
-    now.ob.srag.pred.zoo.proaim <- lista.ob.srag.proaim$now.pred.zoo
-  }
+  ## 4.3. Corta a a partir de 15/03
+  now.ob.srag.pred.zoo.proaim <- window(lista.ob.srag.proaim$now.pred.zoo, start = dia.zero.srag)
+  now.ob.srag.proj.zoo.proaim  <- window(now.ob.srag.proj.zoo.proaim, start = dia.zero.srag)
+  td.now.ob.srag.proaim <- window(td.now.ob.srag.proaim, start = dia.zero.srag)
 
   ## 4.4. Gera df para grafico
   df.ob.srag.proaim <- formata.now.df(now.ob.srag.pred.zoo.proaim,
