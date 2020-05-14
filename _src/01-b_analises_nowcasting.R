@@ -241,8 +241,8 @@ if (existe.ob.srag.proaim) {
   df.ob.srag.diario.proaim <- df.ob.srag.proaim$diario
   df.ob.srag.cum.proaim <- df.ob.srag.proaim$acumulado
 
-  #ast ö aqui está salvando no local antigo e deveria ser o site mas amanhã vemos isso, só não vou fazer push
-  df.path <- paste0("../dados/", adm, "_", sigla.adm, "/tabelas_nowcasting_para_grafico/")
+  push_folder <- "../para_o_site/"
+  df.path <- paste0(push_folder, "dados/", adm, "_", sigla.adm, "/tabelas_nowcasting_para_grafico/")
   if (!dir.exists(df.path)) dir.create(df.path)
   write.csv(df.ob.srag.cum.proaim,
             paste0(df.path, "nowcasting_acumulado_obitos_srag_proaim_", data.ob.srag.proaim, ".csv"),
