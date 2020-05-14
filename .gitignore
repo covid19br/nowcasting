@@ -1,5 +1,11 @@
 # copia local do repo do site
 para_o_site/
+central_covid_data/
 
 .Rproj
 .Rproj.user
+*~
+*.~
+.Rhistory
+.RData
+.*.sw[opq]
