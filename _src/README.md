@@ -13,15 +13,15 @@ Rscript gera_nowcastings_SIVEP.R --dataBase 2020-05-04 --file SRAGHospitalizado_
 ```
 
 
-# 1. Para gerar os dados consodidados de os gráficos de _nowcasting_ para cada estado e município 
+# 1. Para gerar os dados consolidados dos gráficos de _nowcasting_ para cada estado e município 
 
 Os scripts rodam automaticamente a partir de `update_nowcasting.R`.
 
 Em um terminal de bash a opção escala permite selecionar a escala de análise (estado, município) e a opção sigla permite indicar a sigla de duas letras de cada estado.
 
 ```bash
-Rscript update_nowcasting.R --escala municipio --sigla SP
-Rscript update_nowcasting.R --escala estado --sigla PB
+Rscript 01_update_nowcasting.R --escala municipio --sigla SP
+Rscript 01_update_nowcasting.R --escala estado --sigla PB
 ```
 
 Para testar localmente, executar `update_nowcasting.R` que chama os scripts seguintes: 

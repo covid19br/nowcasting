@@ -54,7 +54,7 @@ formato.data <- opt$options$formatoData
 #if you are going to run this interactively uncomment:
 #adm <- "municipio"
 #sigla.adm <- "SP"
-#data.base <- NULL
+#data.base <- "NULL" #ast o problema com is.null e =="NULL" é que o loop acima faz com que data.base seja "NULL" e não NULL, por isso estava desse jeito. o robot vai ler em caracteres.
 #formato.data <- "%Y-%m-%d"
 if (!exists('sigla.adm')) {
   print("Sigla do estado não definida")
@@ -84,9 +84,9 @@ if (adm == "municipio")
 
 # este arquivo deve se encarregar de procurar na pasta certa pelo arquivo com a
 # data mais recente
-source('prepara_dados_nowcasting.R')
+source('01-a_prepara_dados_nowcasting.R')
 
 # códigos de análise e plot genéricos (mas pode usar as variáveis `mun` e
 # `municipio` pra títulos de plot etc.%isso agora adm.sigla too
-source('analises_nowcasting.R')
+source('01-b_analises_nowcasting.R')
 # source('plots_nowcasting.R')
