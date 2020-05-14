@@ -1,6 +1,8 @@
 library(dplyr)
 source("funcoes.R")
 
+
+
 ###############
 # 1. COVID ####
 ###############
@@ -41,8 +43,8 @@ if (existe.covid) {
                              lista.covid)
   df.covid.diario <- df.covid$diario
   df.covid.cum <- df.covid$acumulado
+
   # salva o df em csv
-  df.path <- paste0("../dados/", adm, "_", sigla.adm, "/tabelas_nowcasting_para_grafico/")
   if (!dir.exists(df.path)) dir.create(df.path)
   write.csv(df.covid.cum,
             paste0(df.path, "nowcasting_acumulado_covid_", data.covid, ".csv"),
@@ -99,8 +101,7 @@ if (existe.srag) {
                             lista.srag)
   df.srag.diario <- df.srag$diario
   df.srag.cum <- df.srag$acumulado
-  # salva o df em csv
-  df.path <- paste0("../dados/", adm, "_", sigla.adm, "/tabelas_nowcasting_para_grafico/")
+
   if (!dir.exists(df.path)) dir.create(df.path)
   write.csv(df.srag.cum,
             paste0(df.path, "nowcasting_acumulado_srag_", data.srag, ".csv"),
@@ -148,7 +149,7 @@ if (existe.ob.covid) {
                                 lista.ob.covid)
   df.ob.covid.diario <- df.ob.covid$diario
   df.ob.covid.cum <- df.ob.covid$acumulado
-  df.path <- paste0("../dados/", adm, "_", sigla.adm, "/tabelas_nowcasting_para_grafico/")
+
   if (!dir.exists(df.path)) dir.create(df.path)
   write.csv(df.ob.covid.cum,
             paste0(df.path, "nowcasting_acumulado_obitos_covid_", data.ob.covid, ".csv"),
@@ -193,7 +194,7 @@ if (existe.ob.srag) {
                                lista.ob.srag)
   df.ob.srag.diario <- df.ob.srag$diario
   df.ob.srag.cum <- df.ob.srag$acumulado
-  df.path <- paste0("../dados/", adm, "_", sigla.adm, "/tabelas_nowcasting_para_grafico/")
+
   if (!dir.exists(df.path)) dir.create(df.path)
   write.csv(df.ob.srag.cum,
             paste0(df.path, "nowcasting_acumulado_obitos_srag_", data.ob.srag, ".csv"),
@@ -241,8 +242,6 @@ if (existe.ob.srag.proaim) {
   df.ob.srag.diario.proaim <- df.ob.srag.proaim$diario
   df.ob.srag.cum.proaim <- df.ob.srag.proaim$acumulado
 
-  push_folder <- "../para_o_site/"
-  df.path <- paste0(push_folder, "dados/", adm, "_", sigla.adm, "/tabelas_nowcasting_para_grafico/")
   if (!dir.exists(df.path)) dir.create(df.path)
   write.csv(df.ob.srag.cum.proaim,
             paste0(df.path, "nowcasting_acumulado_obitos_srag_proaim_", data.ob.srag.proaim, ".csv"),

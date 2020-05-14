@@ -33,7 +33,10 @@ if (sys.nframe() == 0L) {
                 metavar = "dataBase"),
     make_option("--formatoData", default = "%Y-%m-%d",
                 help = ("Formato do campo de datas no csv, confome padrão da função as.Date"),
-                metavar = "formatoData")
+                metavar = "formatoData"),
+    make_option("--pushFolder", default = "para_o_site",
+                help = ("Aonde fazer o push (pasta que leva ao repositório do site"),
+                metavar = "pushFolder")
   )
   #ö checar os detalles do parse usage aqui
   parser_object <- OptionParser(usage = "Rscript %prog [Opções] [sigla UF]\n",
@@ -48,14 +51,20 @@ adm <- opt$options$escala
 sigla.adm <- opt$options$sigla
 data.base <- opt$options$dataBase
 formato.data <- opt$options$formatoData
-#ö: isto ficou assim porque municipio SP ainda está independente o terminal vai perguntar estado e sigla. mas isso não muda a parametrizaçãõ de adm e sigla.adm
+push.folder <- opt$options$pushFolder
+
 }
 
-#if you are going to run this interactively uncomment:
+# If you are going to run this interactively you can run the code above and it will set up the variables with their default values. If you need to change anything, you can change it here (or change the defaults above)
 #adm <- "municipio"
 #sigla.adm <- "SP"
 #data.base <- "NULL" #ast o problema com is.null e =="NULL" é que o loop acima faz com que data.base seja "NULL" e não NULL, por isso estava desse jeito. o robot vai ler em caracteres.
 #formato.data <- "%Y-%m-%d"
+
+#push.folder e df.path são usadas em analises. push.folder permite mudar a pasta de destino caso seja necessário
+push.folder <- paste0("../", push.folder, "/")
+df.path <- paste0(push.folder, "dados/", adm, "_", sigla.adm, "/tabelas_nowcasting_para_grafico/")
+
 if (!exists('sigla.adm')) {
   print("Sigla do estado não definida")
   quit(status = 1)
