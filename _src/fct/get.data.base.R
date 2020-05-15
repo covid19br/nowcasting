@@ -1,6 +1,6 @@
 # extrai a data mais recente de nowcasting
 get.data.base <- function(adm, sigla.adm, tipo) {
-  nome.dir <- paste0("../dados/", adm, "_", sigla.adm, "/")
+  nome.dir <- paste0("../dados/outputs_nowcasting/", adm, "_", sigla.adm, "/")
   file <-  dir(nome.dir, pattern = paste0("nowcasting", ".+", tipo,".+", "_20"))
   if (length(file) > 0) {
   data.base <- file %>%

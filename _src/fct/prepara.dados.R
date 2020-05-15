@@ -18,7 +18,7 @@ prepara.dados <- function(tipo = "covid",
             stop("sigla de municipio invalida")
         }
     }
-    nome.dir <- paste0("../dados/", adm, "_", sigla.adm, "/")
+    nome.dir <- paste0("../dados/outputs_nowcasting/", adm, "_", sigla.adm, "/")
     if (missing(data.base))
         data.base <- get.data.base(adm = adm, sigla.adm = sigla.adm, tipo = tipo)
 
