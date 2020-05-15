@@ -15,20 +15,11 @@ Repositório para análises de _nowcasting_ de COVID-19 a partir de microdados e
     ├── .gitignore 
     └── README.md
 
-### Diretório `dados/outputs_nowcasting/`
+## Dados de entrada
 
-Esse diretório recebe os outputs de *nowcasting* gerados nos repositórios privados ou os outputs gerados a partir dos dados públicos da SIVEP-Gripe disponível em `dados/SIVEP-Gripe/`. 
+O diretório `dados/outputs_nowcasting/` recebe os outputs de *nowcasting* gerados nos repositórios privados ou os outputs gerados a partir dos dados públicos da SIVEP-Gripe disponível em `dados/SIVEP-Gripe/`. 
 
-### Diretório local `para_o_site/`
-
-Dentro da sua cópia local deste repositório, você precisará executar:
-
-```
-git clone git@github.com:covid19br/covid19br.github.io.git para_o_site
-```
-
-Isso vai criar uma cópia do repositório do site do Observatório COVID-19 BR dentro da sua cópia local deste repositório. Não se preocupe, esse subdiretório será ignorado para fins de atualização aqui, pois está no `.gitignore.`
-Vai ficar apenas na sua máquina local. Isso é necessário para fazer o push dos outputs públicos para o repositório do site do Observatório.
+## Outputs gerados
 
 Os outputs gerados neste repositório devem ir para: `para_o_site/web/[escala]_[sigla escala]/tabelas_nowcasting_para_grafico/`
 
