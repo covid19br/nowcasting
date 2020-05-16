@@ -5,23 +5,22 @@
 Repositório para análises de _nowcasting_ de COVID-19 a partir de microdados e exportar para a [página do observatório](https://covid19br.github.io/). Os outputs finais são enviados para o repositório do site do Observatório.
 
     .
-    ├── dados/                   # Dados com as saídas de nowcasting
-     ├── SIVEP-Gripe/               # Dados públicos do SIVEP-Gripe
-     ├── outputs_nowcasting/        # Output das análises de nowcasting
-     └── ...
+    ├── dados_processados/      # Dados com as saídas de nowcasting
+            └── nowcasting/
+        └── ...
     ├── _src/                    # Scripts para rodar as análises (source files)
-     ├── fct/                       # Funções em R para executar nowcasting
-     └── ...
+        ├── fct/                       # Funções em R para executar nowcasting
+        └── ...
     ├── .gitignore 
     └── README.md
 
-## Dados de entrada
+### Caminho para dados de entrada
 
-O diretório `dados/outputs_nowcasting/` recebe os outputs de *nowcasting* gerados nos repositórios privados ou os outputs gerados a partir dos dados públicos da SIVEP-Gripe disponível em `dados/SIVEP-Gripe/`. 
+Dados de entrada em `dados_processados/nowcasting/[escala]_[sigla]`
 
-## Outputs gerados
+### Caminho para outputs
 
-Os outputs gerados neste repositório devem ir para: `para_o_site/web/[escala]_[sigla escala]/tabelas_nowcasting_para_grafico/`
+Os outputs gerados neste repositório devem ir para: `site/web/[escala]_[sigla escala]/tabelas_nowcasting_para_grafico/`
 
 ## Dependências
 
