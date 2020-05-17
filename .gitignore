@@ -2,8 +2,8 @@
 para_o_site/
 central_covid_data/
 
-.Rproj
-.Rproj.user
+*.Rproj
+*.Rproj.user
 *~
 *.~
 .Rhistory
