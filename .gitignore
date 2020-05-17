@@ -9,3 +9,4 @@ central_covid_data/
 .Rhistory
 .RData
 .*.sw[opq]
+.Rproj.user
