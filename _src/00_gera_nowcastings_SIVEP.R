@@ -61,10 +61,10 @@ update.git <- opt$options$updateGit
 ### to run INTERACTIVELY: START HERE
 ################################################################################
 # you have to set the variables below before proceeding
-## nome <- "SRAGHospitalizado_2020_05_04.csv"
-## data <- "NULL"
-## estado <- "DF"
-## sigla <- "DF"
+## dir <- "../../dados/SIVEP-Gripe"
+## geocode <- "12" # aqui pode ser estado ou municipio por enquanto
+## data <- NULL
+## fitro <- TRUE
 ## window <- 40
 ## trim.now <- 2
 ## formato.data <- "%d/%m/%Y"
@@ -73,21 +73,12 @@ update.git <- opt$options$updateGit
 ################################################################################
 ## Importacao de preparacao dos dados
 ################################################################################
-## Se output data é  NULL faz um trim do nome do arquivo, assumindo o nome padrão (SRAGHospitalizado_dia_mes_ano)
-if (data == "NULL")
-    data.base <- as.Date(substr(nome, regexpr("_",nome) + 1, regexpr("_",nome) + 10), "%Y_%m_%d")
-if (data != "NULL")
-    data.base <- as.Date(data)
-## Importa csv. Ad hoc intencional para quebrar se mudar estrutura de diretorios
-dados <- read.csv2(paste0("../dados/SIVEP-Gripe/", nome), as.is = TRUE)
-## Conveninencia, nomes das variaveis em minusculas
-names(dados) <- tolower(names(dados))
-## Coversao dos campos de datas em datas
-dt.cols <- names(dados)[grepl("dt_", names(dados))]
-dados[, dt.cols] <- lapply(dados[, dt.cols], function(x) as.Date(x, formato.data))
 
-# fonte: IBGE (https://www.ibge.gov.br/geociencias/organizacao-do-territorio/divisao-regional/15778-divisoes-regionais-do-brasil.html?=&t=acesso-ao-produto)
-regioes.ibge <- read_csv('../dados/regioes_geograficas_composicao_por_municipios_2017_20180911.csv')
+dados <- read.sivep(dir = dir,
+                    filtro = filtro,
+                    geocode = geocode,
+                    data = data)
+
 
 ################################################################################
 ## comandos git: PULL ANTES de adicionar arquivos
@@ -102,115 +93,31 @@ if (update.git)
 ## Guarda data de notificação também para gerar a tabela de n de notificaoes por data
 ## pois o nowcasting retorna tabela de n de casos por data do 1o sintoma
 
-## filtra por cidade/estado/região
-if (adm == "estado") {
-    dados.f <- filter(dados, sg_uf == sigla)
-} else if (adm == "municipio") {
-    dados.f <- filter(dados, co_mun_res == sigla)
-} else if (adm == "micro") {
-    co.muns <- regioes.ibge %>%
-        filter(cod_rgi == sigla) %>%
-        mutate(CD_GEOCODI = as.numeric(substr(CD_GEOCODI, 1, nchar(CD_GEOCODI)-1))) %>%
-        .$CD_GEOCODI
-    if(length(co.muns) == 0){
-        print("Código da microrregião inexistente")
-        quit(status = 1)
-    }
-    dados.f <- filter(dados, co_mun_res %in% co.muns)
+now.covid <- gera.nowcasting(dados = dados,
+                             caso = TRUE,
+                             tipo = "covid",
+                             trim.now = trim.now,
+                             window = window)
 
-} else if (adm == "meso") {
-    co.muns <- regioes.ibge %>%
-        filter(cod_rgint == sigla) %>%
-        mutate(CD_GEOCODI = as.numeric(substr(CD_GEOCODI, 1, nchar(CD_GEOCODI) - 1))) %>%
-        .$CD_GEOCODI
-    if (length(co.muns) == 0) {
-        print("Código da mesorregião inexistente")
-        quit(status = 1)
-    }
-    dados.f <- filter(dados, co_mun_res %in% co.muns)
-} else if (adm == "pais"){
-    dados.f <- dados
-}
+now.srag <- gera.nowcasting(dados = dados,
+                             caso = TRUE,
+                             tipo = "srag",
+                             trim.now = trim.now,
+                             window = window)
 
-## Cria objetos com dados
-##COVID##
-dados2 <-
-  dados.f %>%
-  filter(pcr_sars2 == 1 | classi_fin == 5) %>% #covid com nova classificacao
-  filter(hospital == 1) %>% # so hospitalizados
-  select(dt_notific, dt_sin_pri, dt_pcr, dt_digita) %>%
-  mutate(dt_pcr_dig = pmax(dt_pcr, dt_digita, dt_notific, na.rm = TRUE))
-##SRAG##
-## %PIP data de registro é data mais recente entre notificação e digitação, não deve incluir data pcr (dt_pcr)
-## pq SRAG não precisa de teste para ser confirmado
-dados2.srag <-
-  dados.f %>%
-  select(dt_notific, dt_sin_pri, dt_digita) %>%
-  mutate(dt_pcr_dig = pmax(dt_pcr, dt_digita, dt_notific, na.rm = TRUE))
-##obitos COVID##
-dados2.obitos_covid <-
-  dados.f %>%
-  filter(pcr_sars2 == 1 | classi_fin == 5) %>% # covid com nova classificacao
-  filter(hospital == 1 & evolucao == 2) %>% # so hospitalizados que vieram a obito
-  filter(!is.na(dt_evoluca)) %>%
-  mutate(dt_encerra = pmax(dt_encerra, dt_digita, dt_evoluca,
-                           na.rm = TRUE)) %>%
-  select(dt_evoluca, dt_notific, dt_encerra)
-##Obitos SRAG##
-dados2.obitos_srag <-
-  dados.f %>%
-  filter(evolucao == 2) %>%
-  filter(!is.na(dt_evoluca)) %>%
-  mutate(dt_encerra = pmax(dt_encerra, dt_digita, dt_evoluca,
-                           na.rm = TRUE)) %>%
-  select(dt_evoluca, dt_notific, dt_encerra)
+now.ob.covid <- gera.nowcasting(dados = dados,
+                                caso = FALSE,
+                                tipo = "covid",
+                                trim.now = trim.now,
+                                window = window)
 
-## Executa nowcasting diario
-##COVID##
-if (nrow(dados2) != 0) {
-now.covid <- NobBS(
-    data = dados2,
-    now = max(dados2$dt_sin_pri) - trim.now,
-    onset_date = "dt_sin_pri",
-    report_date = "dt_pcr_dig",
-    units = "1 day",
-    moving_window = window)
-}
+now.ob.srag <- gera.nowcasting(dados = dados,
+                               caso = FALSE,
+                               tipo = "srag",
+                               trim.now = trim.now,
+                               window = window)
 
-##SRAG##
-if (nrow(dados2.srag) != 0) {
-now.srag <- NobBS(
-    data = dados2.srag,
-    now = max(dados2.srag$dt_sin_pri) - trim.now,
-    onset_date = "dt_sin_pri",
-    report_date = "dt_pcr_dig",
-    units = "1 day",
-    moving_window = window)
-}
-
-##obitos COVID##
-if (nrow(dados2.obitos_covid) != 0) {
-now.obitos.covid <- NobBS(
-    data = dados2.obitos_covid,
-    now = max(dados2.obitos_covid$dt_encerra) - trim.now,
-    onset_date = "dt_evoluca",
-    report_date = "dt_encerra",
-    units = "1 day",
-    moving_window = window,
-    specs = list(beta.priors = dbinom(0:40, size = 40, p = 15/50)))
-}
-
-##obitos SRAG##
-if (nrow(dados2.obitos_srag) != 0) {
-now.obitos.srag <- NobBS(
-    data = dados2.obitos_srag,
-    now = max(dados2.obitos_srag$dt_encerra) - trim.now,
-    onset_date = "dt_evoluca",
-    report_date = "dt_encerra",
-    units = "1 day",
-    moving_window = window,
-    specs = list(beta.priors = dbinom(0:40, size = 40, p = 15/50)))
-}
+# ö srm parei aqui!
 
 ################################################################################
 ## Cria data frames com totais obseravdos de casos ou obitos
