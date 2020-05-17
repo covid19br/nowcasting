@@ -1,5 +1,3 @@
-# Dados acessórios
+# Dados processados
 
-- `regioes_geograficas_composicao_por_municipios_2017_20180911.csv`: geocode e nome dos municípios e regiões geográficas (fonte IBGE - https://www.ibge.gov.br/geociencias/organizacao-do-territorio/divisao-regional/15778-divisoes-regionais-do-brasil.html?=&t=acesso-ao-produto - convertido de .xls pra .csv)
-
-- `estados_code.csv`: geocode e sigla dos estados brasileiros
+- `nowcasting`: Gerados a partir de `_src/00_gera_nowcasting.R`. Aqui o dado de uma localidade deve ser armazenado em uma subpasta com o padrão [escala]\_[sigla]
