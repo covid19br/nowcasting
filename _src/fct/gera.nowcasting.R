@@ -20,20 +20,22 @@ gera.nowcasting <- function(dados, # dados
       ## pq SRAG não precisa de teste para ser confirmado
       dados2 <- dados %>%
         select(dt_notific, dt_sin_pri, dt_digita) %>%
-        mutate(dt_pcr_dig = pmax(dt_pcr, dt_digita, dt_notific, na.rm = TRUE))
+        mutate(dt_pcr_dig = pmax(dt_digita, dt_notific, na.rm = TRUE))
     }
 
-    if (nrow(dados) != 0) {
+    if (nrow(dados2) != 0) {
       dados.now <- NobBS(
         data = dados2,
-        now = max(dados2$dt_sin_pri) - trim.now,
+        now = max(dados2$dt_sin_pri, na.rm = TRUE) - trim.now,
         onset_date = "dt_sin_pri",
         report_date = "dt_pcr_dig",
         units = "1 day",
         moving_window = window)
+    } else {
+     dados.now <- NULL
     }
 
-    # 2. obitos ####
+    # 2. nowcasting de obitos ####
   } else {
     ## 2.1. obitos covid ####
     if (tipo == "covid") {
@@ -46,7 +48,7 @@ gera.nowcasting <- function(dados, # dados
                                  na.rm = TRUE)) %>%
         select(dt_evoluca, dt_notific, dt_encerra)
     }
-    ## obitos srag ####
+    ## 2.2. obitos srag ####
     if (tipo == "srag") {
       dados2 <- dados %>%
         filter(evolucao == 2) %>%
@@ -55,7 +57,7 @@ gera.nowcasting <- function(dados, # dados
                                  na.rm = TRUE)) %>%
         select(dt_evoluca, dt_notific, dt_encerra)
     }
-    if (nrow(dados) != 0) {
+    if (nrow(dados2) != 0) {
       dados.now <- NobBS(
         data = dados2,
         now = max(dados2$dt_encerra) - trim.now,
@@ -64,7 +66,13 @@ gera.nowcasting <- function(dados, # dados
         units = "1 day",
         moving_window = window,
         specs = list(beta.priors = dbinom(0:40, size = 40, p = 15/50)))
+
+    } else {
+      dados.now <- NULL
     }
   }
-  return(dados.now)
+
+  out <- list(now = dados.now, dados = dados2)
+
+  return(out)
 }
