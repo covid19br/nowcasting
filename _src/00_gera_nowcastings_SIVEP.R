@@ -193,7 +193,7 @@ if (!is.null(now.ob.srag$now)) {
 }
 
 
-files.para.pull <- list.files(output.dir, pattern = paste0("*.", data, ".csv"))
+files.para.push <- list.files(output.dir, pattern = paste0("*.", data, ".csv"))
 
 ################################################################################
 ## Comando git: commits e pushs

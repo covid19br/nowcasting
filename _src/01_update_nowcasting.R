@@ -34,7 +34,7 @@ if (sys.nframe() == 0L) {
     make_option("--formatoData", default = "%Y-%m-%d",
                 help = ("Formato do campo de datas no csv, confome padrão da função as.Date"),
                 metavar = "formatoData"),
-    make_option("--pushFolder", default = "para_o_site",
+    make_option("--pushFolder", default = "../../site", #ö seria isso?
                 help = ("Aonde fazer o push (pasta que leva ao repositório do site"),
                 metavar = "pushFolder")
   )
@@ -56,13 +56,15 @@ if (sys.nframe() == 0L) {
 }
 
 # If you are going to run this interactively you can run the code above and it will set up the variables with their default values. If you need to change anything, you can change it here (or change the defaults above)
-#adm <- "municipio"
-#sigla.adm <- "SP"
-#data.base <- "NULL" #ast o problema com is.null e =="NULL" é que o loop acima faz com que data.base seja "NULL" e não NULL, por isso estava desse jeito. o robot vai ler em caracteres.
-#formato.data <- "%Y-%m-%d"
+# ö todos os parametros aqui podem morar no 00
+adm <- "municipio"
+sigla.adm <- "SP" #srm ö atualizar para sigla?, pode unificar com 00
+data.base <- "NULL"
+formato.data <- "%Y-%m-%d"
+push.folder <- "../../site/"
+output.dir <- paste0("../dados_processados/nowcasting/", adm, "_", sigla.adm, "/") # srm ö pode ficar so no 00
 
 #push.folder e df.path são usadas em analises. push.folder permite mudar a pasta de destino caso seja necessário
-push.folder <- paste0("../", push.folder, "/")
 df.path <- paste0(push.folder, "dados/", adm, "_", sigla.adm, "/tabelas_nowcasting_para_grafico/")
 
 if (!exists('sigla.adm')) {
@@ -99,3 +101,4 @@ source('01-a_prepara_dados_nowcasting.R')
 # `municipio` pra títulos de plot etc.%isso agora adm.sigla too
 source('01-b_analises_nowcasting.R')
 # source('plots_nowcasting.R')
+
