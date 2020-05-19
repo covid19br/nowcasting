@@ -64,6 +64,11 @@ if (sys.nframe() == 0L) {
   update.git <- opt$options$updateGit
 }
 
+# pegando a data mais recente
+if (data == "NULL") {
+  data <- get.last.date(dir)
+}
+
 #push.folder e df.path são usadas em analises. push.folder permite mudar a pasta de destino caso seja necessário
 #df.path <- paste0(push.folder, "/dados/", escala, "_", sigla, "/tabelas_nowcasting_para_grafico/")
 df.path <- paste0(output.dir, "/tabelas_nowcasting_para_grafico/")  #this was wrong but i needed to see this. push folder needs to be solved but we need to compare 11_05 output before and after too

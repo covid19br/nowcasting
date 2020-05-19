@@ -4,12 +4,12 @@ existe.nowcasting <- function(escala = escala,
                               tipo,
                               data,
                               output.dir) {
-  if (data == "NULL") {
-    data <- get.data.base(tipo = tipo,
-                          output.dir = output.dir)
-    }
-  else data_file <- as.Date(data, format = formato.data) %>%
-      format("%Y_%m_%d")
+  # if (data == "NULL") {
+  #   data <- get.data.base(tipo = tipo,
+  #                         output.dir = output.dir)
+  #   }
+  data_file <- as.Date(data, format = formato.data) %>%
+    format("%Y_%m_%d")
   nowcasting.file <- list.files(path = output.dir,
                                 pattern = paste0("nowcasting_", tipo, ".+", data,".csv"))
   length(nowcasting.file) > 0

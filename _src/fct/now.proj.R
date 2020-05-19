@@ -6,13 +6,15 @@
 #' @param pred.original Data frame. Objeto `now.pred.original` gerado em prepara_nowcasting.R
 #' @param now.lista Lista. Objeto `now.lista` gerado em prepara_dados_nowcasting.R
 #' @param now.params.post Data frame. Objeto `now.params.post` gerado em gerado em prepara_dados_nowcasting.R
-now.proj <- function(pred, 
-                     pred.original, 
+now.proj <- function(pred,
+                     pred.original,
                      now.params.post,
-                     n.dias = 5) {
+                     n.dias = 5,
+                     data) {
+    data0 <- as.Date(data, "%Y_%m_%d")
     ## N de dias para projetar: 5 dias a partir da data atual
     ## Adiciona ao forecast dias entre a ultima data de nocasting e o dia atual
-    days.to.forecast <- as.integer(Sys.Date() - max(time(pred)) + n.dias)
+    days.to.forecast <- as.integer(data0 - max(time(pred)) + n.dias)
     ## Objeto zoo com n de casos previstos pelo nowcasting concatenados com o n de casos
     ## projetado a partir do nowcasting acumulado com regressão Poisson
     now.proj.zoo <- merge(
@@ -20,12 +22,12 @@ now.proj <- function(pred,
                                             start = length(time(pred)) - 4,
                                             days.forecast = days.to.forecast)$predito,
                        pred$estimate.merged.c),
-        
+
         now.low.c = c(forecast.exponential(pred$lower.merged.c,
                                            start = length(time(pred)) - 4,
                                            days.forecast = days.to.forecast)$predito,
                       pred$lower.merged.c),
-        
+
         now.upp.c = c(forecast.exponential(pred$upper.merged.c,
                                            start = length(time(pred)) - 4,
                                            days.forecast = days.to.forecast)$predito,
@@ -48,7 +50,7 @@ now.proj <- function(pred,
                                          NobBS.params.post = now.params.post,
                                          from = ndias.now - days.to.forecast + 1))
     ##Calcula n de casos cumulativos
-    
+
     now.proj.zoo$not.mean.c <- cumsum(na.zero(now.proj.zoo$not.mean))
     now.proj.zoo$not.low.c <- cumsum(na.zero(now.proj.zoo$not.low))
     now.proj.zoo$not.upp.c <- cumsum(na.zero(now.proj.zoo$not.upp))
