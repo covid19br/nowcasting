@@ -1,7 +1,7 @@
 #' Função para ler base da sivep
 #' @param dir Caractere. Caminho relativo para o diretório onde está o dado
-#' @param escala Escala de análise estado, municipio etc.#ö completar sorry
-#' @param geocode Caractere. Geocode IBGE do estado ou município.
+#' @param escala Caractere. Escala de análise aceita: `"pais"`, `"estado"`, `"municipio"` #ö micro e meso um dia
+#' @param geocode Caractere. Geocode IBGE do estado ou município
 #' @param data Caractere. Data no formato  "%Y_%m_%d". Quando NULL (padrão) pega a data mais recente
 #' @param ... Qualquer parâmetro de `read.csv()`
 read.sivep <- function(dir, # diretorio onde esta o dado
@@ -17,9 +17,9 @@ read.sivep <- function(dir, # diretorio onde esta o dado
   names(dados) <- tolower(names(dados))
   # filtro por estados ou municipio
   ## ö dá pra implementar meso e microrregiao ast: super dá, por enquanto tirei filtro
-  if (escala != "país") {
+  if (escala != "pais") {
     n.geo <- nchar(geocode)
-    geocodes <- c(estado = 2, meso = 4, micro = 6, municipio = 7)
+    n.geocodes <- c(estado = 2, meso = 4, micro = 6, municipio = 7)
     #ö ast estava pensando num check de escala vs geocode tipo "seu geocode não corresponde ao n.char". não sei como renato resolveu isto no site. teria que ter a exceção de municipiom claro. mas a pessoa pode querer vir com o geocode de 7, né.
     # CORRIGINDO GEOCODE DO MUNICIPIO DE SAO PAULO na base "355030" mas oficial é "3550308"
     #olhando pro código do renato acho que a solução dele de escalas deve vir aqui.
