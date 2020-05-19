@@ -19,8 +19,7 @@ check.geocode <- function(escala,
         stop("geocode não bate com escala")
     if (geocode %in% municipio.code) {
       id <- which(municipio.code == geocode)
-      nome <- paste0("municipio_",
-                    paste(estado.sigla[id], df$nome.nonascii[id], sep = "_")) # SP_Sao_Paulo
+      nome <- paste0("municipios/", estado.sigla[id], "/", df$nome.nonascii[id]) # municipios/SP/Sao_Paulo
     } else {
       stop("geocode de municipio invalido")
     }
@@ -31,8 +30,7 @@ check.geocode <- function(escala,
       stop("geocode não bate com escala")
     if (geocode %in% micro.code) {
       id <- which(micro.code == geocode)
-      nome <- paste0("micro_",
-                    unique(paste(estado.sigla[id], micro.code[id], sep = "_"))) #SP_35035
+      nome <- paste0("microrregioes/", unique(estado.sigla[id]), "/", unique(micro.code[id])) #SP_35035
     } else {
       stop("geocode de microrregião invalido")
     }
@@ -43,8 +41,7 @@ check.geocode <- function(escala,
       stop("geocode não bate com escala")
     if (geocode %in% meso.code) {
       id <- which(meso.code == geocode)
-      nome <- paste0("meso_",
-                     unique(paste(estado.sigla[id], meso.code[id], sep = "_"))) #SP_3508
+      nome <- paste0("mesorregioes/", unique(estado.sigla[id]), "/", unique(meso.code[id])) #SP_3508
     } else {
       stop("geocode de mesorregião invalido")
     }
@@ -55,7 +52,7 @@ check.geocode <- function(escala,
       stop("geocode não bate com escala")
     if (geocode %in% estado.code) {
       id <- which(estado.code == geocode)
-      nome <- unique(paste("estado", estado.sigla[id], sep = "_"))
+      nome <- unique(paste0("estado/", estado.sigla[id]))
     } else {
       stop("geocode de estado invalido")
     }
@@ -63,19 +60,10 @@ check.geocode <- function(escala,
   return(nome)
 }
 
-# check.geocode(escala = "municipio",
-#               geocode = " 2113009")
-#
-# check.geocode(escala = "estado",
-#               geocode = "21")
-#
-# check.geocode(escala = "micro",
-#               geocode = "21")
-#
-# check.geocode(escala = "micro",
-#               geocode = "21008")
-#
-# check.geocode(escala = "meso",
-#               geocode = "2102")
+# check.geocode(escala = "municipio", geocode = " 2113009")
+# check.geocode(escala = "estado", geocode = "21")
+# check.geocode(escala = "micro", geocode = "21")
+# check.geocode(escala = "micro", geocode = "21008")
+# check.geocode(escala = "meso", geocode = "2102")
 
 
