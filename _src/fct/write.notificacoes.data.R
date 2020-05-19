@@ -20,14 +20,14 @@ write.notificacoes.data <- function(dados,
       group_by(dt_evoluca) %>%
       summarise(n.casos = n()) %>%
       as.data.frame()
-  } else {
+    nome.data <- paste0(output.dir, "n_casos_data_", tipo, "_", data, ".csv")
+      } else {
     n.data  <- dados %>%
       group_by(dt_sin_pri) %>%
       summarise(n.casos = n()) %>%
       as.data.frame()
+    nome.data <-  paste0(output.dir, "n_casos_data_sintoma_", tipo, "_", data, ".csv")
   }
-
-  nome.data <-  paste0(output.dir, "notificacoes_", tipo, "_", data, ".csv")
 
   write.csv(n.notificacoes,
             nome.not,

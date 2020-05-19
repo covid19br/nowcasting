@@ -9,7 +9,8 @@
 prepara.dados <- function(tipo = "covid",
                           adm,
                           sigla.adm,
-                          data.base = data.base) { # tipos possiveis: covid, srag, obitos_covid e obitos_srag
+                          data.base,
+                          output.dir = output.dir) { # tipos possiveis: covid, srag, obitos_covid e obitos_srag
     casos <- c("covid", "srag")
     obitos <- c("obitos_covid", "obitos_srag")
     proaim <- c("proaim_obitos_srag")
@@ -18,9 +19,9 @@ prepara.dados <- function(tipo = "covid",
             stop("sigla de municipio invalida")
         }
     }
-    nome.dir <- paste0("../dados/outputs_nowcasting/", adm, "_", sigla.adm, "/")
-    if (missing(data.base))
-        data.base <- get.data.base(adm = adm, sigla.adm = sigla.adm, tipo = tipo)
+    nome.dir <- output.dir
+    # if (missing(data.base))
+    #     data.base <- get.data.base(adm = adm, sigla.adm = sigla.adm, tipo = tipo)
 
 
     ## Importa dados em objetos de séries temporais (zoo)
@@ -56,7 +57,8 @@ prepara.dados <- function(tipo = "covid",
     ## VERIFICAR: Total de casos reportado por data do nowcasting tem diferenças com total de casos por data de sintoma tabulado
     now.pred.zoo <- merge(n.casos = n.sintoma.zoo, now.pred.zoo.original)
     ## Retira os dias para os quais há n de casos observados mas nao nowcasting
-    now.pred.zoo <- window(now.pred.zoo, start = min(time(n.sintoma.zoo)), end = max(time(now.pred.zoo.original)))
+    now.pred.zoo <- window(now.pred.zoo, start = min(time(n.sintoma.zoo), na.rm = TRUE),
+                           end = max(time(now.pred.zoo.original), na.rm = TRUE))
     ## Adiciona variavel de novos casos merged:
     ## junta os valores corrigidos por nowcasting (que em geral vai até um certo ponto no passado)
     ## e n de casos observados antes da data em que começa a correção de nowcasting
