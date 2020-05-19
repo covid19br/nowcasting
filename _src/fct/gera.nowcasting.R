@@ -19,8 +19,9 @@ gera.nowcasting <- function(dados, # dados
       ## %PIP data de registro é data mais recente entre notificação e digitação, não deve incluir data pcr (dt_pcr)
       ## pq SRAG não precisa de teste para ser confirmado
       dados2 <- dados %>%
+        filter(hospital == 1) %>% # so hospitalizados
         select(dt_notific, dt_sin_pri, dt_digita) %>%
-        mutate(dt_pcr_dig = pmax(dt_digita, dt_notific, na.rm = TRUE))
+        mutate(dt_pcr_dig = pmax(dt_digita, dt_notific, na.rm = TRUE)) # nome aqui é pcr mas não tem pcr
     }
 
     if (nrow(dados2) != 0) {
@@ -51,7 +52,7 @@ gera.nowcasting <- function(dados, # dados
     ## 2.2. obitos srag ####
     if (tipo == "srag") {
       dados2 <- dados %>%
-        filter(evolucao == 2) %>%
+        filter(hospital == 1 & evolucao == 2) %>%
         filter(!is.na(dt_evoluca)) %>%
         mutate(dt_encerra = pmax(dt_encerra, dt_digita, dt_evoluca,
                                  na.rm = TRUE)) %>%
