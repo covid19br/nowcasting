@@ -13,21 +13,24 @@ source("funcoes.R")
 ################################################################################
 
 
-### to run INTERACTIVELY: SKIP THIS and JUMP
 ################################################################################
 ## Parsing command line arguments
 ################################################################################
 if (sys.nframe() == 0L) {
   option_list <- list(
-    make_option("--file",
-                help = ("Arquivo csv com base sivep gripe"),
-                metavar = "file"),
-    make_option("--adm", default = "estado",
-                help = ("nível administrativo, um de: municipio, micro, meso, estado, pais"),
-                metavar = "adm"),
-    make_option("--estado",
-                help = ("Sigla do estado"),
-                metavar = "estado"),
+    make_option("--dir",
+                help = ("Caminho até o diretório com os arquivos csv com base sivep gripe"),
+                default = "../../dados/municipio_SP/SRAG_hospitalizados/dados/",
+                metavar = "dir"),
+    make_option("--escala", default = "municipio",
+                help = ("Nível administrativo, um de: municipio, micro, meso, estado, pais"),
+                metavar = "escala"),
+    make_option("--sigla", default = "SP",
+                help = ("Sigla do estado a ser atualizado"),
+                metavar = "sigla"),
+    make_option("--geocode",
+                help = ("Geocode de município, micro-mesorregião ou estado"),
+                metavar = "geocode"),
     make_option("--window", type = "integer", default = 40,
                 help = ("Largura da running window do nowcasting (dias)"),
                 metavar = "window"),
@@ -35,14 +38,17 @@ if (sys.nframe() == 0L) {
                 help = ("Últimos dias da serie temporal a tirar do nowcasting"),
                 metavar = "trim"),
     make_option("--dataBase", default = "NULL",
-                help = ("Data da base de dados, formato 'yyyy-mm-dd'"),
+                help = ("Data da base de dados, formato 'yyyy_mm_dd'"),
                 metavar = "dataBase"),
-    make_option("--formatoData", default = "%d/%m/%Y",
+    make_option("--formatoData", default = "%Y_%m_%d",
                 help = ("Formato do campo de datas no csv, confome padrão da função as.Date"),
                 metavar = "formatoData"),
     make_option("--updateGit", default = "FALSE",
                 help = ("Fazer git add, commit e push?"),
-                metavar = "updateGit")
+                metavar = "updateGit"),
+    make_option("--pushFolder", default = "../../site", #ö seria isso?
+                help = ("Aonde fazer o push (pasta que leva ao repositório do site"),
+                metavar = "pushFolder")
   )
 
   parser_object <- OptionParser(usage = "Rscript %prog [Opções] [ARQUIVO]\n",
@@ -51,29 +57,32 @@ if (sys.nframe() == 0L) {
 
   ## aliases
   opt <- parse_args(parser_object, args = commandArgs(trailingOnly = TRUE), positional_arguments = TRUE)
-  nome <- opt$options$file
-  adm <- opt$options$adm
-  sigla <- opt$options$estado
+  dir <- opt$options$dir
+  escala <- opt$options$escala
+  sigla <- opt$options$sigla
+  geocode <- opt$options$geocode
   data <- opt$options$dataBase
   window <- opt$options$window
   trim.now <- opt$options$trim
   formato.data <- opt$options$formatoData
+  push.folder <- opt$options$pushFolder
   update.git <- opt$options$updateGit
 }
-################################################################################
-### to run INTERACTIVELY: START HERE
-################################################################################
-# you have to set the variables below before proceeding
-dir <- "../../dados/municipio_SP/SRAG_hospitalizados/dados/"
-data <- "NULL"
-format.date <- "%Y_%m_%d"
-geocode <- "3550308" # municipio SP - aqui pode ser estado ou municipio por enquanto
-adm <- "municipio"
+####################################################
+### to run INTERACTIVELY:
+#you only have to set up the variables that are not already set up above
+#exemplo municipio SP
+escala <- "municipio"
+geocode <- "3550308" # municipio SP - aqui pode ser qualquer escala
 sigla <- "SP"
-filtro <- TRUE
-window <- 40
-trim.now <- 2
+data <- "2020_05_11" # dois objetivos: fazer rodar e comparar com o nowcasting da semana passada efeito de cortar a data inicial de srag para 15/03
+#window <- 40
+#trim.now <- 2
 ## update.git <- FALSE
+# o output dir deveria ser parametro, tirei do meio
+output.dir <- paste0("../dados_processados/nowcasting/", escala, "_", sigla, "/")
+
+if (!file.exists(output.dir)) dir.create(output.dir, showWarnings = FALSE) #ast tirei da funcao só para que ficasse junto
 
 ################################################################################
 ## Importacao de preparacao dos dados
@@ -84,13 +93,14 @@ if (data == "NULL") {
 
 # Se for para baixar de data especifica, usar o argumento data
 dados <- read.sivep(dir = dir,
-                    filtro = filtro,
+                    escala = escala,
                     geocode = geocode,
                     data = data)
 
 # exemplo com estado RJ
 # dados <- read.sivep(dir = "../../dados/SIVEP-Gripe/",
-#                     filtro = filtro,
+#                     escala = escala,
+#                     sigla = "RJ",#deveria funcionar com qualquer um mas ainda nao sei se sigla deveria ser parametro mesmo
 #                     geocode = "33",
 #                     data = NULL)
 
@@ -131,11 +141,10 @@ now.ob.srag <- gera.nowcasting(dados = dados,
                                window = window)
 
 ################################################################################
-## Exporta data frames com totais obseravdos de casos ou obitos
+## Exporta data frames com totais observados de casos ou obitos
 ## Exporta data frames com outputs de nowcasting
 ################################################################################
 
-output.dir <- paste0("../dados_processados/nowcasting/", adm, "_", sigla, "/")
 
 # COVID ####
 write.notificacoes.data(dados = now.covid$dados,
@@ -144,10 +153,10 @@ write.notificacoes.data(dados = now.covid$dados,
                         data = data)
 
 if (!is.null(now.covid$now)) {
-  write.nowcating(now = now.covid$now,
-                  output.dir = output.dir,
-                  tipo = "covid",
-                  data = data)
+  write.nowcasting(now = now.covid$now,
+                   output.dir = output.dir,
+                   tipo = "covid",
+                   data = data)
 }
 
 # SRAG ####
@@ -157,10 +166,10 @@ write.notificacoes.data(dados = now.srag$dados,
                         data = data)
 
 if (!is.null(now.srag$now)) {
-  write.nowcating(now = now.srag$now,
-                  output.dir = output.dir,
-                  tipo = "srag",
-                  data = data)
+  write.nowcasting(now = now.srag$now,
+                   output.dir = output.dir,
+                   tipo = "srag",
+                   data = data)
 }
 
 # OBITOS COVID ####
@@ -171,7 +180,7 @@ write.notificacoes.data(dados = now.ob.covid$dados,
                         data = data)
 
 if (!is.null(now.ob.covid$now)) {
-  write.nowcating(now = now.ob.covid$now,
+  write.nowcasting(now = now.ob.covid$now,
                   output.dir = output.dir,
                   tipo = "obitos_covid",
                   data = data)
@@ -186,7 +195,7 @@ write.notificacoes.data(dados = now.ob.srag$dados,
                         data = data)
 
 if (!is.null(now.ob.srag$now)) {
-  write.nowcating(now = now.ob.srag$now,
+  write.nowcasting(now = now.ob.srag$now,
                   output.dir = output.dir,
                   tipo = "obitos_srag",
                   data = data)
@@ -195,13 +204,21 @@ if (!is.null(now.ob.srag$now)) {
 
 files.para.push <- list.files(output.dir, pattern = paste0("*.", data, ".csv"))
 
+# ast a gente precisa decidir aqui um padrão.
+# se o push_repo é o mesmo repo e as coisas vão para dados_processados (eu preferiria que fosse output_nowcasting para saber daonde vem), push_repo pode ser NULL e a vida segue.
+# se o push_repo é site o output_folder é
+#lembrando que vai ser assim:
+#output.dir <- "/dados_processados/nowcasting/municipio_SP/"
+#if (push_repo <- "site")
+#output.dir <- paste0("../../", push_repo, "/dados_", escala,"_", sigla, output.dir)
+#(mas o ponto duplo vai sair)
 ################################################################################
 ## Comando git: commits e pushs
 ################################################################################
-if (update.git) {#ast isto é segurança para a gente por enquanto, pode sair depois ou ficar como TRUE por default - por enquanto tá FALSE
+if (update.git) {
   system("git pull")
   ## todos os arquivos da data
-  system(paste("git add", paste(files.para.pull, collapse = " ")))
+  system(paste("git add", paste(files.para.push, collapse = " ")))
   system(paste0("git commit -m '[auto] atualizacao automatica nowcasting estado ", sigla, "' &&
        git push origin master"))
 }

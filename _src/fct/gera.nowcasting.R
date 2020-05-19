@@ -3,7 +3,7 @@ gera.nowcasting <- function(dados, # dados
                             tipo, # covid ou srag
                             trim.now, # corte para nowcasting
                             window) { # janela para nowcasting
-  # 1. nocasting de casos ###
+  # 1. nowcasting de casos ###
   if (caso) {
     ## 1.1 casos covid ####
     if (tipo == "covid") {
@@ -66,7 +66,6 @@ gera.nowcasting <- function(dados, # dados
         units = "1 day",
         moving_window = window,
         specs = list(beta.priors = dbinom(0:40, size = 40, p = 15/50)))
-
     } else {
       dados.now <- NULL
     }

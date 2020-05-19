@@ -2,11 +2,9 @@ write.notificacoes.data <- function(dados,
                                     output.dir,
                                     tipo = "covid", # covid, srag, obitos_covid, obitos_srag
                                     data
-                                    ){
+                                    ) {
 
   obitos <- c("obitos_covid", "obitos_srag")
-
-  dir.create(output.dir, showWarnings = FALSE)
 
   n.notificacoes <- dados %>%
     group_by(dt_notific) %>%

@@ -6,99 +6,79 @@ library(lubridate)
 library(optparse)
 library(Hmisc)
 library(stringr)
-#library(withr)
 
-##############################################################################
-# Helper Functions ###########################################################
-##############################################################################
-## lista de nomes
-# makeNamedList <- function(...) {
-#   structure(list(...), names = as.list(substitute(list(...)))[-1L])
-# }
-##############################################################################
 
-# if executed from command line, look for arguments
-# else variable `mun` is assumed to be defined
+################################################################################
+## Parsing command line arguments
+################################################################################
 if (sys.nframe() == 0L) {
-  # Parsing command line arguments
   option_list <- list(
+    make_option("--dir",
+                help = ("Caminho até o diretório com os arquivos csv com base sivep gripe"),
+                default = "../../dados/municipio_SP/SRAG_hospitalizados/dados/",
+                metavar = "dir"),
     make_option("--escala", default = "municipio",
-                help = ("Selecione uma escala administrativa: estado, municipio"),
+                help = ("Nível administrativo, um de: municipio, micro, meso, estado, pais"),
                 metavar = "escala"),
     make_option("--sigla", default = "SP",
-                help = ("Estado a ser atualizado"),
+                help = ("Sigla do estado a ser atualizado"),
                 metavar = "sigla"),
+    make_option("--geocode",
+                help = ("Geocode de município, micro-mesorregião ou estado"),
+                metavar = "geocode"),
+    make_option("--window", type = "integer", default = 40,
+                help = ("Largura da running window do nowcasting (dias)"),
+                metavar = "window"),
+    make_option("--trim", type = "integer", default = 2,
+                help = ("Últimos dias da serie temporal a tirar do nowcasting"),
+                metavar = "trim"),
     make_option("--dataBase", default = "NULL",
                 help = ("Data da base de dados, formato 'yyyy-mm-dd'"),
                 metavar = "dataBase"),
-    make_option("--formatoData", default = "%Y-%m-%d",
+    make_option("--formatoData", default = "%Y/%m/%d",
                 help = ("Formato do campo de datas no csv, confome padrão da função as.Date"),
                 metavar = "formatoData"),
+    make_option("--updateGit", default = "FALSE",
+                help = ("Fazer git add, commit e push?"),
+                metavar = "updateGit"),
     make_option("--pushFolder", default = "../../site", #ö seria isso?
                 help = ("Aonde fazer o push (pasta que leva ao repositório do site"),
                 metavar = "pushFolder")
   )
-  #ö checar os detalles do parse usage aqui
-  parser_object <- OptionParser(usage = "Rscript %prog [Opções] [sigla UF]\n",
-                                option_list = option_list,
-                                description = "Script para atualizar análise e plots do site do OBSERVATORIO COVID-19 BR com resultados por município ou estado")
 
-  opt <- parse_args(parser_object, args = commandArgs(trailingOnly = TRUE),
-                    positional_arguments = TRUE)
+  parser_object <- OptionParser(usage = "Rscript %prog [Opções] [ARQUIVO]\n",
+                                option_list = option_list,
+                                description = "Script para importar csv da sivep gripe, filtrar por estado, executar nowcasting e salvar os resultados no diretorio do estado")
 
   ## aliases
-  adm <- opt$options$escala
-  sigla.adm <- opt$options$sigla
-  data.base <- opt$options$dataBase
+  opt <- parse_args(parser_object, args = commandArgs(trailingOnly = TRUE), positional_arguments = TRUE)
+  dir <- opt$options$dir
+  escala <- opt$options$escala
+  sigla <- opt$options$sigla
+  geocode <- opt$options$geocode
+  data <- opt$options$dataBase
+  window <- opt$options$window
+  trim.now <- opt$options$trim
   formato.data <- opt$options$formatoData
   push.folder <- opt$options$pushFolder
-
+  update.git <- opt$options$updateGit
 }
-
-# If you are going to run this interactively you can run the code above and it will set up the variables with their default values. If you need to change anything, you can change it here (or change the defaults above)
-# ö todos os parametros aqui podem morar no 00
-adm <- "municipio"
-sigla.adm <- "SP" #srm ö atualizar para sigla?, pode unificar com 00
-data.base <- "NULL"
-formato.data <- "%Y-%m-%d"
-push.folder <- "../../site/"
-output.dir <- paste0("../dados_processados/nowcasting/", adm, "_", sigla.adm, "/") # srm ö pode ficar so no 00
 
 #push.folder e df.path são usadas em analises. push.folder permite mudar a pasta de destino caso seja necessário
-df.path <- paste0(push.folder, "dados/", adm, "_", sigla.adm, "/tabelas_nowcasting_para_grafico/")
+#df.path <- paste0(push.folder, "/dados/", escala, "_", sigla, "/tabelas_nowcasting_para_grafico/")
+df.path <- paste0(output.dir, "/tabelas_nowcasting_para_grafico/")  #this was wrong but i needed to see this. push folder needs to be solved but we need to compare 11_05 output before and after too
+print(paste("Atualizando", escala , sigla))
 
-if (!exists('sigla.adm')) {
-  print("Sigla do estado não definida")
-  quit(status = 1)
-}
-print(paste("Atualizando", adm , sigla.adm))
+#ast todos estes checks precisamos rever e ver se ficam no 00. a parametrização dupla pode dar erro. tirei por enquanto mas entendo que o ideal é ser passos aparte.
 
 sigla.municipios <- c(SP = "São Paulo",
                       RJ = "Rio de Janeiro")
-
-estados <- read.csv("../dados/estados_code.csv", row.names = 1,
-                    stringsAsFactors = F)
-sigla.estados <- estados$nome
-names(sigla.estados) <- estados$sigla
-#só mantendo o formato de sigla.municipios
-
-if (adm == "estado" & !sigla.adm %in% names(sigla.estados) |
-    adm == "municipio" & !sigla.adm %in% names(sigla.municipios)) {
-  print(paste(Hmisc::capitalize(adm), sigla.adm, "não consta na lista de suportados."))
-  #quit(status = 1)
-}
-if (adm == "estado")
-  nome.adm <- sigla.estados[sigla.adm]
-if (adm == "municipio")
-  nome.adm <- sigla.municipios[sigla.adm]
-
 
 # este arquivo deve se encarregar de procurar na pasta certa pelo arquivo com a
 # data mais recente
 source('01-a_prepara_dados_nowcasting.R')
 
-# códigos de análise e plot genéricos (mas pode usar as variáveis `mun` e
-# `municipio` pra títulos de plot etc.%isso agora adm.sigla too
+# códigos de análise e plot genéricos (mas pode usar as variáveis `mun` e `municipio` pra títulos de plot etc.
 source('01-b_analises_nowcasting.R')
 # source('plots_nowcasting.R')
 

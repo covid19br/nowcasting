@@ -1,8 +1,8 @@
-write.nowcating <- function(now,
+write.nowcasting <- function(now,
                             output.dir,
                             tipo = "covid", # covid, srag, obitos_covid, obitos_srag
                             data
-                            ){ # objeto com output dos nowcastings
+                            ) { # objeto com output dos nowcastings
 
   nome.now.df <- paste0(output.dir, "nowcasting_", tipo, "_previstos_", data, ".csv")
   write.csv(now$estimates,
