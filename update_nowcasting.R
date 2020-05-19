@@ -24,6 +24,7 @@ system("git pull")
 ################################################################################
 ## Parsing command line arguments
 ################################################################################
+
 if (sys.nframe() == 0L) {
   option_list <- list(
     make_option("--dir",
@@ -31,7 +32,7 @@ if (sys.nframe() == 0L) {
                 default = "../dados/municipio_SP/SRAG_hospitalizados/dados/",
                 metavar = "dir"),
     make_option("--escala", default = "municipio",
-                help = ("Nível administrativo, um de: municipio, micro, meso, estado, pais"),
+                help = ("Nível administrativo, um de: municipio, micro, meso, estado, país"),
                 metavar = "escala"),
     make_option("--sigla", default = "SP",
                 help = ("Sigla do estado a ser atualizado"),
@@ -46,22 +47,22 @@ if (sys.nframe() == 0L) {
                 help = ("Últimos dias da serie temporal a tirar do nowcasting"),
                 metavar = "trim"),
     make_option("--dataBase", default = "NULL",
-                help = ("Data da base de dados, formato 'yyyy-mm-dd'"),
+                help = ("Data da base de dados, formato 'yyyy_mm_dd'"),
                 metavar = "dataBase"),
-    make_option("--formatoData", default = "%Y/%m/%d",
+    make_option("--formatoData", default = "%Y_%m_%d",
                 help = ("Formato do campo de datas no csv, confome padrão da função as.Date"),
                 metavar = "formatoData"),
     make_option("--updateGit", default = "FALSE",
                 help = ("Fazer git add, commit e push?"),
                 metavar = "updateGit"),
-    make_option("--pushFolder", default = "../site", #ö seria isso? sim!
+    make_option("--pushRepo", default = "site", #opcoes site e NULL?
                 help = ("Aonde fazer o push (pasta que leva ao repositório do site"),
-                metavar = "pushFolder")
+                metavar = "pushRepo")
   )
-
   parser_object <- OptionParser(usage = "Rscript %prog [Opções] [ARQUIVO]\n",
                                 option_list = option_list,
-                                description = "Script para importar csv da sivep gripe, filtrar por estado, executar nowcasting e salvar os resultados no diretorio do estado")
+                                description = "Script para importar csv da sivep gripe,
+                                executar nowcasting e salvar os resultados")
 
   ## aliases
   opt <- parse_args(parser_object, args = commandArgs(trailingOnly = TRUE), positional_arguments = TRUE)
@@ -69,41 +70,49 @@ if (sys.nframe() == 0L) {
   escala <- opt$options$escala
   sigla <- opt$options$sigla
   geocode <- opt$options$geocode
-  data <- opt$options$dataBase
   window <- opt$options$window
   trim.now <- opt$options$trim
+  data <- opt$options$dataBase
   formato.data <- opt$options$formatoData
-  push.folder <- opt$options$pushFolder
   update.git <- opt$options$updateGit
+  push.repo <- opt$options$pushRepo
 }
+####################################################
+### to run INTERACTIVELY:
+#You only have to set up the variables that are not already set up above or the ones that you would like to change #
+geocode <- "3550308" # municipio SP
+#ast aqui teria que ter um jeito de pegar o nome a partir do geocode se a gente nao criar nome (is.null(nome)), aí a gente nomeia com o geocode e a escala.
+data <- "2020_05_18"
+# o output dir deveria ser parametro, tirei do meio
+if (push.repo <- "NULL")
+  output.dir <- paste0("/dados_processados/nowcasting/", escala,"_", sigla,"/")
+if (push.repo <- "site")
+  output.dir <- paste0("../", push.repo, "/dados_", escala,"_", sigla, output.dir)#ou nome
+
+if (!file.exists(output.dir)) dir.create(output.dir, showWarnings = FALSE) #ast tirei da funcao só para que ficasse junto
+# só para as tabelas
+if (push.repo <- "site")
+  df.path <- paste0(push.repo, "/dados/", escala, "_", sigla, "/tabelas_nowcasting_para_grafico/")
+if (push.repo <- "NULL")
+  df.path <- paste0("/dados_processados/nowcasting/", escala, "_", sigla, "/tabelas_nowcasting_para_grafico/")
 
 # pegando a data mais recente
 if (data == "NULL") {
   data <- get.last.date(dir)
 }
 
-# o output dir deveria ser parametro, tirei do meio
-output.dir <- paste0("/dados_processados/nowcasting/", escala, "_", sigla, "/")
-if (!file.exists(output.dir)) dir.create(output.dir, showWarnings = FALSE) #ast tirei da funcao só para que ficasse junto
 
-#push.folder tá ../site no default push folder e df.path são usadas em analises. push.folder permite mudar a pasta de destino caso seja necessário - se for . já deveria ir para dados_processados não é??
-#push.folder somewhere
 
-#df.path <- paste0(push.folder, "/dados/", escala, "_", sigla, "/tabelas_nowcasting_para_grafico/")
 print(paste("Atualizando", escala , sigla))
 
-#ast todos estes checks precisamos rever
+#ast todos estes checks precisamos rever ainda
 
 sigla.municipios <- c(SP = "São Paulo",
                       RJ = "Rio de Janeiro")
 
 source("_src/01_gera_nowcastings_SIVEP.R")
-
 source('_src/02_prepara_dados_nowcasting.R')
-
-# códigos de análise e plot genéricos (mas pode usar as variáveis `mun` e `municipio` pra títulos de plot etc.
 source('_src/03_analises_nowcasting.R')
-# source('plots_nowcasting.R')
 
 
 files.para.push <- list.files(output.dir, pattern = paste0("*.", data, ".csv"))
