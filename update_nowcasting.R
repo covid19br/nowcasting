@@ -79,11 +79,11 @@ print(paste("Atualizando", escala , sigla))
 sigla.municipios <- c(SP = "São Paulo",
                       RJ = "Rio de Janeiro")
 
-# este arquivo deve se encarregar de procurar na pasta certa pelo arquivo com a
-# data mais recente
-source('01-a_prepara_dados_nowcasting.R')
+source("_src/01_gera_nowcastings_SIVEP.R")
+
+source('_src/02_prepara_dados_nowcasting.R')
 
 # códigos de análise e plot genéricos (mas pode usar as variáveis `mun` e `municipio` pra títulos de plot etc.
-source('01-b_analises_nowcasting.R')
+source('_src/03_analises_nowcasting.R')
 # source('plots_nowcasting.R')
 

@@ -72,10 +72,10 @@ if (sys.nframe() == 0L) {
 ### to run INTERACTIVELY:
 #you only have to set up the variables that are not already set up above
 #exemplo municipio SP
-escala <- "municipio"
+#escala <- "municipio"
 geocode <- "3550308" # municipio SP - aqui pode ser qualquer escala
-sigla <- "SP"
-data <- "2020_05_11" # dois objetivos: fazer rodar e comparar com o nowcasting da semana passada efeito de cortar a data inicial de srag para 15/03
+#sigla <- "SP"
+data <- "2020_05_18" # dois objetivos: fazer rodar e comparar com o nowcasting da semana passada efeito de cortar a data inicial de srag para 15/03
 #window <- 40
 #trim.now <- 2
 ## update.git <- FALSE
