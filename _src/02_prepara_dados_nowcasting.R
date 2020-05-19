@@ -1,8 +1,3 @@
-## Pacotes necessários
-library(zoo)
-library(dplyr)
-library(stringr)
-source("funcoes.R")
 
 
 # testando se existe nowcasting
@@ -23,6 +18,7 @@ existe.ob.covid <- existe.nowcasting(escala = escala,
                                      tipo = "obitos_covid",
                                      data = data,
                                      output.dir = output.dir)
+
 existe.ob.srag <- existe.nowcasting(escala = escala,
                                     sigla = sigla,
                                     tipo = "obitos_srag",
@@ -46,7 +42,7 @@ if (existe.covid) {
     data.covid <- get.data.base(tipo = "covid",
                                 output.dir = output.dir)
   } else data.covid <- as.Date(data, format = "%Y_%m_%d") %>%
-      format("%Y_%m_%d")
+      format("%Y_%m_%d")##ast all this should be relying in format data and will be useful when other sources enter
   lista.covid <- prepara.dados(tipo = "covid",
                                escala = escala,
                                sigla = sigla,

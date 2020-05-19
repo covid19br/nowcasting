@@ -4,12 +4,12 @@
 
 Para os dados públicos em `SIVEP-Gripe`, é possível seguir os passos abaixo.
 
-- Os arquivos de _nowcasting_ devem ter sido gerados usando o script `gera_nowcastings_SIVEP.R`
+- Os arquivos de _nowcasting_ devem ter sido gerados usando o script `00_gera_nowcastings_SIVEP.R`
 
 Num terminal de bash: 
 
 ```bash
-Rscript gera_nowcastings_SIVEP.R --dataBase 2020-05-04 --file SRAGHospitalizado_2020_05_04.csv --escala [estado]
+Rscript 00_gera_nowcastings_SIVEP.R --dataBase 2020-05-11 --dir "../dados/municipio_SP/SRAG_hospitalizados/dados/" --escala municipio --sigla SP
 ```
 
 
