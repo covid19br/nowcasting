@@ -8,9 +8,9 @@ existe.nowcasting <- function(escala = escala,
   #   data <- get.data.base(tipo = tipo,
   #                         output.dir = output.dir)
   #   }
-  data_file <- as.Date(data, format = formato.data) %>%
-    format("%Y_%m_%d")
+  # data_file <- as.Date(data, format = formato.data) %>%
+  #   format("%Y_%m_%d")
   nowcasting.file <- list.files(path = output.dir,
-                                pattern = paste0("nowcasting_", tipo, ".+", data,".csv"))
+                                pattern = paste0("nowcasting_", tipo, ".+", data, ".csv"))
   length(nowcasting.file) > 0
 }
