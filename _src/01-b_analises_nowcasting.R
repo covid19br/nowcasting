@@ -12,7 +12,8 @@ if (existe.covid) {
   ## 1.1 projecao ####
   now.proj.zoo <- now.proj(pred = lista.covid$now.pred.zoo,
                            pred.original = lista.covid$now.pred.original,
-                           now.params.post = lista.covid$now.params.post)
+                           now.params.post = lista.covid$now.params.post,
+                           data = data.covid)
 
 
   ## 1.2 Cálculo do R efetivo ####
@@ -70,7 +71,8 @@ if (existe.srag) {
   ## 2.1 projecao ####
   now.srag.proj.zoo <-  now.proj(pred = lista.srag$now.pred.zoo,
                                  pred.original = lista.srag$now.pred.original,
-                                 now.params.post = lista.srag$now.params.post)
+                                 now.params.post = lista.srag$now.params.post,
+                                 data = data.srag)
 
   ## 2.2 Cálculo do R efetivo ####
   ## SRAG ##
@@ -126,7 +128,8 @@ if (existe.ob.covid) {
   ## 3.1 projecao ####
   now.ob.covid.proj.zoo <-  now.proj(pred = lista.ob.covid$now.pred.zoo,
                                      pred.original = lista.ob.covid$now.pred.original,
-                                     now.params.post = lista.ob.covid$now.params.post)
+                                     now.params.post = lista.ob.covid$now.params.post,
+                                     data = data.ob.covid)
 
   ## 3.2. Cálculo do tempo de duplicação ####
   td.now.ob.covid <- dt.rw(lista.ob.covid$now.pred.zoo$estimate.merged.c, window.width = 5)
@@ -171,7 +174,8 @@ if (existe.ob.srag) {
   ## 4.1 projecao ####
   now.ob.srag.proj.zoo <-  now.proj(pred = lista.ob.srag$now.pred.zoo,
                                     pred.original = lista.ob.srag$now.pred.original,
-                                    now.params.post = lista.ob.srag$now.params.post)
+                                    now.params.post = lista.ob.srag$now.params.post,
+                                    data = data.ob.srag)
 
   ## 4.2. Cálculo do tempo de duplicação ####
   td.now.ob.srag <- dt.rw(lista.ob.srag$now.pred.zoo$estimate.merged.c, window.width = 5)
@@ -219,7 +223,8 @@ if (existe.ob.srag.proaim) {
   ## 4.1 projecao ####
   now.ob.srag.proj.zoo.proaim <-  now.proj(pred = lista.ob.srag.proaim$now.pred.zoo,
                                            pred.original = lista.ob.srag.proaim$now.pred.original,
-                                           now.params.post = lista.ob.srag.proaim$now.params.post)
+                                           now.params.post = lista.ob.srag.proaim$now.params.post,
+                                           data = data.ob.srag.proaim)
 
   ## 4.2. Cálculo do tempo de duplicação ####
   td.now.ob.srag.proaim <- dt.rw(lista.ob.srag.proaim$now.pred.zoo$estimate.merged.c, window.width = 5)
