@@ -36,3 +36,19 @@ source("fct/zoo2df.R")
 # source("fct/plot.nowcast.acumulado.R")
 # source("fct/plot.estimate.R0.R")
 # source("fct/plot.tempo.dupl.R")
+
+
+################################################################################
+## Funcoes das rotinas de projecao de leitos
+################################################################################
+
+source("fct/age_table.R")
+source("fct/wait_times.R")
+source("fct/fix.dates.R")
+source("fct/fillNowcastedLines.R")
+source("fct/get.hospital.probabilities.R")
+source("fct/get.times.R")
+source("fct/countByAgeClass.R")
+source("fct/getCurrentInBed.R")
+source("fct/makeHospitalTable.R")
+source("fct/plotTimesValidation.R")
