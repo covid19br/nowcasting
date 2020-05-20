@@ -3,10 +3,7 @@
 #P = function(...) file.path(PRJROOT, ...)
 #DATAROOT = "~/data/Municipio_SP/SRAG_hospitalizados/dados"
 
-setwd(P("_src"))
 source(P("_src/funcoes.R"))
-setwd(P())
-
 
 srag_files = sort(grep("SRAGH_2020", dir(file.path(DATAROOT), full.names = TRUE), value = TRUE))
 
