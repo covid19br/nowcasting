@@ -75,9 +75,9 @@ srag.now_casted = fillNowcastedLines(srag.dt, srag.now.day,
                                      probsFits$srag$uti[,"Estimate"],
                                      .parallel = TRUE)
 
-march_present = seq(as.Date("2020/03/08"), today(), by = "day")
-march_present.covid = seq(as.Date("2020/03/08"), now.Date.covid, by = "day")
-march_present.srag  = seq(as.Date("2020/03/08"), now.Date.srag, by = "day")
+march_present = seq(intial_date, today(), by = "day")
+march_present.covid = seq(intial_date, now.Date.covid, by = "day")
+march_present.srag  = seq(intial_date, now.Date.srag, by = "day")
 
 covid_in_hospital = lapply(covid.now_casted, makeHospitalTable, march_present.covid)
 covid_in_UTI      = lapply(covid.now_casted, makeHospitalTable, march_present.covid, UTI = TRUE)
@@ -94,7 +94,6 @@ hospitalized_totals_srag = data.frame(srag_in_hospital$observed$date,
                                       typo = "srag", stringsAsFactors = F)
 names(hospitalized_totals_srag) = c("date", "observed", "estimate", "upper", "lower", "type")
 hospitalized_totals = rbind(hospitalized_totals_covid, hospitalized_totals_srag)
-write_csv(hospitalized_totals, O("hospitalizados", paste0("hopitalized_", data_date,".csv")))
 
 # p3 = ggplot(hospitalized_totals, aes(date, observed, group = type, shape = type, color = type)) + 
 #   geom_point(size=2) + geom_line(aes(y = estimate)) + 
@@ -119,6 +118,12 @@ UTI_totals_srag = data.frame(srag_in_UTI$observed$date,
                                       typo = "srag", stringsAsFactors = F)
 names(UTI_totals_srag) = c("date", "observed", "estimate", "upper", "lower", "type")
 UTI_totals = rbind(UTI_totals_covid, UTI_totals_srag)
+
+##################
+# Output
+##################
+
+write_csv(hospitalized_totals, O("hospitalizados", paste0("hopitalized_", data_date,".csv")))
 write_csv(UTI_totals, O("hospitalizados", paste0("hopitalized_UTI_", data_date,".csv")))
 
 # p4 = ggplot(UTI_totals, aes(date, observed, group = type, color = type)) + 

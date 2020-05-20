@@ -7,7 +7,6 @@ setwd(P("_src"))
 source(P("_src/funcoes.R"))
 setwd(P())
 
-codigo_municipio = 355030
 
 srag_files = sort(grep("SRAGH_2020", dir(file.path(DATAROOT), full.names = TRUE), value = TRUE))
 
@@ -37,7 +36,7 @@ if(!all(dt_cols_class))
 set_week_start("Sunday") ## para incluir semana epidemiologica
 
 srag.dt = srag.20.raw %>%
-  dplyr::filter(co_mun_not == codigo_municipio) %>%
+  dplyr::filter(co_mun_not == geocode) %>%
   dplyr::rename(UTI = uti) %>%
   dplyr::filter(hospital == 1) %>%
   dplyr::select(dt_int, dt_not, dt_dig, dt_pcr, dt_sin, dt_evo, dt_enc, dt_ent, dt_sai, 
