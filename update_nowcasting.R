@@ -10,6 +10,7 @@ library(foreign)
 library(dplyr)
 library(NobBS)
 library(zoo)
+library(tidyr)
 
 
 # carrega funcoes
@@ -81,13 +82,13 @@ if (sys.nframe() == 0L) {
 ### to run INTERACTIVELY:
 #You only have to set up the variables that are not already set up above or the ones that you would like to change #
 #geocode <- "3550308" # municipio SP
-#data <- "2020_05_16"
+#data <- "2020_05_20"
 #######################################################
 # sets paths
 name_path <- check.geocode(escala = escala,
               geocode = geocode)
 output_dir <- paste0(output.dir, name_path, "/")
-output_dir <- paste0("../site/dados/", name_path, "/")
+
 # só para as tabelas
 df_path <- paste0(output_dir, "tabelas_nowcasting_para_grafico/")
 
