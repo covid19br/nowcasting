@@ -11,12 +11,17 @@ Repositório para análises de _nowcasting_ de COVID-19 a partir de microdados e
     │    
     ├── dados_processados/     # Dados com as saídas de nowcasting
     │    └── nowcasting/
-    │         ├── municipios
-    │         │     └── AM
-    │         │         └── nome_municipio ...
-    │         ├── estados
-    │         │     └── AM...
-    │        ...      
+    │         ├── municipios/
+    │         │     └── [UF]/
+    │         │         ├── [nome_municipio]/
+                                └── tabelas_nowcasting_para_grafico/
+                        └── ...
+                                
+    │         ├── estados/
+              |     ├── [UF]/
+    │         │     └── ...
+                    
+    │         └── ...      
     ├── .gitignore 
     │
     └── README.md
