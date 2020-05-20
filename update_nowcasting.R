@@ -80,11 +80,13 @@ if (sys.nframe() == 0L) {
 ####################################################
 ### to run INTERACTIVELY:
 #You only have to set up the variables that are not already set up above or the ones that you would like to change #
-geocode <- "3550308" # municipio SP
+#geocode <- "3550308" # municipio SP
+#data <- "2020_05_16"
+#push.repo <- "site"#NOT WORKING DEIXA NULL
+#######################################################
+# sets paths
 name_path <- check.geocode(escala = escala,
               geocode = geocode)#ast falta checar outras escalas e fontes de dados e destinos para push
-data <- "2020_05_16"
-#push.repo <- "site"#NOT WORKING DEIXA NULL
 if (is.null(push.repo))
   output.dir <- paste0("./dados_processados/nowcasting/", name_path, "/")
 if (!is.null(push.repo))#ö ast falta checar que seja necessariamente "site" ou decidir as opções
@@ -135,18 +137,18 @@ if (update.git) {
                   "'"))
     system("git push")
   }
-  if (push.repo == "site") {#NAO FUNCIONA. tem que escolher entre dar o caminho inteiro (nao pode) e fazer cd,
+  #if (push.repo == "site") {#NAO FUNCIONA. alias tem que ser !is.null mas também o valor. mas sobre tudo tem que escolher entre dar o caminho inteiro (nao pode) e fazer cd,
     #(dai perde o caminho) por isso pi separa o path em dois
     #tambem nao pode fazer cd num comando e viver achando que mudou ¬¬
-    system(paste0("cd ../", push.repo, " &&
-                  git pull &&
-                  git add", paste(files.para.push, collapse = " "), "&&
-                  git add", paste(tabelas.para.push, collapse = " "), "&&
-                  git commit -m ':robot: atualizacao desde o script nowcasting ",
-                   gsub(x = name_path, pattern = "/", replacement = " "),
-                   " dados:", data,
-                   "'"))
-    system("git push origin master")
-  }
+   # system(paste0("cd ../", push.repo, " &&
+  #                git pull &&
+   #               git add", paste(files.para.push, collapse = " "), "&&
+    #              git add", paste(tabelas.para.push, collapse = " "), "&&
+     #             git commit -m ':robot: atualizacao desde o script nowcasting ",
+      #             gsub(x = name_path, pattern = "/", replacement = " "),
+       #            " dados:", data,
+        #           "'"))
+    #system("git push origin master")
+  #}
   }
 
