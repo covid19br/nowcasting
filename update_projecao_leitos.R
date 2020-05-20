@@ -12,6 +12,7 @@ fix_missing_dates = TRUE
 intial_date = as.Date("2020/03/08")
 geocode = 355030
 n_cores = 2
+data_date = NULL
 
 registerDoMC(n_cores)
 
@@ -23,7 +24,7 @@ P = function(...) file.path(PRJROOT, ...)
 CODEROOT = paste0(PRJROOT, "/_src/projecao_leitos")
 C = function(...) file.path(CODEROOT, ...)	
 
-source(P("_src/fct/load_packages.R"))
+source(P("fct/load_packages.R"))
 
 source(C("00-read_process_SIVEP_CSV.R"))
 source(C("01-nowcast_inHospital_byAge.R"))
