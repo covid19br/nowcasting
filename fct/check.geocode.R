@@ -4,12 +4,12 @@
 check.geocode <- function(escala,
                           geocode) {
 
-  # url <- paste0("https://servicodados.ibge.gov.br/api/v1/localidades/municipios")
-  # df <- jsonlite::fromJSON(url)
-  # df$nome.nonascii <- gsub(" ", "_", replace_non_ascii(df$nome))
-  # df$nome.nonascii <- gsub("'", "", df$nome.nonascii)
-  # write.csv(df, "../dados/geocode_ibge.csv", row.names = FALSE)
-  df <- read.csv("../dados/geocode_ibge.csv")
+  #url <- paste0("https://servicodados.ibge.gov.br/api/v1/localidades/municipios")
+  #df <- jsonlite::fromJSON(url)
+  #df$nome.nonascii <- gsub(" ", "_", textclean::replace_non_ascii(df$nome))
+  #df$nome.nonascii <- gsub("'", "", df$nome.nonascii)
+  #write.csv(df, "./dados/geocode_ibge.csv", row.names = FALSE)
+  df <- read.csv("./dados/geocode_ibge.csv")
   #geocode <- as.numeric(geocode)
   municipio.code <- sapply(df$id, function(x) substr(x, start = 1, stop = 6))
   micro.code   <- df$microrregiao.id
