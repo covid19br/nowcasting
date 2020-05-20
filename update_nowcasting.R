@@ -83,13 +83,14 @@ if (sys.nframe() == 0L) {
 geocode <- "3550308" # municipio SP
 name_path <- check.geocode(escala = escala,
               geocode = geocode)#ast falta checar outras escalas e fontes de dados e destinos para push
-#data <- "2020_05_18"
-
+data <- "2020_05_16"
+#push.repo <- "site"#NOT WORKING DEIXA NULL
 if (is.null(push.repo))
   output.dir <- paste0("./dados_processados/nowcasting/", name_path, "/")
 if (!is.null(push.repo))#ö ast falta checar que seja necessariamente "site" ou decidir as opções
   output.dir <- paste0("../", push.repo, "/dados/", name_path, "/")#sorry not sorry
 #ö ast contar para a galera do site que o esquema vai mudar
+#ast: para fazer bem o push tinha um esquema de ter os nomes separados em dois - copiar do PI ou pensar como fazer. eu faço isto, não precisa.
 
 # só para as tabelas
 df.path <- paste0(output.dir, "tabelas_nowcasting_para_grafico/")
@@ -110,33 +111,42 @@ source('_src/02_prepara_dados_nowcasting.R')
 source('_src/03_analises_nowcasting.R')
 
 
-files.para.push <- list.files(output.dir, pattern = paste0("*.", data, ".csv"))
+#ast: acho que para o add e commit tem que ser o caminho inteiro - R/tem
+#ast nao é, tem que separar o path em dois. com push.repo null tá servindo,
+#para site ainda nao. ver o esquema do PI ¬¬
+files.para.push <- list.files(output.dir, pattern = paste0("*.", data, ".csv"),
+                              full.names = TRUE)
 files.para.push <- files.para.push[-grep(files.para.push, pattern = "post")]
 #aqui também poderia rolar um push das tabelas pro site mesmo
 tabelas.para.push <- list.files(df.path, pattern = paste0("*.", data, ".csv"))
-#ast: acho que para o add e commit tem que ser o caminho inteiro
 
 ################################################################################
 ## Comando git: commits e pushs
 ################################################################################
 if (update.git) {
-  if (push.repo == "NULL") {
+  if (is.null(push.repo)) {#funciona
     system("git pull")
     ## todos os arquivos da data
     system(paste("git add", paste(files.para.push, collapse = " ")))
-    system(paste("git commit -m '[auto] atualizacao automatica nowcasting",
+    system(paste("git add", paste(tabelas.para.push, collapse = " ")))
+    system(paste("git commit -m ':robot: atualizacao desde o script nowcasting",
                   gsub(x = name_path, pattern = "/", replacement = " "),
+                 "dados:", data,
                   "'"))
+    system("git push")
+  }
+  if (push.repo == "site") {#NAO FUNCIONA. tem que escolher entre dar o caminho inteiro (nao pode) e fazer cd,
+    #(dai perde o caminho) por isso pi separa o path em dois
+    #tambem nao pode fazer cd num comando e viver achando que mudou ¬¬
+    system(paste0("cd ../", push.repo, " &&
+                  git pull &&
+                  git add", paste(files.para.push, collapse = " "), "&&
+                  git add", paste(tabelas.para.push, collapse = " "), "&&
+                  git commit -m ':robot: atualizacao desde o script nowcasting ",
+                   gsub(x = name_path, pattern = "/", replacement = " "),
+                   " dados:", data,
+                   "'"))
     system("git push origin master")
   }
-  if (push.repo == "site") {
+  }
 
-    system(paste0("cd ../", push.repo, " && git pull"))
-    ## todos os arquivos da data
-    system(paste("git add", paste(files.para.push, collapse = " ")))
-    system(paste("git commit -m ':robot: atualizacao automatica nowcasting",
-                  gsub(x = name_path, pattern = "/", replacement = " "),
-                  "'"))
-    system("git push origin master")
-  }
-}
