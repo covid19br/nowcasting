@@ -46,7 +46,7 @@ if (sys.nframe() == 0L) {
     make_option("--trim", type = "integer", default = 2,
                 help = ("Últimos dias da serie temporal a tirar do nowcasting"),
                 metavar = "trim"),
-    make_option("--dataBase", #ast ö cara, era NULL só porque aqui estava "NULL" assim.
+    make_option("--dataBase",
                 help = ("Data da base de dados, formato 'yyyy_mm_dd'"),
                 metavar = "dataBase"),
     make_option("--formatoData", default = "%Y_%m_%d",
@@ -54,10 +54,7 @@ if (sys.nframe() == 0L) {
                 metavar = "formatoData"),
     make_option("--updateGit", default = "FALSE",
                 help = ("Fazer git add, commit e push?"),
-                metavar = "updateGit"),
-    make_option("--pushRepo", #opcoes site e NULL?
-                help = ("Aonde fazer o push (pasta que leva ao repositório do site"),
-                metavar = "pushRepo")
+                metavar = "updateGit")
   )
   parser_object <- OptionParser(usage = "Rscript %prog [Opções] [ARQUIVO]\n",
                                 option_list = option_list,
@@ -82,7 +79,6 @@ if (sys.nframe() == 0L) {
 #You only have to set up the variables that are not already set up above or the ones that you would like to change #
 #geocode <- "3550308" # municipio SP
 #data <- "2020_05_16"
-#push.repo <- "site" # NOT WORKING DEIXA NULL
 #######################################################
 # sets paths
 name_path <- check.geocode(escala = escala,
@@ -120,35 +116,22 @@ files.para.push <- list.files(output.dir, pattern = paste0("*.", data, ".csv"),
                               full.names = TRUE)
 files.para.push <- files.para.push[-grep(files.para.push, pattern = "post")]
 #aqui também poderia rolar um push das tabelas pro site mesmo
-tabelas.para.push <- list.files(df.path, pattern = paste0("*.", data, ".csv"))
+tabelas.para.push <- list.files(df.path, pattern = paste0("*.", data, ".csv"),
+                                full.names = TRUE)
 
 ################################################################################
 ## Comando git: commits e pushs
 ################################################################################
 if (update.git) {
-  if (is.null(push.repo)) {#funciona
-    system("git pull")
-    ## todos os arquivos da data
-    system(paste("git add", paste(files.para.push, collapse = " ")))
-    system(paste("git add", paste(tabelas.para.push, collapse = " ")))
-    system(paste("git commit -m ':robot: atualizacao desde o script nowcasting",
-                  gsub(x = name_path, pattern = "/", replacement = " "),
-                 "dados:", data,
-                  "'"))
-    system("git push")
+  system("git pull")
+  ## todos os arquivos da data
+  system(paste("git add", paste(files.para.push, collapse = " ")))
+  system(paste("git add", paste(tabelas.para.push, collapse = " ")))
+  system(paste("git commit -m ':robot: nowcasting",
+               gsub(x = name_path, pattern = "/", replacement = " "),
+               "dados:", data,
+               "'"))
+  system("git push")
   }
-  #if (push.repo == "site") {#NAO FUNCIONA. alias tem que ser !is.null mas também o valor. mas sobre tudo tem que escolher entre dar o caminho inteiro (nao pode) e fazer cd,
-    #(dai perde o caminho) por isso pi separa o path em dois
-    #tambem nao pode fazer cd num comando e viver achando que mudou ¬¬
-   # system(paste0("cd ../", push.repo, " &&
-  #                git pull &&
-   #               git add", paste(files.para.push, collapse = " "), "&&
-    #              git add", paste(tabelas.para.push, collapse = " "), "&&
-     #             git commit -m ':robot: atualizacao desde o script nowcasting ",
-      #             gsub(x = name_path, pattern = "/", replacement = " "),
-       #            " dados:", data,
-        #           "'"))
-    #system("git push origin master")
-  #}
-  }
+
 
