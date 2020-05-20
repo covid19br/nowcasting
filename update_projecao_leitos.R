@@ -13,6 +13,8 @@ intial_date = as.Date("2020/03/08")
 geocode = 355030
 n_cores = 2
 data_date = NULL
+make_report = TRUE
+update_site = FALSE
 
 registerDoMC(n_cores)
 
@@ -27,9 +29,15 @@ C = function(...) file.path(CODEROOT, ...)
 source(P("fct/load_packages.R"))
 
 source(C("00-read_process_SIVEP_CSV.R"))
-source(C("01-nowcast_inHospital_byAge.R"))
-source(C("02-runFits_generalized_Exponential_Logistic_fit.R"))
-source(C("03-report_ExpLogistfit.R"))
-setwd(file.path(METAROOT, "site/_src"))
-source("update_modelogro.R")
 
+source(C("01-nowcast_inHospital_byAge.R"))
+
+source(C("02-runFits_generalized_Exponential_Logistic_fit.R"))
+
+if(make_report)
+  source(C("03-report_ExpLogistfit.R"))
+
+if(update_site){
+  setwd(file.path(METAROOT, "site/_src"))
+  source("update_modelogro.R")
+}
