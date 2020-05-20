@@ -19,12 +19,9 @@ read.sivep <- function(dir, # diretorio onde esta o dado
   ## ö dá pra implementar meso e microrregiao ast: super dá, por enquanto tirei filtro
   if (escala != "pais") {
     n.geo <- nchar(geocode)
-    n.geocodes <- c(estado = 2, meso = 4, micro = 6, municipio = 7)
+    n.geocodes <- c(estado = 2, meso = 4, micro = 5, municipio = 7)
     #ö ast estava pensando num check de escala vs geocode tipo "seu geocode não corresponde ao n.char". não sei como renato resolveu isto no site. teria que ter a exceção de municipiom claro. mas a pessoa pode querer vir com o geocode de 7, né.
     # CORRIGINDO GEOCODE DO MUNICIPIO DE SAO PAULO na base "355030" mas oficial é "3550308"
-    #olhando pro código do renato acho que a solução dele de escalas deve vir aqui.
-    #https://github.com/covid19br/covid19br.github.io/blob/900389f11cf89f907cd25c99859f9af07548bc09/_src/gera_nowcastings_SIVEP.R#L106
-    #eu faço, vou avançar enquanto isso.
     if (escala == "municipio" & n.geo == 7) {
       geocode <- substr(geocode, start = 1, stop = 6)
       n.geo <- nchar(geocode)
