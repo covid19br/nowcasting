@@ -46,16 +46,16 @@ if (sys.nframe() == 0L) {
     make_option("--trim", type = "integer", default = 2,
                 help = ("Últimos dias da serie temporal a tirar do nowcasting"),
                 metavar = "trim"),
-    make_option("--dataBase", default = "NULL",
+    make_option("--dataBase", #ast ö cara, era NULL só porque aqui estava "NULL" assim.
                 help = ("Data da base de dados, formato 'yyyy_mm_dd'"),
                 metavar = "dataBase"),
     make_option("--formatoData", default = "%Y_%m_%d",
-                help = ("Formato do campo de datas no csv, confome padrão da função as.Date"),
+                help = ("Formato do campo de datas no csv, confome padrão da função as.Date"),#ast antes de tirar checar outras fontes de dados
                 metavar = "formatoData"),
     make_option("--updateGit", default = "FALSE",
                 help = ("Fazer git add, commit e push?"),
                 metavar = "updateGit"),
-    make_option("--pushRepo", default = "site", #opcoes site e NULL?
+    make_option("--pushRepo", #opcoes site e NULL?
                 help = ("Aonde fazer o push (pasta que leva ao repositório do site"),
                 metavar = "pushRepo")
   )
@@ -81,34 +81,29 @@ if (sys.nframe() == 0L) {
 ### to run INTERACTIVELY:
 #You only have to set up the variables that are not already set up above or the ones that you would like to change #
 geocode <- "3550308" # municipio SP
-#ast aqui teria que ter um jeito de pegar o nome a partir do geocode se a gente nao criar nome (is.null(nome)), aí a gente nomeia com o geocode e a escala.
-data <- "2020_05_18"
-# o output dir deveria ser parametro, tirei do meio
-if (push.repo <- "NULL")
-  output.dir <- paste0("/dados_processados/nowcasting/", escala,"_", sigla,"/")
-if (push.repo <- "site")
-  output.dir <- paste0("../", push.repo, "/dados_", escala,"_", sigla, output.dir)#ou nome
+name_path <- check.geocode(escala = escala,
+              geocode = geocode)#ast falta checar outras escalas e fontes de dados e destinos para push
+#data <- "2020_05_18"
 
-if (!file.exists(output.dir)) dir.create(output.dir, showWarnings = FALSE) #ast tirei da funcao só para que ficasse junto
+if (is.null(push.repo))
+  output.dir <- paste0("./dados_processados/nowcasting/", name_path, "/")
+if (!is.null(push.repo))#ö ast falta checar que seja necessariamente "site" ou decidir as opções
+  output.dir <- paste0("../", push.repo, "/dados/", name_path, "/")#sorry not sorry
+#ö ast contar para a galera do site que o esquema vai mudar
+
 # só para as tabelas
-if (push.repo <- "site")
-  df.path <- paste0(push.repo, "/dados/", escala, "_", sigla, "/tabelas_nowcasting_para_grafico/")
-if (push.repo <- "NULL")
-  df.path <- paste0("/dados_processados/nowcasting/", escala, "_", sigla, "/tabelas_nowcasting_para_grafico/")
+df.path <- paste0(output.dir, "tabelas_nowcasting_para_grafico/")
+
+#ast cria mais abrangente melhor, até a pasta das tabelas
+if (!file.exists(df.path))
+  dir.create(df.path, showWarnings = TRUE, recursive = TRUE)
 
 # pegando a data mais recente
-if (data == "NULL") {
+if (is.null(data)) {
   data <- get.last.date(dir)
 }
 
-
-
-print(paste("Atualizando", escala , sigla))
-
-#ast todos estes checks precisamos rever ainda
-
-sigla.municipios <- c(SP = "São Paulo",
-                      RJ = "Rio de Janeiro")
+print(paste("Atualizando", escala , sigla, data))
 
 source("_src/01_gera_nowcastings_SIVEP.R")
 source('_src/02_prepara_dados_nowcasting.R')
@@ -116,29 +111,32 @@ source('_src/03_analises_nowcasting.R')
 
 
 files.para.push <- list.files(output.dir, pattern = paste0("*.", data, ".csv"))
+files.para.push <- files.para.push[-grep(files.para.push, pattern = "post")]
+#aqui também poderia rolar um push das tabelas pro site mesmo
+tabelas.para.push <- list.files(df.path, pattern = paste0("*.", data, ".csv"))
+#ast: acho que para o add e commit tem que ser o caminho inteiro
 
 ################################################################################
 ## Comando git: commits e pushs
 ################################################################################
 if (update.git) {
-  system("git pull")
-  ## todos os arquivos da data
-  system(paste("git add", paste(files.para.push, collapse = " ")))
-  system(paste0("git commit -m '[auto] atualizacao automatica nowcasting estado ", sigla, "' &&
-       git push origin master"))
+  if (push.repo == "NULL") {
+    system("git pull")
+    ## todos os arquivos da data
+    system(paste("git add", paste(files.para.push, collapse = " ")))
+    system(paste("git commit -m '[auto] atualizacao automatica nowcasting",
+                  gsub(x = name_path, pattern = "/", replacement = " "),
+                  "'"))
+    system("git push origin master")
+  }
+  if (push.repo == "site") {
+
+    system(paste0("cd ../", push.repo, " && git pull"))
+    ## todos os arquivos da data
+    system(paste("git add", paste(files.para.push, collapse = " ")))
+    system(paste("git commit -m ':robot: atualizacao automatica nowcasting",
+                  gsub(x = name_path, pattern = "/", replacement = " "),
+                  "'"))
+    system("git push origin master")
+  }
 }
-
-##%PI: ainda a implementar para cada estado
-## ################################################################################
-## ## Executa analises de comparacao dos resultados por versoes da base SIVEP
-## ## compila e relatorio destas comparacoes e dá push dos aquivos resultantes
-## ################################################################################
-## ## Executa as analises, ver codigo compara_nowcasting_versoes_sivep.R
-## system("Rscript compara_nowcasting_versoes_sivep.R --diretorio 'Municipio_SP' --trim 2 --covid FALSE --obitos FALSE")
-## system("Rscript compara_nowcasting_versoes_sivep.R --diretorio 'Municipio_SP' --trim 2 --covid TRUE --obitos FALSE")
-## system("Rscript compara_nowcasting_versoes_sivep.R --diretorio 'Municipio_SP' --trim 2 --covid FALSE --obitos FALSE --hospital TRUE")
-## system("Rscript compara_nowcasting_versoes_sivep.R --diretorio 'Municipio_SP' --trim 2 --covid TRUE --obitos FALSE --hospital TRUE")
-## ## Executa o script que compila relatorio nowcasting e dá commit e push
-## system(paste0("cd Municipio_SP/SRAG_hospitalizados/; Rscript compara_nowcasting_versoes_sivep_compila_rmd.R --trim ",
-##               trim.now, " --dataBase ", data.base))
-

@@ -1,5 +1,5 @@
 check.geocode <- function(escala,
-                          geocode){
+                          geocode) {
 
   # url <- paste0("https://servicodados.ibge.gov.br/api/v1/localidades/municipios")
   # df <- jsonlite::fromJSON(url)
@@ -9,9 +9,9 @@ check.geocode <- function(escala,
   df <- read.csv("../dados/geocode_ibge.csv")
   geocode <- as.numeric(geocode)
   municipio.code <- df$id
-  micro.code <- df$microrregiao.id
-  meso.code <- df$microrregiao.mesorregiao.id
-  estado.code <- df$microrregiao.mesorregiao.UF.id
+  micro.code   <- df$microrregiao.id
+  meso.code    <- df$microrregiao.mesorregiao.id
+  estado.code  <- df$microrregiao.mesorregiao.UF.id
   estado.sigla <- df$microrregiao.mesorregiao.UF.sigla
 
     if (escala == "municipio") {
@@ -60,10 +60,9 @@ check.geocode <- function(escala,
   return(nome)
 }
 
-# check.geocode(escala = "municipio", geocode = " 2113009")
+# check.geocode(escala = "municipio", geocode = "3512100")
 # check.geocode(escala = "estado", geocode = "21")
 # check.geocode(escala = "micro", geocode = "21")
 # check.geocode(escala = "micro", geocode = "21008")
 # check.geocode(escala = "meso", geocode = "2102")
-
 

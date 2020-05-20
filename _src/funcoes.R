@@ -4,6 +4,7 @@ library(lubridate)
 
 # carraga funcoes em fct, listagem em ordem alfabetica
 source("fct/beta.summary.R")
+source("fct/check.geocode.R")
 source("fct/diazero.R")
 source("fct/dt.rw.R")
 source("fct/estima.not.R")
