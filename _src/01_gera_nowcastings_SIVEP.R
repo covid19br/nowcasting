@@ -1,8 +1,15 @@
-################################################################################
+#####################################################################
 ## 1. Leitura de arquivo  do sivep gripe no diretorio SIVEP-Gripe
-## 2. Execucao do nowcasting, e criação de tabelas de n de casos por data de sintoma e notificacao
-## 3. Dá push destes arquivos no repo do site OBSERVATÓRIO COVID-19 BR
-################################################################################
+## 2. Execucao do nowcasting, e criação de tabelas de n de casos
+# por data de sintoma e notificacao
+## 3. Exporta os arquivos
+###################################################################
+
+# usa funcoes em fct:
+## 1. read.sivep
+## 2. gera.nowcasting
+## 3. write.notificacoes.data
+##    write.nowcasting
 
 
 ################################################################################

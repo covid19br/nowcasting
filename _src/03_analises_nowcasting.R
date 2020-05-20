@@ -1,5 +1,16 @@
-# Para srag todos os ouputs são cortados a partir de 15/03 quando passou a incluir covid
-#dia.zero.srag <- "2020-03-15"
+#####################################################################
+## 1. Calcula projeções a partir do nowcasting
+## 2. Calcula R efetivo e tempo de duplicação
+## 3. Exporta tabelas consolidadas
+###################################################################
+
+# usa funcoes em fct:
+## 1. now.proj
+## 2. Re.com.data
+##    dt.rw
+## 3. formata.now.df
+##    zoo2df :P
+
 
 ###############
 # 1. COVID ####
