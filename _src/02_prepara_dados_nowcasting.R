@@ -1,4 +1,11 @@
+#####################################################################
+## 1. Testa se existe nowcasting para o tipo específico
+## 2. Prepara os dados (cria objetos zoo) para análises
+###################################################################
 
+# usa funcoes em fct:
+## 1. existe.nowcasting
+## 2. prepara.dados
 
 # testando se existe nowcasting
 existe.covid <- existe.nowcasting(tipo = "covid",
