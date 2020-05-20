@@ -6,7 +6,7 @@ Repositório para análises de _nowcasting_ de COVID-19 a partir de microdados e
 
     .
     ├── update_nowcasting.R    # Script principal para rodar o workflow
-    ├── _src/                  # Scripts secundários para rodar as análises         │                            (source files)
+    ├── _src/                  # Scripts secundários para rodar as análises (source files)
     ├── fct/                   # Funções auxiliares
     │    
     ├── dados_processados/     # Dados com as saídas de nowcasting
@@ -23,11 +23,11 @@ Repositório para análises de _nowcasting_ de COVID-19 a partir de microdados e
 
 ### Caminho para dados de entrada
 
-Dados de entrada em `dados_processados/nowcasting/[escala]_[sigla]`
+Os dados de entrada são parametrizados no script `update_nowcasting.R` usando o argumento `dir`. 
 
 ### Caminho para outputs
 
-Os outputs gerados neste repositório devem ir para: `site/web/[escala]_[sigla escala]/tabelas_nowcasting_para_grafico/`
+Os outputs gerados por `update_nowcasting.R` vão para `dados_processados/nowcasting/[escala]/[sigla_UF]/[nome]`. Os dados processados de *nowcasting* estão na raiz desse caminho e há uma subpasta `dados_processados/nowcasting/[escala]/[sigla_UF]/[nome]/tabelas_nowcasting_para_grafico` onde são guardadas as tabelas de *nowcasting* consolidadas. 
 
 ## Dependências
 
@@ -46,6 +46,8 @@ Além disso, a execução dos scripts em R depende da instalação dos pacotes a
 - patchwork 
 - optparse 
 - zoo
+
+Construímos funções acessórias que estão em `fct` para facilitar o fluxo de trabalho.
 
 ## Sobre o método
 
