@@ -54,7 +54,10 @@ if (sys.nframe() == 0L) {
                 metavar = "formatoData"),
     make_option("--updateGit", default = "FALSE",
                 help = ("Fazer git add, commit e push?"),
-                metavar = "updateGit")
+                metavar = "updateGit"),
+    make_option("--outputDir", default = "./dados_processados/nowcasting",
+                help = ("Diretório de destino"),
+                metavar = "outputDir")
   )
   parser_object <- OptionParser(usage = "Rscript %prog [Opções] [ARQUIVO]\n",
                                 option_list = option_list,
@@ -72,7 +75,7 @@ if (sys.nframe() == 0L) {
   data <- opt$options$dataBase
   formato.data <- opt$options$formatoData
   update.git <- opt$options$updateGit
-  push.repo <- opt$options$pushRepo
+  output.dir <- opt$options$outputDir
 }
 ####################################################
 ### to run INTERACTIVELY:
@@ -82,20 +85,14 @@ if (sys.nframe() == 0L) {
 #######################################################
 # sets paths
 name_path <- check.geocode(escala = escala,
-              geocode = geocode)#ast falta checar outras escalas e fontes de dados e destinos para push
-if (is.null(push.repo))
-  output.dir <- paste0("./dados_processados/nowcasting/", name_path, "/")
-if (!is.null(push.repo))#ö ast falta checar que seja necessariamente "site" ou decidir as opções
-  output.dir <- paste0("../", push.repo, "/dados/", name_path, "/")#sorry not sorry
-#ö ast contar para a galera do site que o esquema vai mudar
-#ast: para fazer bem o push tinha um esquema de ter os nomes separados em dois - copiar do PI ou pensar como fazer. eu faço isto, não precisa.
-
+              geocode = geocode)
+output_dir <- paste0(output.dir, name_path, "/")
+output_dir <- paste0("../site/dados/", name_path, "/")
 # só para as tabelas
-df.path <- paste0(output.dir, "tabelas_nowcasting_para_grafico/")
+df_path <- paste0(output_dir, "tabelas_nowcasting_para_grafico/")
 
-#ast cria mais abrangente melhor, até a pasta das tabelas
-if (!file.exists(df.path))
-  dir.create(df.path, showWarnings = TRUE, recursive = TRUE)
+if (!file.exists(df_path))
+  dir.create(df_path, showWarnings = TRUE, recursive = TRUE)
 
 # pegando a data mais recente
 if (is.null(data)) {
@@ -108,15 +105,12 @@ source("_src/01_gera_nowcastings_SIVEP.R")
 source('_src/02_prepara_dados_nowcasting.R')
 source('_src/03_analises_nowcasting.R')
 
-
-#ast: acho que para o add e commit tem que ser o caminho inteiro - R/tem
-#ast nao é, tem que separar o path em dois. com push.repo null tá servindo,
-#para site ainda nao. ver o esquema do PI ¬¬
-files.para.push <- list.files(output.dir, pattern = paste0("*.", data, ".csv"),
+#ö checar path para git push
+files_para_push <- list.files(output_dir, pattern = paste0("*.", data, ".csv"),
                               full.names = TRUE)
-files.para.push <- files.para.push[-grep(files.para.push, pattern = "post")]
+files_para_push <- files_para_push[-grep(files_para_push, pattern = "post")]
 #aqui também poderia rolar um push das tabelas pro site mesmo
-tabelas.para.push <- list.files(df.path, pattern = paste0("*.", data, ".csv"),
+tabelas_para_push <- list.files(df_path, pattern = paste0("*.", data, ".csv"),
                                 full.names = TRUE)
 
 ################################################################################
@@ -125,8 +119,8 @@ tabelas.para.push <- list.files(df.path, pattern = paste0("*.", data, ".csv"),
 if (update.git) {
   system("git pull")
   ## todos os arquivos da data
-  system(paste("git add", paste(files.para.push, collapse = " ")))
-  system(paste("git add", paste(tabelas.para.push, collapse = " ")))
+  system(paste("git add", paste(files_para_push, collapse = " ")))
+  system(paste("git add", paste(tabelas_para_push, collapse = " ")))
   system(paste("git commit -m ':robot: nowcasting",
                gsub(x = name_path, pattern = "/", replacement = " "),
                "dados:", data,

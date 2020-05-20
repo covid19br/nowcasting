@@ -10,18 +10,22 @@ Repositório para análises de _nowcasting_ de COVID-19 a partir de microdados d
     ├── fct/                   # Funções auxiliares
     │    
     ├── dados_processados/     # Dados com as saídas de nowcasting
-    │    └── nowcasting/
-    │         ├── municipios/
-    │         │     └── [UF]/
-    │         │         ├── [nome_municipio]/
-                                └── tabelas_nowcasting_para_grafico/
-                        └── ...
-                                
-    │         ├── estados/
-              |     ├── [UF]/
-    │         │     └── ...
-                    
-    │         └── ...      
+    │    ├─ nowcasting/
+    │    │    ├── municipios/
+    │    │    │     └── [UF]/
+    │    │    │         ├── [nome_municipio]/
+    │    │    │         │      └── tabelas_nowcasting_para_grafico/
+    │    │    │         └── ...
+    │    │    │                 
+    │    │    ├── estados/
+    │    │    |     ├── [UF]/
+    │    │    │     └── ...
+    │    │    │    
+    │    │    └── ...  
+    │    │
+    │    └─ projecao_leitos/
+    │         └── municipio_SP/
+    │
     ├── .gitignore 
     │
     └── README.md
