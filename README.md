@@ -2,7 +2,7 @@
 
 ## Estrutura do repositório
 
-Repositório para análises de _nowcasting_ de COVID-19 a partir de microdados e exportar para a [página do observatório](https://covid19br.github.io/). Os outputs finais são enviados para o repositório do site do Observatório.
+Repositório para análises de _nowcasting_ de COVID-19 a partir de microdados.
 
     .
     ├── update_nowcasting.R    # Script principal para rodar o workflow
