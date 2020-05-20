@@ -32,7 +32,7 @@ if (existe.covid) {
                                data.base = data.covid,
                                output.dir = output.dir)
     }
-}
+
 ################################################################################
 ## Dados e nowcastings SRAG
 ################################################################################
@@ -42,7 +42,7 @@ if (existe.srag) {
                                 data.base = data.srag,
                                 output.dir = output.dir)
   }
-}
+
 ################################################################################
 ## Dados e nowcastings COVID OBITOS
 ################################################################################
@@ -51,7 +51,6 @@ if (existe.ob.covid) {
       lista.ob.covid <- prepara.dados(tipo = "obitos_covid",
                                       data.base = data.ob.covid,
                                       output.dir = output.dir)
-      }
     }
 ################################################################################
 ## Dados e nowcastings SRAG OBITOS
@@ -62,7 +61,7 @@ if (existe.ob.srag) {
                                    data.base = data.ob.srag,
                                    output.dir = output.dir)
   }
-}
+
 
 if (existe.ob.srag.proaim) {
     data.ob.srag.proaim <- data
