@@ -2,7 +2,7 @@
 
 ## Estrutura do repositório
 
-Repositório para análises de _nowcasting_ de COVID-19 a partir de microdados.
+Repositório para análises de _nowcasting_ de COVID-19 a partir de microdados de SIVEP-Gripe.
 
     .
     ├── update_nowcasting.R    # Script principal para rodar o workflow
@@ -56,7 +56,7 @@ Construímos funções acessórias que estão em `fct` para facilitar o fluxo de
 
 ## Sobre o método
 
-- *Nowcasting* com método *Bayesian smoothing* de McGough et al (2019), usando a função `NobBS` do pacote R de mesmo nome (McGough et al 2020), com janela (argumento (`moving_window`) de 40 dias para nowcasting diário
+- *Nowcasting* com método *Bayesian smoothing* de McGough et al (2019), usando a função `NobBS` do pacote R de mesmo nome (McGough et al 2020), com janela (argumento `moving_window`) de 40 dias para nowcasting diário
 
 - *Nowcasting* diário até dois dias antes da última data de sintoma que consta na base. Este corte é feito
 porque o _nowcasting_ diário tem muita variação nas previsões dos dias mais recentes, para os quais
@@ -82,4 +82,19 @@ do Observatório COVID-19 BR](https://covid19br.github.io)
 - Cálculo dos tempos de R efetivo (R) a partir do limite superior do IC 95% dos valores estimados por
 nowcating. R e calculado pelo método de Wallinga & Teunis (2004), implementado no pacote **EpiEstim**
 (Cori et al 2020, função `estimate_R`). Utilizado o método que assume distribuição gama dos intervalos
-seriais, com parâmetros tomados de Nishiura et al. (2020)
+seriais, com parâmetros tomados de Nishiura et al. (2020).
+
+## Referências
+
+Cori, Anne (2019). EpiEstim: Estimate Time Varying Reproduction Numbers from Epidemic Curves. R
+  package version 2.2-1. https://CRAN.R-project.org/package=EpiEstim
+
+McGough, S. F., Johansson, M. A., Lipsitch, M., & Menzies, N. A. (2020). Nowcasting by Bayesian Smoothing: A flexible, generalizable model for real-time epidemic tracking. PLoS computational biology, 16(4), e1007735.
+
+McGough, S., Menzies, N., Lipsitch, M., Johansson, M. (2020). NobBS: Nowcasting by
+  Bayesian Smoothing. R package version 0.1.0. https://CRAN.R-project.org/package=NobBS
+  
+  Nishiura, H., Linton, N. M., & Akhmetzhanov, A. R. (2020). Serial interval of novel coronavirus (COVID-19) infections. International journal of infectious diseases.
+  
+ Wallinga, J., & Teunis, P. (2004). Different epidemic curves for severe acute respiratory syndrome reveal similar impacts of control measures. American Journal of epidemiology, 160(6), 509-516.
+
