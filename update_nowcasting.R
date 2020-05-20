@@ -87,7 +87,7 @@ if (sys.nframe() == 0L) {
 # sets paths
 name_path <- check.geocode(escala = escala,
               geocode = geocode)
-output_dir <- paste0(output.dir, name_path, "/")
+output_dir <- paste0(output.dir, "/", name_path, "/")
 
 # só para as tabelas
 df_path <- paste0(output_dir, "tabelas_nowcasting_para_grafico/")
