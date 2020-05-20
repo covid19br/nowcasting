@@ -34,7 +34,7 @@ if (sys.nframe() == 0L) {
     make_option("--escala", default = "municipio",
                 help = ("Nível administrativo, um de: municipio, micro, meso, estado, país"),
                 metavar = "escala"),
-    make_option("--sigla", default = "SP",
+    make_option("--sigla", default = "SP", # ainda nao estamos usando
                 help = ("Sigla do estado a ser atualizado"),
                 metavar = "sigla"),
     make_option("--geocode",
@@ -82,7 +82,7 @@ if (sys.nframe() == 0L) {
 #You only have to set up the variables that are not already set up above or the ones that you would like to change #
 #geocode <- "3550308" # municipio SP
 #data <- "2020_05_16"
-#push.repo <- "site"#NOT WORKING DEIXA NULL
+#push.repo <- "site" # NOT WORKING DEIXA NULL
 #######################################################
 # sets paths
 name_path <- check.geocode(escala = escala,
@@ -106,7 +106,7 @@ if (is.null(data)) {
   data <- get.last.date(dir)
 }
 
-print(paste("Atualizando", escala , sigla, data))
+print(paste("Atualizando", gsub(x = name_path, pattern = "/", replacement = " ")))
 
 source("_src/01_gera_nowcastings_SIVEP.R")
 source('_src/02_prepara_dados_nowcasting.R')

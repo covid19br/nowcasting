@@ -1,33 +1,23 @@
 
 
 # testando se existe nowcasting
-existe.covid <- existe.nowcasting(escala = escala,
-                                  sigla = sigla,
-                                  tipo = "covid",
+existe.covid <- existe.nowcasting(tipo = "covid",
                                   data = data,
                                   output.dir = output.dir)
 
-existe.srag <- existe.nowcasting(escala = escala,
-                                 sigla = sigla,
-                                 tipo = "srag",
+existe.srag <- existe.nowcasting(tipo = "srag",
                                  data = data,
                                  output.dir = output.dir)
 
-existe.ob.covid <- existe.nowcasting(escala = escala,
-                                     sigla = sigla,
-                                     tipo = "obitos_covid",
+existe.ob.covid <- existe.nowcasting(tipo = "obitos_covid",
                                      data = data,
                                      output.dir = output.dir)
 
-existe.ob.srag <- existe.nowcasting(escala = escala,
-                                    sigla = sigla,
-                                    tipo = "obitos_srag",
+existe.ob.srag <- existe.nowcasting(tipo = "obitos_srag",
                                     data = data,
                                     output.dir = output.dir)
 
-existe.ob.srag.proaim <- existe.nowcasting(escala = escala,
-                                           sigla = sigla,
-                                           tipo = "proaim_obitos_srag",
+existe.ob.srag.proaim <- existe.nowcasting(tipo = "proaim_obitos_srag",
                                            data = data,
                                            output.dir = output.dir)
 
@@ -45,8 +35,6 @@ if (existe.covid) {
   #data.covid <- as.Date(data, format = "%Y_%m_%d") %>%
    #   format("%Y_%m_%d")##ast all this should be relying in format data and will be useful when other sources enter
   lista.covid <- prepara.dados(tipo = "covid",
-                               escala = escala,
-                               sigla = sigla,
                                data.base = data.covid,
                                output.dir = output.dir)
     }
@@ -60,10 +48,8 @@ if (existe.srag) {
                                output.dir = output.dir)
   if (data.srag == data) {
     lista.srag <- prepara.dados(tipo = "srag",
-                              escala = escala,
-                              sigla = sigla,
-                              data.base = data.srag,
-                              output.dir = output.dir)
+                                data.base = data.srag,
+                                output.dir = output.dir)
   }
 }
 ################################################################################
@@ -74,8 +60,6 @@ if (existe.ob.covid) {
                                    output.dir = output.dir)
     if (data.ob.covid == data) {
       lista.ob.covid <- prepara.dados(tipo = "obitos_covid",
-                                      escala = escala,
-                                      sigla = sigla,
                                       data.base = data.ob.covid,
                                       output.dir = output.dir)
       }
@@ -87,11 +71,9 @@ if (existe.ob.srag) {
     data.ob.srag <- get.data.base(tipo = "obitos_srag",
                                   output.dir = output.dir)
   if (data.ob.srag == data) {
-  lista.ob.srag <- prepara.dados(tipo = "obitos_srag",
-                                 escala = escala,
-                                 sigla = sigla,
-                                 data.base = data.ob.srag,
-                                 output.dir = output.dir)
+    lista.ob.srag <- prepara.dados(tipo = "obitos_srag",
+                                   data.base = data.ob.srag,
+                                   output.dir = output.dir)
   }
 }
 
@@ -99,10 +81,8 @@ if (existe.ob.srag.proaim) {
   data.ob.srag.proaim <- get.data.base(tipo = "proaim_obitos_srag",
                                        output.dir = output.dir)
   if (data.ob.srag.proaim == data) {
-  lista.ob.srag.proaim <- prepara.dados(tipo = "proaim_obitos_srag",
-                                        escala = escala,
-                                        sigla = sigla,
-                                        data.base = data.ob.srag.proaim,
-                                        output.dir = output.dir)
+    lista.ob.srag.proaim <- prepara.dados(tipo = "proaim_obitos_srag",
+                                          data.base = data.ob.srag.proaim,
+                                          output.dir = output.dir)
   }
 }

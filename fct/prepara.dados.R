@@ -4,21 +4,12 @@
 #' Função para automatizar a preparação dos dados de nowcasting por unidade administrativa
 #' @details Retira datas dos sufixos dos nomes das bases e identifica a maior data. Só funciona se os nomes das bases forem mantidos no padrão
 #' @param tipo Caractere. Nome da base de dados para preparar. Tipos possíveis: `covid` para casos de COVID-19, `srag` para casos de SRAG, `obitos_covid` para óbitos por COVID-19 e `obitos_srag` para óbitos por SRAG
-#' @param escala Caractere. Unidade administrativa `estado` ou `municipio`
-#' @param sigla Caractere. Sigla da unidade administrativa. Para municípios por enquanto apenas SP disponível
 prepara.dados <- function(tipo = "covid",
-                          escala,
-                          sigla,
                           data.base,
                           output.dir = output.dir) { # tipos possiveis: covid, srag, obitos_covid e obitos_srag
     casos <- c("covid", "srag")
     obitos <- c("obitos_covid", "obitos_srag")
     proaim <- c("proaim_obitos_srag")
-    if (escala == "municipio") {
-        if (!sigla %in% c("SP", "RJ")) {
-            stop("sigla de municipio invalida")
-        }
-    }
     nome.dir <- output.dir
     # if (missing(data.base))
     #     data.base <- get.data.base(escala = escala, sigla = sigla, tipo = tipo)

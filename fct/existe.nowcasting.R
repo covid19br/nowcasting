@@ -1,7 +1,5 @@
 ## Função para checar se existem dados de nowcasting para a unidade administrativa
-existe.nowcasting <- function(escala = escala,
-                              sigla = sigla,
-                              tipo,
+existe.nowcasting <- function(tipo,
                               data,
                               output.dir) {
   # if (data == "NULL") {
