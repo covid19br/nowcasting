@@ -44,7 +44,7 @@ if (sys.nframe() == 0L) {
                 metavar = "n_cores"),
     make_option("--fit_models", default = FALSE,
                 help = ("Booleano. Ajusta ou não os modelos de projeção. Precisa ser feito antes do relatório."),
-                metavar = "n_cores"),
+                metavar = "fit_models"),
     make_option("--report", default = TRUE,
                 help = ("Booleano. Gera ou não relatório automático."),
                 metavar = "report")
@@ -71,9 +71,19 @@ if (sys.nframe() == 0L) {
   fix_missing_dates <- opt$options$fix_dates
   n_cores <- opt$options$n_cores
   make_report <- opt$options$report
-  fit_models <- 
+  fit_models <- opt$options$fit_models
   out.root <- if(is.null(opt$options$out_dir)) {"dados_processados"} else opt$options$out_dir
 }
+
+####################################################
+### to run INTERACTIVELY:
+#You only have to set up the variables that are not already set up above or the ones that you would like to change #
+#geocode <- "3550308" # municipio SP
+geocode <- "3509502" # municipio Campinas
+DATAROOT <- "../dados/municipio_campinas/SRAG_hospitalizados/dados/"
+#data <- "2020_05_16"
+#######################################################
+
 
 if(exists("PRJROOT")){
   if(!is.null(PRJROOT)) 
