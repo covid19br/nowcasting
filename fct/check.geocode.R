@@ -2,7 +2,8 @@
 #' @param escala Caractere. Escala do filtro: `"municipio`, `"estado"`, `"micro"`, `"meso"`
 #' @param geocode Caractere. Geocode IBGE. Município 6 ou 7 dígitos; microrregião 5 dígitos; mesorregião 4 dígitos; estado 2 dígitos
 check.geocode <- function(escala,
-                          geocode) {
+                          geocode,
+                          sigla) {
 
   #url <- paste0("https://servicodados.ibge.gov.br/api/v1/localidades/municipios")
   #df <- jsonlite::fromJSON(url)
@@ -62,6 +63,19 @@ check.geocode <- function(escala,
       stop("geocode de estado invalido")
     }
   }
+
+  if (escala == "drs") {
+    if(missing(sigla))
+      stop("sigla é necessária para escala DRS")
+    drs <- read.csv(paste0('./dados/DRS_', sigla, '.csv'))
+    if (geocode %in% drs$DRS) {
+      drs.nome <- unique(drs[drs$DRS == geocode, 'DRS.nome'])
+      nome <- paste0("DRS/", sigla, "/", drs.nome) #SP_3508
+    } else {
+      stop("geocode de DRS inválido")
+    }
+  }
+
   return(nome)
 }
 

@@ -20,7 +20,8 @@
 dados <- read.sivep(dir = dir,
                     escala = escala,
                     geocode = geocode,
-                    data = data)
+                    data = data,
+                    sigla = sigla)
 
 
 ################################################################################

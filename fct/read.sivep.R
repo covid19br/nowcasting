@@ -6,7 +6,7 @@
 #' @param ... Qualquer parâmetro de `read.csv()`
 read.sivep <- function(dir, # diretorio onde esta o dado
                        escala,
-                       #sigla, #ast quero botar
+                       sigla,
                        geocode,
                        data,  #formato com _
                        ...) { # qq parametro de read.csv()
@@ -15,6 +15,15 @@ read.sivep <- function(dir, # diretorio onde esta o dado
   dados <- read.csv(file.name, sep = ";", header = TRUE, stringsAsFactors = FALSE, ...)
   # conveniencia mudando para minusculas
   names(dados) <- tolower(names(dados))
+  
+  df <- read.csv("./dados/geocode_ibge.csv")
+  #geocode <- as.numeric(geocode)
+  municipio.code <- sapply(df$id, function(x) substr(x, start = 1, stop = 6))
+  micro.code   <- df$microrregiao.id
+  meso.code    <- df$microrregiao.mesorregiao.id
+  estado.code  <- df$microrregiao.mesorregiao.UF.id
+  estado.sigla <- df$microrregiao.mesorregiao.UF.sigla
+
   # filtro por estados ou municipio
   ## ö dá pra implementar meso e microrregiao ast: super dá, por enquanto tirei filtro
   if (escala != "pais") {
@@ -36,6 +45,19 @@ read.sivep <- function(dir, # diretorio onde esta o dado
       if (!is.null(sigla) & is.null(geocode)) geocode <-  estados[names(estados) == sigla]#o geocode nao importa tanto para estados porque tem sg_uf
       if (is.null(sigla) & !is.null(geocode)) sigla <- names(estados[estados == geocode])
       dados <- dados[dados$sg_uf == sigla, ]
+    }
+    if (escala == "micro") {
+      co.muns <- municipio.code[micro.code == geocode, ]
+      dados <- dados[dados$co_mun_res %in% as.numeric(co.muns), ]
+    }
+    if (escala == "meso") {
+      co.muns <- municipio.code[meso.code == geocode, ]
+      dados <- dados[dados$co_mun_res %in% co.muns, ]
+    }
+    if (escala == "drs") {
+      drs <- read.csv(paste0('./dados/DRS_', sigla, '.csv'))
+      co.muns <- drs[drs$DRS == geocode, 'id']
+      dados <- dados[dados$co_mun_res %in% co.muns, ]
     }
   }
   # formata datas

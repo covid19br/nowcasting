@@ -17,15 +17,8 @@ library(tidyr)
 source("_src/funcoes.R")
 
 ################################################################################
-## comandos git: PULL ANTES de adicionar arquivos
-################################################################################
-system("git pull")
-
-
-################################################################################
 ## Parsing command line arguments
 ################################################################################
-
 if (sys.nframe() == 0L) {
   option_list <- list(
     make_option("--dir",
@@ -33,7 +26,7 @@ if (sys.nframe() == 0L) {
                 default = "../dados/municipio_SP/SRAG_hospitalizados/dados/",
                 metavar = "dir"),
     make_option("--escala", default = "municipio",
-                help = ("Nível administrativo, um de: municipio, micro, meso, estado, país"),
+                help = ("Nível administrativo, um de: municipio, micro, meso, estado, drs, país"),
                 metavar = "escala"),
     make_option("--sigla", default = "SP", # ainda nao estamos usando
                 help = ("Sigla do estado a ser atualizado"),
@@ -84,13 +77,20 @@ if (sys.nframe() == 0L) {
 #geocode <- "3550308" # municipio SP
 #data <- "2020_05_20"
 #######################################################
+
+################################################################################
+## comandos git: PULL ANTES de adicionar arquivos
+################################################################################
+if (update.git)
+  system("git pull")
+
 if (!exists('geocode')) {
   print("Geocode não definido")
   quit(status = 1)
 }
 # sets paths
 name_path <- check.geocode(escala = escala,
-              geocode = geocode)
+              geocode = geocode, sigla = sigla)
 output.dir <- paste0(out.dir, "/", name_path, "/")
 
 
@@ -191,9 +191,7 @@ if (update.git) {
                "dados:", data,
                "'"))
   system("git push")
-  }
-
-
-
 }
+
+
 #falta git plot
