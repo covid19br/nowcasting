@@ -24,7 +24,7 @@ covid.now.day <- NobBS.strat(
   onset_date = "dt_sin",
   report_date = "dt_rec",
   units = "1 day",
-  moving_window =  40,
+  moving_window =  window,
   specs = list(nAdapt = 3000, nBurnin = 3000, nThin = 1, nSamp = 10000)
 )
 
@@ -46,7 +46,7 @@ srag.now.day <- NobBS.strat(
   onset_date = "dt_sin",
   report_date = "dt_mnd",
   units = "1 day",
-  moving_window =  40,
+  moving_window =  window,
   specs = list(nAdapt = 3000, nBurnin = 3000, nThin = 1, nSamp = 10000)
 )
 
