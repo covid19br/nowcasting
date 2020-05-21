@@ -38,6 +38,10 @@ Os dados de entrada são parametrizados no script `update_nowcasting.R` usando o
 
 Os outputs gerados por `update_nowcasting.R` vão para `dados_processados/nowcasting/[escala]/[sigla_UF]/[nome]`. Os dados processados de *nowcasting* estão na raiz desse caminho e há uma subpasta `dados_processados/nowcasting/[escala]/[sigla_UF]/[nome]/tabelas_nowcasting_para_grafico` onde são guardadas as tabelas de *nowcasting* consolidadas. 
 
+## Para rodar os scripts
+
+Veja [aqui](https://github.com/covid19br/nowcasting/tree/master/_src) o que está por trás do script `update_nowcasting.R`. 
+
 ## Dependências
 
 Para executar o conjunto de scripts disponibilizados nesse repositório o usuário deverá instalar os seguintes programas:
