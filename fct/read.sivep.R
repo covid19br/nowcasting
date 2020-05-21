@@ -3,12 +3,14 @@
 #' @param escala Caractere. Escala de análise aceita: `"pais"`, `"estado"`, `"municipio"` #ö micro e meso um dia
 #' @param geocode Caractere. Geocode IBGE do estado ou município. Município pde ter 6 ou 7 dígitos
 #' @param data Caractere. Data no formato  "%Y_%m_%d". Quando NULL (padrão) pega a data mais recente
+#' @param residentes Filtar por residentes ou por local da notificação
 #' @param ... Qualquer parâmetro de `read.csv()`
 read.sivep <- function(dir, # diretorio onde esta o dado
                        escala,
                        sigla,
                        geocode,
                        data,  #formato com _
+                       residentes = TRUE,
                        ...) { # qq parametro de read.csv()
   # lendo os dados
   file.name <- list.files(dir, pattern = paste0(".*", data, ".csv"), full.names = TRUE)
@@ -37,7 +39,10 @@ read.sivep <- function(dir, # diretorio onde esta o dado
     }
 
     if (escala == "municipio") {
-      dados <- dados[dados$co_mun_res == as.numeric(geocode), ]
+      if(residentes)
+        dados <- dados[dados$co_mun_res == as.numeric(geocode), ]
+      else
+        dados <- dados[dados$co_mun_not == as.numeric(geocode), ]
     }
     if (escala == "estado") {
       estados <- c('12','27','13','16','29','23','53','32','52','21','31','50','51','15','25','26','22','41','33','24','11','14','43','42','28','35','17')

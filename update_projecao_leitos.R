@@ -1,4 +1,89 @@
+if(!require(optparse)){install.packages("optparse"); library(optparse)}
+if(!require(Hmisc)){install.packages("Hmisc"); library(Hmisc)}
 if(!require(rprojroot)){install.packages("rprojroot"); library(rprojroot)}
+
+
+if (sys.nframe() == 0L) {
+  option_list <- list(
+    make_option("--dir",
+                help = ("Caminho até o diretório com os arquivos csv com base sivep gripe"),
+                default = "../dados/municipio_SP/SRAG_hospitalizados/dados/",
+                metavar = "dir"),
+    make_option("--tipo", default = "srag",
+                help = ("tipo da internação. Todos os 'srag' ou só 'covid'"),
+                metavar = "tipo"),
+    make_option("--escala", default = "municipio",
+                 help = ("Nível administrativo, um de: municipio, micro, meso, estado, país"),
+                 metavar = "escala"),
+    make_option("--sigla", default = "SP", # ainda nao estamos usando
+                 help = ("Sigla do estado a ser atualizado"),
+                 metavar = "sigla"),
+    make_option("--geocode", default = 355030,
+                help = ("Geocode de município, micro-mesorregião ou estado"),
+                metavar = "geocode"),
+    make_option("--window", type = "integer", default = 40,
+                help = ("Largura da running window do nowcasting (dias)"),
+                metavar = "window"),
+    make_option("--dataBase", default = NULL,
+                help = ("Data da base de dados, formato 'yyyy_mm_dd'"),
+                metavar = "dataBase"),
+    make_option("--dataInicial", default = as.Date("2020-03-08"),
+                help = ("Data do ínicio dos casos, formato 'yyyy_mm_dd'"),
+                metavar = "dataInicial"),
+    make_option("--formatoData", default = "%Y_%m_%d",
+                help = ("Formato do campo de datas no csv, confome padrão da função as.Date"),#ast antes de tirar checar outras fontes de dados
+                metavar = "formatoData"),
+    make_option("--fix_dates", default = TRUE,
+                help = ("Booleana. Define se as os casos com datas inconsistentes devem ser concertadas (TRUE) ou excluidas (FALSE)"),
+                metavar = "fix_dates"),
+    make_option("--out_dir", default = NULL,
+                help = ("Pasta de saida dos resultados"),
+                metavar = "out_dir"),
+    make_option("--n_cores", default = 2,
+                help = ("Numero de cores usado para a projeção de leitos"),
+                metavar = "n_cores"),
+    make_option("--fit_models", default = FALSE,
+                help = ("Booleano. Ajusta ou não os modelos de projeção. Precisa ser feito antes do relatório."),
+                metavar = "fit_models"),
+    make_option("--report", default = TRUE,
+                help = ("Booleano. Gera ou não relatório automático."),
+                metavar = "report")
+    # make_option("--updateGit", default = "FALSE",
+    #             help = ("Fazer git add, commit e push?"),
+    #             metavar = "updateGit")
+  )
+  parser_object <- OptionParser(usage = "Rscript %prog [Opções] [ARQUIVO]\n",
+                                option_list = option_list,
+                                description = "Script para importar csv da sivep gripe,
+                                executar nowcasting e salvar os resultados")
+  
+  ## aliases
+  opt <- parse_args(parser_object, args = commandArgs(trailingOnly = TRUE), positional_arguments = TRUE)
+  DATAROOT <- opt$options$dir
+  disease <- opt$options$tipo
+  escala <- opt$options$escala
+  sigla <- opt$options$sigla
+  geocode <- opt$options$geocode
+  window <- opt$options$window
+  data_date <- if(is.null(opt$options$dataBase)) {NULL} else as.Date(opt$options$dataBase, format("%Y_%m_%d"))
+  intial_date <- as.Date(opt$options$dataInicial)
+  formato.data <- opt$options$formatoData
+  fix_missing_dates <- opt$options$fix_dates
+  n_cores <- opt$options$n_cores
+  make_report <- opt$options$report
+  fit_models <- opt$options$fit_models
+  out.root <- if(is.null(opt$options$out_dir)) {"dados_processados"} else opt$options$out_dir
+}
+
+####################################################
+### to run INTERACTIVELY:
+#You only have to set up the variables that are not already set up above or the ones that you would like to change #
+#geocode <- "3550308" # municipio SP
+geocode <- "3509502" # municipio Campinas
+DATAROOT <- "../dados/municipio_campinas/SRAG_hospitalizados/dados/"
+#data <- "2020_05_16"
+#######################################################
+
 
 if(exists("PRJROOT")){
   if(!is.null(PRJROOT)) 
@@ -6,27 +91,36 @@ if(exists("PRJROOT")){
 } else 
   PRJROOT = rprojroot::find_root(criterion=rprojroot::is_git_root)  
 
-METAROOT = rprojroot::find_root(".here")
-DATAROOT = paste0(METAROOT, "/dados/municipio_SP/SRAG_hospitalizados/dados/")
-fix_missing_dates = TRUE
-intial_date = as.Date("2020/03/08")
-geocode = 355030
-n_cores = 2
-data_date = NULL
-make_report = TRUE
+P = function(...) file.path(PRJROOT, ...)
+
+source(P("fct/load_packages.R"))
+source(P("_src/funcoes.R"))
+
+name_path <- check.geocode(escala = escala,
+                           geocode = geocode)#ast falta checar outras escalas e fontes de dados e destinos para push
+output.dir <- file.path(out.root, "projecao_leitos", name_path)
+
+
+if (!file.exists(output.dir))
+  dir.create(output.dir, showWarnings = TRUE, recursive = TRUE)
+if (!file.exists(file.path(output.dir, "hospitalizados")))
+  dir.create(file.path(output.dir, "hospitalizados"), showWarnings = TRUE, recursive = TRUE)
+if (!file.exists(file.path(output.dir, "curve_fits")))
+  dir.create(file.path(output.dir, "curve_fits"), showWarnings = TRUE, recursive = TRUE)
+if(make_report)
+  if (!file.exists(file.path(output.dir, "relatorios")))
+    dir.create(file.path(output.dir, "relatorios"), showWarnings = TRUE, recursive = TRUE)
+
 update_site = FALSE
 
 registerDoMC(n_cores)
 
-P = function(...) file.path(PRJROOT, ...)
-O = function(...) file.path(PRJROOT, "dados_processados/projecao_leitos/municipio_SP", ...)
-OUT_SITE = function(...) file.path(METAROOT, "site/dados/municipio_SP/projecao_leitos", ...)
-R = function(...) file.path(PRJROOT, "dados_processados/projecao_leitos/municipio_SP/relatorios", ...)
+O = function(...) file.path(output.dir, ...)
+R = function(...) file.path(output.dir, "relatorios", ...)
 P = function(...) file.path(PRJROOT, ...)
 CODEROOT = paste0(PRJROOT, "/_src/projecao_leitos")
 C = function(...) file.path(CODEROOT, ...)	
 
-source(P("fct/load_packages.R"))
 
 source(C("00-read_process_SIVEP_CSV.R"))
 

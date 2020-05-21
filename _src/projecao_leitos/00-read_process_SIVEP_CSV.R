@@ -3,25 +3,23 @@
 #P = function(...) file.path(PRJROOT, ...)
 #DATAROOT = "~/data/Municipio_SP/SRAG_hospitalizados/dados"
 
-source(P("_src/funcoes.R"))
-
 srag_files = sort(grep("SRAGH_2020", dir(file.path(DATAROOT), full.names = TRUE), value = TRUE))
 
 ### Set if looking for specific date
 #data_date = as.Date("2020-04-02")
 #data_date = NULL\
 
-if(!exists("data_date") || is.null(data_date)){
-  current_srag_table = last(srag_files)
-  data_date = as.Date(gsub(".csv", "", (gsub("SRAGH_", "", last(strsplit(current_srag_table, "/")[[1]])))), format = "%Y_%m_%d")
-} else{
-  current_srag_table = grep(gsub("-", "_", as.character(data_date)), srag_files, value = TRUE)
+if (is.null(data_date)) {
+  data_date <- as.Date(get.last.date(DATAROOT), format = "%Y_%m_%d")
 }
 
 say(paste("Data date is set to:", format(data_date, "%d %B %Y")), "cow")
 
-srag.20.raw <- read.csv2(current_srag_table, as.is=TRUE)
-names(srag.20.raw) = tolower(names(srag.20.raw))
+srag.20.raw <- read.sivep(dir = DATAROOT,
+                          escala = escala,
+                          geocode = geocode,
+                          data = format(data_date, "%Y_%m_%d"),
+                          residentes = FALSE)
 dt.cols <- grepl("dt_", names(srag.20.raw))
 names(srag.20.raw)[dt.cols] <- substr(names(srag.20.raw[,dt.cols]), start=1, stop=6)
 
@@ -33,7 +31,6 @@ if(!all(dt_cols_class))
 set_week_start("Sunday") ## para incluir semana epidemiologica
 
 srag.dt = srag.20.raw %>%
-  dplyr::filter(co_mun_not == geocode) %>%
   dplyr::rename(UTI = uti) %>%
   dplyr::filter(hospital == 1) %>%
   dplyr::select(dt_int, dt_not, dt_dig, dt_pcr, dt_sin, dt_evo, dt_enc, dt_ent, dt_sai, 
@@ -56,17 +53,22 @@ covid.dt = srag.dt %>%
 if(!exists("fix_missing_dates") || fix_missing_dates){
   if(!exists("fix_missing_dates"))
     warning("'fix_missing_dates' variable is missing, assuming TRUE.")
-  warning(paste("Fixing records with inconsistent dates."))
-  load(C("hospitalStatsFits.Rdata"))
-  if(!require(brms)){install.packages("brms"); library(brms)}
-  srag.dt %<>%
-    ddply(.(ID), fixUTIDates, time_fits0$srag$UTI) %>%
-    ddply(.(ID), fixEVODates, time_fits0$srag$afterUTI, time_fits0$srag$notUTI) %>%
-    as.data.frame()
-  covid.dt %<>%
-    ddply(.(ID), fixUTIDates, time_fits0$covid$UTI) %>%
-    ddply(.(ID), fixEVODates, time_fits0$covid$afterUTI, time_fits0$covid$notUTI) %>%
-    as.data.frame()
+  excluded = srag.dt %>%
+    dplyr::filter((!is.na(evolucao) & is.na(dt_evo))) %>%
+    nrow
+  if(excluded > 0){
+    warning(paste("Fixing", excluded, "records with inconsistent dates."))
+    load(C("hospitalStatsFits.Rdata"))
+    if(!require(brms)){install.packages("brms"); library(brms)}
+    srag.dt %<>%
+      ddply(.(ID), fixUTIDates, time_fits0$srag$UTI) %>%
+      ddply(.(ID), fixEVODates, time_fits0$srag$afterUTI, time_fits0$srag$notUTI) %>%
+      as.data.frame()
+    covid.dt %<>%
+      ddply(.(ID), fixUTIDates, time_fits0$covid$UTI) %>%
+      ddply(.(ID), fixEVODates, time_fits0$covid$afterUTI, time_fits0$covid$notUTI) %>%
+      as.data.frame()
+  }
 } else{
   excluded = srag.dt %>%
     dplyr::filter((!is.na(evolucao) & is.na(dt_evo))) %>%

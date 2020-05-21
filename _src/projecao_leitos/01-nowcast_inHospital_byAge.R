@@ -24,7 +24,7 @@ covid.now.day <- NobBS.strat(
   onset_date = "dt_sin",
   report_date = "dt_rec",
   units = "1 day",
-  moving_window =  40,
+  moving_window =  window,
   specs = list(nAdapt = 3000, nBurnin = 3000, nThin = 1, nSamp = 10000)
 )
 
@@ -46,7 +46,7 @@ srag.now.day <- NobBS.strat(
   onset_date = "dt_sin",
   report_date = "dt_mnd",
   units = "1 day",
-  moving_window =  40,
+  moving_window =  window,
   specs = list(nAdapt = 3000, nBurnin = 3000, nThin = 1, nSamp = 10000)
 )
 
@@ -95,16 +95,16 @@ hospitalized_totals_srag = data.frame(srag_in_hospital$observed$date,
 names(hospitalized_totals_srag) = c("date", "observed", "estimate", "upper", "lower", "type")
 hospitalized_totals = rbind(hospitalized_totals_covid, hospitalized_totals_srag)
 
-# p3 = ggplot(hospitalized_totals, aes(date, observed, group = type, shape = type, color = type)) + 
-#   geom_point(size=2) + geom_line(aes(y = estimate)) + 
-#   geom_ribbon(fill="indianred3", 
+# p3 = ggplot(hospitalized_totals, aes(date, observed, group = type, shape = type, color = type)) +
+#   geom_point(size=2) + geom_line(aes(y = estimate)) +
+#   geom_ribbon(fill="indianred3",
 #               aes(ymin=lower, ymax=upper), alpha=0.3, color = 0) +
 #   theme_cowplot() + scale_color_manual(values = c("black", "red")) +
-#   scale_x_date(breaks = seq(as.Date("2020-03-08"), today()+7, by = 5), 
+#   scale_x_date(breaks = seq(as.Date("2020-03-08"), today()+7, by = 5),
 #                labels = format(seq(as.Date("2020-03-08"), today()+7, by = 5), "%d %b")) +
 #   scale_y_continuous(breaks = seq(0, 20000, by = 2000)) +
-#   background_grid(major = "xy", minor = "y") + 
-#   labs(x = "Dia", y = "Número de casos hospitalizados") 
+#   background_grid(major = "xy", minor = "y") +
+#   labs(x = "Dia", y = "Número de casos hospitalizados")
 # save_plot(filename = O("plots", 
 #                        paste0("covid_srag_in_hospital_nowcast_", data_date, ".png")), 
 #           p3, base_height = 6.5, base_asp = 1.7)
