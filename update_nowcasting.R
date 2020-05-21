@@ -58,6 +58,11 @@ if (sys.nframe() == 0L) {
                                 description = "Script para importar csv da sivep gripe,
                                 executar nowcasting e salvar os resultados")
 
+  ## TO TEST INTERACTIVELY the command-line arguments
+  #input <- "--dir ../dados/estado_SP/SRAG_hospitalizados/dados/ --escala municipio --geocode 350750 --dataBase 2020_05_20"
+  #command.args <- strsplit(input, " ")[[1]]
+  #opt <- parse_args(parser_object, args = command.args, positional_arguments = TRUE)
+  ## SKIP opt line below
   ## aliases
   opt <- parse_args(parser_object, args = commandArgs(trailingOnly = TRUE), positional_arguments = TRUE)
   dir <- opt$options$dir
