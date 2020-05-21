@@ -13,7 +13,7 @@ library(zoo)
 library(tidyr)
 
 
-# carrega funcoes
+# carrega funcoes----
 source("_src/funcoes.R")
 
 ################################################################################
@@ -76,7 +76,7 @@ if (sys.nframe() == 0L) {
   data <- opt$options$dataBase
   formato.data <- opt$options$formatoData
   update.git <- opt$options$updateGit
-  output.dir <- opt$options$outputDir
+  out.dir <- opt$options$outputDir
 }
 ####################################################
 ### to run INTERACTIVELY:
@@ -87,13 +87,18 @@ if (sys.nframe() == 0L) {
 # sets paths
 name_path <- check.geocode(escala = escala,
               geocode = geocode)
-output_dir <- paste0(output.dir, "/", name_path, "/")
+output.dir <- paste0(out.dir, "/", name_path, "/")
 
+
+# só para o output
+out.path <- paste0(output.dir, "output_nowcasting/")
 # só para as tabelas
-df_path <- paste0(output_dir, "tabelas_nowcasting_para_grafico/")
+df.path <- paste0(output.dir, "tabelas_nowcasting_para_grafico/")
 
-if (!file.exists(df_path))
-  dir.create(df_path, showWarnings = TRUE, recursive = TRUE)
+if (!file.exists(df.path))
+  dir.create(df.path, showWarnings = TRUE, recursive = TRUE)
+if (!file.exists(out.path))
+  dir.create(out.path, showWarnings = TRUE, recursive = TRUE)
 
 # pegando a data mais recente
 if (is.null(data)) {
@@ -106,12 +111,11 @@ source("_src/01_gera_nowcastings_SIVEP.R")
 source('_src/02_prepara_dados_nowcasting.R')
 source('_src/03_analises_nowcasting.R')
 
-#ö checar path para git push
-files_para_push <- list.files(output_dir, pattern = paste0("*.", data, ".csv"),
+files_para_push <- list.files(output.dir, pattern = paste0("*.", data, ".csv"),
                               full.names = TRUE)
 files_para_push <- files_para_push[-grep(files_para_push, pattern = "post")]
 #aqui também poderia rolar um push das tabelas pro site mesmo
-tabelas_para_push <- list.files(df_path, pattern = paste0("*.", data, ".csv"),
+tabelas_para_push <- list.files(df.path, pattern = paste0("*.", data, ".csv"),
                                 full.names = TRUE)
 
 ################################################################################
