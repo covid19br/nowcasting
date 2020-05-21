@@ -240,7 +240,7 @@ disease = "covid"
 disease_text = "COVID-19"
 plots = last(covidPlots)
 olderPlots = olderPlotsCovid
-render(input = R("relatorio.Rmd"),
+render(input = C("relatorio.Rmd"),
        output_file = R(paste0(data.atual, "_relatorio_projecoes_demanda_hospitalar_covid.pdf")),
        encoding = "utf8")
 
@@ -249,7 +249,7 @@ disease = "srag"
 disease_text = "SRAG"
 plots = last(sragPlots)
 olderPlots = olderPlotsSrag
-render(input = R("relatorio.Rmd"),
+render(input = C("relatorio.Rmd"),
        output_file = R(paste0(data.atual, "_relatorio_projecoes_demanda_hospitalar_srag.pdf")),
        encoding = "utf8")
 

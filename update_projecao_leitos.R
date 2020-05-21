@@ -41,7 +41,13 @@ if (sys.nframe() == 0L) {
                 metavar = "out_dir"),
     make_option("--n_cores", default = 2,
                 help = ("Numero de cores usado para a projeção de leitos"),
-                metavar = "n_cores")
+                metavar = "n_cores"),
+    make_option("--fit_models", default = FALSE,
+                help = ("Booleano. Ajusta ou não os modelos de projeção. Precisa ser feito antes do relatório."),
+                metavar = "n_cores"),
+    make_option("--report", default = TRUE,
+                help = ("Booleano. Gera ou não relatório automático."),
+                metavar = "report")
     # make_option("--updateGit", default = "FALSE",
     #             help = ("Fazer git add, commit e push?"),
     #             metavar = "updateGit")
@@ -64,6 +70,8 @@ if (sys.nframe() == 0L) {
   formato.data <- opt$options$formatoData
   fix_missing_dates <- opt$options$fix_dates
   n_cores <- opt$options$n_cores
+  make_report <- opt$options$report
+  fit_models <- 
   out.root <- if(is.null(opt$options$out_dir)) {"dados_processados"} else opt$options$out_dir
 }
 
@@ -83,20 +91,22 @@ name_path <- check.geocode(escala = escala,
 output.dir <- file.path(out.root, "projecao_leitos", name_path)
 
 
-if (!file.exists(df.path))
-  dir.create(df.path, showWarnings = TRUE, recursive = TRUE)
-if (!file.exists(out.path))
-  dir.create(out.path, showWarnings = TRUE, recursive = TRUE)
+if (!file.exists(output.dir))
+  dir.create(output.dir, showWarnings = TRUE, recursive = TRUE)
+if (!file.exists(file.path(output.dir, "hospitalizados")))
+  dir.create(file.path(output.dir, "hospitalizados"), showWarnings = TRUE, recursive = TRUE)
+if (!file.exists(file.path(output.dir, "curve_fits")))
+  dir.create(file.path(output.dir, "curve_fits"), showWarnings = TRUE, recursive = TRUE)
+if(make_report)
+  if (!file.exists(file.path(output.dir, "relatorios")))
+    dir.create(file.path(output.dir, "relatorios"), showWarnings = TRUE, recursive = TRUE)
 
-
-METAROOT = rprojroot::find_root(".here")
-make_report = TRUE
 update_site = FALSE
 
 registerDoMC(n_cores)
 
 O = function(...) file.path(output.dir, ...)
-R = function(...) file.path(PRJROOT, "dados_processados/projecao_leitos/municipio_SP/relatorios", ...)
+R = function(...) file.path(output.dir, "relatorios", ...)
 P = function(...) file.path(PRJROOT, ...)
 CODEROOT = paste0(PRJROOT, "/_src/projecao_leitos")
 C = function(...) file.path(CODEROOT, ...)	
