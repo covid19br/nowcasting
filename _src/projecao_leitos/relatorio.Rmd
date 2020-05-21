@@ -234,7 +234,8 @@ olderPlots[[length(olderPlots)]]
 \newpage
 
 ```{r , fig.width = 12,  fig.height = 15, fig.cap = "", echo=FALSE}
-for(i in (length(olderPlots)-1):1)
-  print(olderPlots[[i]])
+if(length(olderPlots) > 1)
+  for(i in (length(olderPlots)-1):1)
+    print(olderPlots[[i]])
 ```
 

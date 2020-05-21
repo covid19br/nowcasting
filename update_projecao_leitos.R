@@ -72,7 +72,7 @@ if (sys.nframe() == 0L) {
   n_cores <- opt$options$n_cores
   make_report <- opt$options$report
   fit_models <- opt$options$fit_models
-  out.root <- if(is.null(opt$options$out_dir)) {"dados_processados"} else opt$options$out_dir
+  out.root <- if(is.null(opt$options$out_dir)) {"./dados_processados"} else opt$options$out_dir
 }
 
 ####################################################
@@ -81,6 +81,7 @@ if (sys.nframe() == 0L) {
 #geocode <- "3550308" # municipio SP
 geocode <- "3509502" # municipio Campinas
 DATAROOT <- "../dados/municipio_campinas/SRAG_hospitalizados/dados/"
+intial_date <- as.Date("2020-03-16")
 #data <- "2020_05_16"
 #######################################################
 
@@ -99,7 +100,6 @@ source(P("_src/funcoes.R"))
 name_path <- check.geocode(escala = escala,
                            geocode = geocode)#ast falta checar outras escalas e fontes de dados e destinos para push
 output.dir <- file.path(out.root, "projecao_leitos", name_path)
-
 
 if (!file.exists(output.dir))
   dir.create(output.dir, showWarnings = TRUE, recursive = TRUE)

@@ -241,7 +241,7 @@ disease_text = "COVID-19"
 plots = last(covidPlots)
 olderPlots = olderPlotsCovid
 render(input = C("relatorio.Rmd"),
-       output_file = R(paste0(data.atual, "_relatorio_projecoes_demanda_hospitalar_covid.pdf")),
+       output_file = P(R(paste0(data.atual, "_relatorio_projecoes_demanda_hospitalar_covid.pdf"))),
        encoding = "utf8")
 
 data.atual = last(date_list)
