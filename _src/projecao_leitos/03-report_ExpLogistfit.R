@@ -1,12 +1,12 @@
 
 excape_paths = function(x) gsub(" ", "\\\ ", x, fixed = TRUE)
 
-#PRJROOT = rprojroot::find_root(".here")
-#P = function(...) file.path(PRJROOT, ...)
-
-
+data = latest_data$hosp
+fits = latest_data$fits$srag$Logist
+latest_data = data
+disease = "srag"
 make_ggplot = function(data, latest_data = NULL, fits, disease ="covid", ylabel = "Hospitalizados", 
-                       title = "Previsões", breaks = 1000){
+                       title = "Previsões"){
   last_date = last(filter(data, type == disease)$date)
   mask = fits$estimate$pred$date >= last_date
   
@@ -17,13 +17,13 @@ make_ggplot = function(data, latest_data = NULL, fits, disease ="covid", ylabel 
                     ymax = fits$upper$pred[mask, "X80."]),alpha=0.2, color = 0) + 
     geom_ribbon(fill="indianred3", 
                 aes(ymin=lower, ymax=upper),alpha=0.2, color = 0) +
-    geom_point(data = latest_data, size=2) + geom_line(aes(y = estimate), color = "indianred3") + 
+    geom_point(data = filter(latest_data, type == disease), size=2) + geom_line(aes(y = estimate), color = "indianred3") + 
     geom_line(data = fits$lower$pred, aes(y = X20.), linetype= "dotted") + 
     geom_line(data = fits$upper$pred, aes(y = X80.), linetype= "dotted") + 
     geom_line(data = fits$estimate$pred, aes(y = mean), linetype= "dashed") + 
     theme_cowplot() + scale_color_manual(values = c("black", "darkgreen")) +
     scale_x_date(breaks = seq(as.Date("2020-03-08"), today()+7, by = 7), date_labels = "%d/%m/%y") +
-    scale_y_continuous(breaks = seq(0, 30000, by = breaks)) +
+    #scale_y_continuous(breaks = seq(0, 30000, by = breaks)) +
     background_grid(major = "xy", minor = "y") + 
     annotate("text", x = last_date - 6, 
              y = data[data$date == (last_date-6),"upper"] * 1.35, 
@@ -81,18 +81,18 @@ getCovidPlots = function(current_data){
   covid = current_data$hosp %>% filter(type == "covid")
   latest_covid = latest_data$hosp %>% filter(type == "covid")
   pce = make_ggplot(covid, latest_covid, current_data$fits$covid$Exp, 
-                    ylabel = "Número de casos COVID-19 hospitalizados",
+                    ylabel = "Número de casos COVID-19 hospitalizados", 
                     title = "COVID-19 - Leitos Totais - Exponencial") 
-  pcl = make_ggplot(covid, latest_covid, current_data$fits$covid$Logist, 
+  pcl = make_ggplot(covid, latest_covid, current_data$fits$covid$Logist,  
                     ylabel = "Número de casos COVID-19 hospitalizados",
                     title = "COVID-19 - Leitos Totais - Logistico")  
   
   covid_UTI = current_data$UTI %>% filter(type == "covid")
   latest_covid_UTI = latest_data$UTI %>% filter(type == "covid")
-  pceU = make_ggplot(covid_UTI, latest_covid_UTI, current_data$fits$covid$UTIExp, breaks = 500,
+  pceU = make_ggplot(covid_UTI, latest_covid_UTI, current_data$fits$covid$UTIExp, 
                      ylabel = "Número de casos COVID-19 hospitalizados em UTI",
                      title = "COVID-19 - Leitos UTI - Exponencial") 
-  pclU = make_ggplot(covid_UTI, latest_covid_UTI, current_data$fits$covid$UTILogist, breaks = 500,
+  pclU = make_ggplot(covid_UTI, latest_covid_UTI, current_data$fits$covid$UTILogist, 
                      ylabel = "Número de casos COVID-19 hospitalizados em UTI",
                      title = "COVID-19 - Leitos UTI - Logistico") 
   list(exp = pce, 
@@ -103,22 +103,22 @@ getCovidPlots = function(current_data){
 getSragPlots = function(current_data){
   srag = current_data$hosp %>% filter(type == "srag")
   latest_srag = latest_data$hosp %>% filter(type == "srag")
-  pse = make_ggplot(srag, latest_srag, current_data$fits$srag$Exp, disease = "srag", breaks = 4000,
+  pse = make_ggplot(srag, latest_srag, current_data$fits$srag$Exp, disease = "srag", 
                     ylabel = "Número de casos SRAG hospitalizados",
                     title = "SRAG - Leitos totais - Exponencial")
   
-  psl = make_ggplot(srag, latest_srag, current_data$fits$srag$Logist, disease = "srag", breaks = 4000,
+  psl = make_ggplot(srag, latest_srag, current_data$fits$srag$Logist, disease = "srag",
                     ylabel = "Número de casos SRAG hospitalizados",
                     title = "SRAG - Leitos totais - Logistico")
   
   srag_UTI = current_data$UTI %>% filter(type == "srag")
   latest_srag_UTI = latest_data$UTI %>% filter(type == "srag")
   
-  pseU = make_ggplot(srag_UTI, latest_srag_UTI, current_data$fits$srag$UTIExp, disease = "srag", breaks = 1000,
+  pseU = make_ggplot(srag_UTI, latest_srag_UTI, current_data$fits$srag$UTIExp, disease = "srag", 
                      ylabel = "Número de casos SRAG hospitalizados em UTI",
                      title = "SRAG - Leitos UTI - Exponencial")
   
-  pslU = make_ggplot(srag_UTI, latest_srag_UTI, current_data$fits$srag$UTILogist, disease = "srag", breaks = 1000,
+  pslU = make_ggplot(srag_UTI, latest_srag_UTI, current_data$fits$srag$UTILogist, disease = "srag", 
                      ylabel = "Número de casos SRAG hospitalizados em UTI",
                      title = "SRAG - Leitos UTI - Logistico")
   list(exp = pse, 
@@ -238,6 +238,7 @@ knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
 data.atual = last(date_list)
 disease = "covid"
 disease_text = "COVID-19"
+label_municipio = check.geocode("label", geocode = geocode)
 plots = last(covidPlots)
 olderPlots = olderPlotsCovid
 render(input = C("relatorio.Rmd"),
@@ -247,9 +248,10 @@ render(input = C("relatorio.Rmd"),
 data.atual = last(date_list)
 disease = "srag"
 disease_text = "SRAG"
+label_municipio = check.geocode("label", geocode = geocode)
 plots = last(sragPlots)
 olderPlots = olderPlotsSrag
 render(input = C("relatorio.Rmd"),
-       output_file = R(paste0(data.atual, "_relatorio_projecoes_demanda_hospitalar_srag.pdf")),
+       output_file = P(R(paste0(data.atual, "_relatorio_projecoes_demanda_hospitalar_srag.pdf"))),
        encoding = "utf8")
 

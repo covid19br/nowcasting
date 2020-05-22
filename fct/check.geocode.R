@@ -29,7 +29,21 @@ check.geocode <- function(escala,
     } else {
       stop("geocode de municipio invalido")
     }
+    }
+  
+  if (escala == "label") {
+    if (!nchar(geocode) %in% c(6, 7))
+      stop("geocode não bate com escala")
+    if (nchar(geocode) == 7)
+      geocode <- substr(geocode, start = 1, stop = 6)
+    if (geocode %in% municipio.code) {
+      id <- which(municipio.code == geocode)
+      nome <- paste0(df$nome.nonascii[id], "-", estado.sigla[id]) # municipios/SP/Sao_Paulo
+    } else {
+      stop("geocode de municipio invalido")
+    }
   }
+  
 
   if (escala == "micro") {
     if (nchar(geocode) != 5)

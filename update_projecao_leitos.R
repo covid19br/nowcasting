@@ -97,8 +97,7 @@ P = function(...) file.path(PRJROOT, ...)
 source(P("fct/load_packages.R"))
 source(P("_src/funcoes.R"))
 
-name_path <- check.geocode(escala = escala,
-                           geocode = geocode)#ast falta checar outras escalas e fontes de dados e destinos para push
+name_path <- check.geocode(escala = escala, geocode = geocode)#ast falta checar outras escalas e fontes de dados e destinos para push
 output.dir <- file.path(out.root, "projecao_leitos", name_path)
 
 if (!file.exists(output.dir))

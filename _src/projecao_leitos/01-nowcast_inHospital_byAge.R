@@ -14,7 +14,6 @@
 load(C("hospitalStatsFits.Rdata"))
 
 ### Nowcasting
-
 # Covid
 now.Date.covid  <-  max(covid.dt$dt_sin)
 covid.now.day <- NobBS.strat(

@@ -153,5 +153,5 @@ fits = list(date = data_date,
                         UTIExp = fitsExpSragUTI,
                         UTILogist = fitsLogitSragUTI))
 saveRDS(fits, file = FITSPATH)
-readRDS(FITSPATH)            
+#readRDS(FITSPATH)            
 
