@@ -52,11 +52,11 @@ read.sivep <- function(dir, # diretorio onde esta o dado
       dados <- dados[dados$sg_uf == sigla, ]
     }
     if (escala == "micro") {
-      co.muns <- municipio.code[micro.code == geocode, ]
+      co.muns <- municipio.code[micro.code == geocode]
       dados <- dados[dados$co_mun_res %in% as.numeric(co.muns), ]
     }
     if (escala == "meso") {
-      co.muns <- municipio.code[meso.code == geocode, ]
+      co.muns <- municipio.code[meso.code == geocode]
       dados <- dados[dados$co_mun_res %in% co.muns, ]
     }
     if (escala == "drs") {
