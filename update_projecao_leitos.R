@@ -28,7 +28,7 @@ if (sys.nframe() == 0L) {
                 help = ("Data da base de dados, formato 'yyyy_mm_dd'"),
                 metavar = "dataBase"),
     make_option("--dataInicial", default = as.Date("2020-03-08"),
-                help = ("Data do ínicio dos casos, formato 'yyyy_mm_dd'"),
+                help = ("Data do início dos casos, formato 'yyyy_mm_dd'"),
                 metavar = "dataInicial"),
     make_option("--formatoData", default = "%Y_%m_%d",
                 help = ("Formato do campo de datas no csv, confome padrão da função as.Date"),#ast antes de tirar checar outras fontes de dados
@@ -42,7 +42,7 @@ if (sys.nframe() == 0L) {
     make_option("--n_cores", default = 2,
                 help = ("Numero de cores usado para a projeção de leitos"),
                 metavar = "n_cores"),
-    make_option("--fit_models", default = FALSE,
+    make_option("--fit_models", default = TRUE,
                 help = ("Booleano. Ajusta ou não os modelos de projeção. Precisa ser feito antes do relatório."),
                 metavar = "fit_models"),
     make_option("--report", default = TRUE,
@@ -79,9 +79,9 @@ if (sys.nframe() == 0L) {
 ### to run INTERACTIVELY:
 #You only have to set up the variables that are not already set up above or the ones that you would like to change #
 #geocode <- "3550308" # municipio SP
-geocode <- "3509502" # municipio Campinas
-DATAROOT <- "../dados/municipio_campinas/SRAG_hospitalizados/dados/"
-intial_date <- as.Date("2020-03-16")
+# geocode <- "3509502" # municipio Campinas
+# DATAROOT <- "../dados/municipio_campinas/SRAG_hospitalizados/dados/"
+# intial_date <- as.Date("2020-03-16")
 #data <- "2020_05_16"
 #######################################################
 
@@ -125,12 +125,13 @@ source(C("00-read_process_SIVEP_CSV.R"))
 
 source(C("01-nowcast_inHospital_byAge.R"))
 
-source(C("02-runFits_generalized_Exponential_Logistic_fit.R"))
+if(fit_models)
+  source(C("02-runFits_generalized_Exponential_Logistic_fit.R"))
 
 if(make_report)
   source(C("03-report_ExpLogistfit.R"))
 
 if(update_site){
-  setwd(file.path(METAROOT, "site/_src"))
+  setwd(file.path("../site/_src"))
   source("update_modelogro.R")
 }

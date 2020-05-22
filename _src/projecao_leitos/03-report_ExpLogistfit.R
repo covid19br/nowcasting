@@ -1,10 +1,6 @@
 
 excape_paths = function(x) gsub(" ", "\\\ ", x, fixed = TRUE)
 
-data = latest_data$hosp
-fits = latest_data$fits$srag$Logist
-latest_data = data
-disease = "srag"
 make_ggplot = function(data, latest_data = NULL, fits, disease ="covid", ylabel = "Hospitalizados", 
                        title = "Previsões"){
   last_date = last(filter(data, type == disease)$date)
