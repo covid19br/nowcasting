@@ -52,7 +52,7 @@ if (sys.nframe() == 0L) {
     make_option("--outputDir", default = "./dados_processados/nowcasting",
                 help = ("Diretório de destino"),
                 metavar = "outputDir"),
-    make_option("--plot", default = "FALSE",
+    make_option("--plot", default = FALSE,
                 help = ("Fazer plots?"),
                 metavar = "plot")
   )
@@ -118,7 +118,7 @@ if (is.null(data)) {
 
 print(paste("Atualizando", gsub(x = name_path, pattern = "/", replacement = " ")))
 
-if (plots == FALSE ) {
+if (!plots) {
   source("_src/01_gera_nowcastings_SIVEP.R")
   source("_src/02_prepara_dados_nowcasting.R")
   source("_src/03_analises_nowcasting.R")
@@ -134,15 +134,13 @@ if (plots) {
 ################################################################################
 if (update.git) {
   system("git pull")
-  files_para_push <- list.files(output.dir, pattern = paste0("*.", data, ".csv"))
+  files_para_push <- list.files(out.path, pattern = paste0("*.", data, ".csv"))
   files_para_push <- files_para_push[-grep(files_para_push, pattern = "post")]
   #aqui também poderia rolar um push das tabelas pro site mesmo
   tabelas_para_push <- list.files(df.path, pattern = paste0("*.", data, ".csv"))
 
   ## todos os arquivos da data
-  system(paste("cd", output.dir, "&& git pull"))
-  ## todos os arquivos da data
-  system(paste("cd", output.dir,
+  system(paste("cd", output.dir, "&& git pull",
                "&& git add", files_para_push,
                "&& git add", tabelas_para_push,
                "&& git add", plots_para_push,
