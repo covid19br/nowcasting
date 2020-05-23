@@ -64,12 +64,12 @@ now.ob.srag <- gera.nowcasting(dados = dados,
 # COVID ####
 write.notificacoes.data(dados = now.covid$dados,
                         tipo = "covid",
-                        output.dir = output.dir,
+                        output.dir = out.path,
                         data = data)
 
 if (!is.null(now.covid$now)) {
   write.nowcasting(now = now.covid$now,
-                   output.dir = output.dir,
+                   output.dir = out.path,
                    tipo = "covid",
                    data = data)
 }
@@ -77,12 +77,12 @@ if (!is.null(now.covid$now)) {
 # SRAG ####
 write.notificacoes.data(dados = now.srag$dados,
                         tipo = "srag",
-                        output.dir = output.dir,
+                        output.dir = out.path,
                         data = data)
 
 if (!is.null(now.srag$now)) {
   write.nowcasting(now = now.srag$now,
-                   output.dir = output.dir,
+                   output.dir = out.path,
                    tipo = "srag",
                    data = data)
 }
@@ -91,12 +91,12 @@ if (!is.null(now.srag$now)) {
 
 write.notificacoes.data(dados = now.ob.covid$dados,
                         tipo = "obitos_covid",
-                        output.dir = output.dir,
+                        output.dir = out.path,
                         data = data)
 
 if (!is.null(now.ob.covid$now)) {
   write.nowcasting(now = now.ob.covid$now,
-                  output.dir = output.dir,
+                  output.dir = out.path,
                   tipo = "obitos_covid",
                   data = data)
 }
@@ -106,12 +106,12 @@ if (!is.null(now.ob.covid$now)) {
 
 write.notificacoes.data(dados = now.ob.srag$dados,
                         tipo = "obitos_srag",
-                        output.dir = output.dir,
+                        output.dir = out.path,
                         data = data)
 
 if (!is.null(now.ob.srag$now)) {
   write.nowcasting(now = now.ob.srag$now,
-                  output.dir = output.dir,
+                  output.dir = out.path,
                   tipo = "obitos_srag",
                   data = data)
 }

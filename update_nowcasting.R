@@ -120,9 +120,11 @@ if (is.null(data)) {
 
 print(paste("Atualizando", gsub(x = name_path, pattern = "/", replacement = " ")))
 
+if (plots == FALSE ) {
 source("_src/01_gera_nowcastings_SIVEP.R")
 source("_src/02_prepara_dados_nowcasting.R")
 source("_src/03_analises_nowcasting.R")
+}
 if (plots) {
   source("_src/04_plots_nowcasting.R")
   files_para_push <- list.files(plot.dir,
