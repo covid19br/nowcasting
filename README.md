@@ -8,7 +8,7 @@ Repositório para análises de _nowcasting_ de COVID-19 a partir de microdados d
     ├── update_nowcasting.R    # Script principal para rodar o workflow
     ├── _src/                  # Scripts secundários para rodar as análises (source files)
     ├── fct/                   # Funções auxiliares
-    │    
+    ├── dados/                 # Dados auxiliares, IBGE e DRS
     ├── dados_processados/     # Dados com as saídas de nowcasting
     │    ├─ nowcasting/
     │    │    ├── municipios/
@@ -28,6 +28,7 @@ Repositório para análises de _nowcasting_ de COVID-19 a partir de microdados d
     │    └─ projecao_leitos/
     │         └── municipio_SP/
     │
+    ├── docs                  # Relatórios automatizados de nowcasting por escala 
     ├── .gitignore 
     │
     └── README.md
