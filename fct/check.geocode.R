@@ -83,7 +83,7 @@ check.geocode <- function(escala,
       stop("sigla é necessária para escala DRS")
     drs <- read.csv(paste0('./dados/DRS_', sigla, '.csv'))
     if (geocode %in% drs$DRS) {
-      drs.nome <- unique(drs[drs$DRS == geocode, 'DRS.nome'])
+      drs.nome <- unique(drs[drs$DRS == geocode, 'DRS.nome.nonascii'])
       nome <- paste0("DRS/", sigla, "/", drs.nome) #SP_3508
     } else {
       stop("geocode de DRS inválido")
