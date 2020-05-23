@@ -101,7 +101,7 @@ if (existe.srag) {
     plot.estimate.R0()
 
   # TABELAS ####
-  tabelas.web(output.dir,
+  tabelas.web(plot.dir,
               tipo = "srag",
               df.srag.cum,
               df.td.srag,
@@ -138,7 +138,7 @@ if (existe.ob.covid) {
   plot.tempo.dupl.ob.covid <- plot.tempo.dupl(df.td.ob.covid)
 
   # TABELAS ####
-  tabelas.web(output.dir,
+  tabelas.web(plot.dir,
               tipo = "obitos_covid",
               df.ob.covid.cum,
               df.td.ob.covid)
@@ -161,25 +161,25 @@ if (existe.ob.srag) {
   ## N de novos casos observados e por nowcasting
   ## Com linha de média móvel
   plot.nowcast.ob.srag <- df.ob.srag.diario %>%
-    #dplyr::slice(which(data == "2020-03-16"):n()) %>% #everything already after
+    dplyr::slice(which(data > "2020-03-15")) %>%
     plot.nowcast.diario() +
     xlab("Dia") +
     ylab("Número de novos óbitos")
 
   ### acumulado
   plot.nowcast.cum.ob.srag <- df.ob.srag.cum %>%
-    #dplyr::slice(which(data == "2020-03-16"):n()) %>%
+    dplyr::slice(which(data > "2020-03-15")) %>%
     plot.nowcast.acumulado() +
     xlab("Dia") +
     ylab("Número acumulado de óbitos")
 
   ### tempo de duplicação
   plot.tempo.dupl.ob.srag <- df.td.ob.srag %>%
-    dplyr::slice(which(data == "2020-03-16"):n()) %>%
+    dplyr::slice(which(data > "2020-03-15")) %>%
     plot.tempo.dupl()
 
   # TABELAS ####
-    tabelas.web(output.dir,
+    tabelas.web(plot.dir,
                 tipo = "obitos_srag",
                 df.ob.srag.cum,
                 df.td.ob.srag)
