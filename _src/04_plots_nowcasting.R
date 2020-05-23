@@ -82,22 +82,22 @@ if (existe.srag) {
   ## N de novos casos observados e por nowcasting
   ## Com linha de média móvel
   plot.nowcast.srag <- df.srag.diario %>%
-    dplyr::slice(which(data == "2020-03-16"):n()) %>%
+    dplyr::slice(which(data > "2020-03-16")) %>%
     plot.nowcast.diario()
 
   ### acumulado
   plot.nowcast.cum.srag <- df.srag.cum %>%
-    dplyr::slice(which(data == "2020-03-16"):n()) %>%
+    dplyr::slice(which(data > "2020-03-16")) %>%
     plot.nowcast.acumulado()
 
   ### tempo de duplicação
   plot.tempo.dupl.srag <- df.td.srag %>%
-    dplyr::slice(which(data == "2020-03-16"):n()) %>%
+    dplyr::slice(which(data > "2020-03-16")) %>%
     plot.tempo.dupl()
 
   ### R efetivo
   plot.estimate.R0.srag <- df.re.srag %>%
-    dplyr::slice(which(data == "2020-03-16"):n()) %>%
+    dplyr::slice(which(data > "2020-03-16")) %>%
     plot.estimate.R0()
 
   # TABELAS ####
