@@ -128,7 +128,7 @@ if (plots == FALSE ) {
 if (plots) {
   source("_src/04_plots_nowcasting.R")
   files_para_push <- list.files(plot.dir,
-                                pattern = paste0("*.", data, ".csv"),
+                                #pattern = paste0("*.", ".csv"),
                                 full.names = TRUE)
   #falta git plot
 }
