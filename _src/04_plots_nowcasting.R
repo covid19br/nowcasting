@@ -33,10 +33,14 @@ existe.ob.srag.proaim <- existe.nowcasting2(tipo = "obitos_srag_proaim",
 
 if (existe.covid) {
   data.covid <- data
-  df.covid.diario <- read.csv(paste0(data.dir, "nowcasting_diario_covid_", data.covid, ".csv"))
-  df.covid.cum <- read.csv(paste0(data.dir, "nowcasting_acumulado_covid_", data.covid, ".csv"))
-  df.td.covid <- read.csv(paste0(data.dir, "tempo_duplicacao_covid_", data.covid, ".csv"))
-  df.re.covid <- read.csv(paste0(data.dir, "r_efetivo_covid_", data.covid, ".csv"))
+  df.covid.diario <- read.csv(paste0(data.dir, "nowcasting_diario_covid_", data.covid, ".csv"),
+                              stringsAsFactors = FALSE)
+  df.covid.cum <- read.csv(paste0(data.dir, "nowcasting_acumulado_covid_", data.covid, ".csv"),
+                           stringsAsFactors = FALSE)
+  df.td.covid <- read.csv(paste0(data.dir, "tempo_duplicacao_covid_", data.covid, ".csv"),
+                          stringsAsFactors = FALSE)
+  df.re.covid <- read.csv(paste0(data.dir, "r_efetivo_covid_", data.covid, ".csv"),
+                          stringsAsFactors = FALSE)
   # PLOTS ####
   ### diario
   ## N de novos casos observados e por nowcasting
@@ -73,31 +77,35 @@ if (existe.covid) {
 
 if (existe.srag) {
   data.srag <- data
-  df.srag.diario <- read.csv(paste0(data.dir, "nowcasting_diario_srag_", data.srag, ".csv"))
-  df.srag.cum <- read.csv(paste0(data.dir, "nowcasting_acumulado_srag_", data.srag, ".csv"))
-  df.td.srag <- read.csv(paste0(data.dir, "tempo_duplicacao_srag_", data.srag, ".csv"))
-  df.re.srag <- read.csv(paste0(data.dir, "r_efetivo_srag_", data.srag, ".csv"))
+  df.srag.diario <- read.csv(paste0(data.dir, "nowcasting_diario_srag_", data.srag, ".csv"),
+                             stringsAsFactors = FALSE)
+  df.srag.cum <- read.csv(paste0(data.dir, "nowcasting_acumulado_srag_", data.srag, ".csv"),
+                          stringsAsFactors = FALSE)
+  df.td.srag <- read.csv(paste0(data.dir, "tempo_duplicacao_srag_", data.srag, ".csv"),
+                         stringsAsFactors = FALSE)
+  df.re.srag <- read.csv(paste0(data.dir, "r_efetivo_srag_", data.srag, ".csv"),
+                         stringsAsFactors = FALSE)
   # PLOTS ####
   ### diario
   ## N de novos casos observados e por nowcasting
   ## Com linha de média móvel
   plot.nowcast.srag <- df.srag.diario %>%
-    dplyr::slice(which(data > "2020-03-15")) %>%
+    dplyr::filter(data > "2020-03-15") %>%
     plot.nowcast.diario()
 
   ### acumulado
   plot.nowcast.cum.srag <- df.srag.cum %>%
-    dplyr::slice(which(data > "2020-03-15")) %>%
+    dplyr::filter(data > "2020-03-15") %>%
     plot.nowcast.acumulado()
 
   ### tempo de duplicação
   plot.tempo.dupl.srag <- df.td.srag %>%
-    dplyr::slice(which(data > "2020-03-15")) %>%
+    dplyr::filter(data > "2020-03-15") %>%
     plot.tempo.dupl()
 
   ### R efetivo
   plot.estimate.R0.srag <- df.re.srag %>%
-    dplyr::slice(which(data > "2020-03-15")) %>%
+    dplyr::filter(data > "2020-03-15") %>%
     plot.estimate.R0()
 
   # TABELAS ####
@@ -119,9 +127,12 @@ if (existe.srag) {
 
 if (existe.ob.covid) {
   data.ob.covid <- data
-  df.ob.covid.diario <- read.csv(paste0(data.dir, "nowcasting_diario_obitos_covid_", data.ob.covid, ".csv"))
-  df.ob.covid.cum <- read.csv(paste0(data.dir, "nowcasting_acumulado_obitos_covid_", data.ob.covid, ".csv"))
-  df.td.ob.covid <- read.csv(paste0(data.dir, "tempo_duplicacao_obitos_covid_", data.ob.covid, ".csv"))
+  df.ob.covid.diario <- read.csv(paste0(data.dir, "nowcasting_diario_obitos_covid_", data.ob.covid, ".csv"),
+                                 stringsAsFactors = FALSE)
+  df.ob.covid.cum <- read.csv(paste0(data.dir, "nowcasting_acumulado_obitos_covid_", data.ob.covid, ".csv"),
+                              stringsAsFactors = FALSE)
+  df.td.ob.covid <- read.csv(paste0(data.dir, "tempo_duplicacao_obitos_covid_", data.ob.covid, ".csv"),
+                             stringsAsFactors = FALSE)
   ### diario
   ## N de novos casos observados e por nowcasting
   ## Com linha de média móvel
