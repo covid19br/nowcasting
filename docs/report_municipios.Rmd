@@ -50,7 +50,7 @@ A linha preta é a tendência estimada, com média móvel para um período de 10
 
 ### ${casos} ${tipo} acumulados e projeção
 
-![${casos} ${tipo} diários](${output.dir}//${uf}/${muni}/plots/plot_nowcast_cum_${ob}${tipol}.svg)
+![${casos} ${tipo} acumulados](${output.dir}//${uf}/${muni}/plots/plot_nowcast_cum_${ob}${tipol}.svg)
 
 As linhas azuis contínuas indicam o número de casos graves observados acumulados até a última data. As linhas vermelhas contínuas indicam o número de casos graves estimados acumulados, corrigindo o tempo entre os primeiros sintomas e a notificação. Por se tratar de números muito discrepantes ao longo do tempo, o gráfico de casos acumulados está em escala logarítmica.
 Os pontos tracejados da linha vermelha são as projeções para os últimos 2 dias e para os próximos 5 dias, se a taxa de crescimento dos valores corrigidos continuar a mesma dos últimos 5 dias. A faixa cinza mostra o intervalo de 95% de confiança dessa projeção. 
