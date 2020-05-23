@@ -127,6 +127,7 @@ if (plots) {
   source("_src/04_plots_nowcasting.R")
   plots_para_push <- list.files(plot.dir,
                                 pattern = paste0("*.", ".svg"))
+  plots_para_push <- paste0("plots/", plots_para_push)
 }
 
 ###############################################################################
@@ -136,15 +137,17 @@ if (update.git) {
   system("git pull")
   files_para_push <- list.files(out.path, pattern = paste0("*.", data, ".csv"))
   files_para_push <- files_para_push[-grep(files_para_push, pattern = "post")]
+  files_para_push <- paste0("output_nowcasting/", files_para_push)
   #aqui também poderia rolar um push das tabelas pro site mesmo
   tabelas_para_push <- list.files(df.path, pattern = paste0("*.", data, ".csv"))
+  tabelas_para_push <- paste0("tabelas_nowcasting_para_grafico/",  tabelas_para_push)
 
   ## todos os arquivos da data
   system(paste("cd", output.dir, "&& git pull",
                "&& git add", files_para_push,
                "&& git add", tabelas_para_push,
                "&& git add", plots_para_push,
-               "git commit -m ':robot: nowcasting",
+               "&& git commit -m ':robot: nowcasting",
                gsub(x = name_path, pattern = "/", replacement = " "),
                "dados:", data, "'",
                "&& git push", collapse = " "))
