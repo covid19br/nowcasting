@@ -1,3 +1,4 @@
+library(textclean)
 #' Função para extrair nome do path a partir do geocode
 #' @param escala Caractere. Escala do filtro: `"municipio`, `"estado"`, `"micro"`, `"meso"`
 #' @param geocode Caractere. Geocode IBGE. Município 6 ou 7 dígitos; microrregião 5 dígitos; mesorregião 4 dígitos; estado 2 dígitos
@@ -49,8 +50,11 @@ check.geocode <- function(escala,
     if (nchar(geocode) != 5)
       stop("geocode não bate com escala")
     if (geocode %in% micro.code) {
-      id <- which(micro.code == geocode)
-      nome <- paste0("microrregioes/", unique(estado.sigla[id]), "/", unique(micro.code[id])) #SP_35035
+      id <- which(micro.code == geocode)[1]
+      micro.nome <- gsub("'", "",
+                    gsub(" ", "_",
+                         replace_non_ascii(df$microrregiao.nome[id])))
+      nome <- paste0("microrregioes/", estado.sigla[id], "/", micro.nome) #microrregioes/SP/Sao_Paulo
     } else {
       stop("geocode de microrregião invalido")
     }
@@ -60,8 +64,11 @@ check.geocode <- function(escala,
     if (nchar(geocode) != 4)
       stop("geocode não bate com escala")
     if (geocode %in% meso.code) {
-      id <- which(meso.code == geocode)
-      nome <- paste0("mesorregioes/", unique(estado.sigla[id]), "/", unique(meso.code[id])) #SP_3508
+      id <- which(meso.code == geocode)[1]
+      meso.nome <- gsub("'", "",
+                    gsub(" ", "_",
+                         replace_non_ascii(df$microrregiao.mesorregiao.nome[id])))
+      nome <- paste0("mesorregioes/", estado.sigla[id], "/", meso.nome) #mesorregioes/SP/Metropolitana_de_Sao_Paulo
     } else {
       stop("geocode de mesorregião invalido")
     }
@@ -71,8 +78,8 @@ check.geocode <- function(escala,
     if (nchar(geocode) != 2)
       stop("geocode não bate com escala")
     if (geocode %in% estado.code) {
-      id <- which(estado.code == geocode)
-      nome <- unique(paste0("estado/", estado.sigla[id]))
+      id <- which(estado.code == geocode)[1]
+      nome <- paste0("estado/", estado.sigla[id])
     } else {
       stop("geocode de estado invalido")
     }
@@ -83,8 +90,8 @@ check.geocode <- function(escala,
       stop("sigla é necessária para escala DRS")
     drs <- read.csv(paste0('./dados/DRS_', sigla, '.csv'))
     if (geocode %in% drs$DRS) {
-      drs.nome <- unique(drs[drs$DRS == geocode, 'DRS.nome.nonascii'])
-      nome <- paste0("DRS/", sigla, "/", drs.nome) #SP_3508
+      id <- which(drs$DRS == geocode)[1]
+      nome <- paste0("DRS/", sigla, "/", drs[id, 'DRS.nome.nonascii'])
     } else {
       stop("geocode de DRS inválido")
     }
