@@ -126,9 +126,7 @@ if (plots == FALSE ) {
 if (plots) {
   source("_src/04_plots_nowcasting.R")
   plots_para_push <- list.files(plot.dir,
-                                pattern = paste0("*.", ".svg"),
-                                full.names = TRUE)
-  #falta git plot
+                                pattern = paste0("*.", ".svg"))
 }
 
 ###############################################################################
@@ -136,12 +134,10 @@ if (plots) {
 ################################################################################
 if (update.git) {
   system("git pull")
-  files_para_push <- list.files(output.dir, pattern = paste0("*.", data, ".csv"),
-                              full.names = TRUE)
+  files_para_push <- list.files(output.dir, pattern = paste0("*.", data, ".csv"))
   files_para_push <- files_para_push[-grep(files_para_push, pattern = "post")]
   #aqui também poderia rolar um push das tabelas pro site mesmo
-  tabelas_para_push <- list.files(df.path, pattern = paste0("*.", data, ".csv"),
-                                  full.names = TRUE)
+  tabelas_para_push <- list.files(df.path, pattern = paste0("*.", data, ".csv"))
 
   ## todos os arquivos da data
   system(paste("cd", output.dir, "&& git pull"))
