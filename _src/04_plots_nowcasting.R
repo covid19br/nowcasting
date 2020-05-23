@@ -154,28 +154,31 @@ if (existe.ob.covid) {
 
 if (existe.ob.srag) {
   data.ob.srag <- data
-  df.ob.srag.diario <- read.csv(paste0(data.dir, "nowcasting_diario_obitos_srag_", data.ob.srag, ".csv"))
-  df.ob.srag.cum <- read.csv(paste0(data.dir, "nowcasting_acumulado_obitos_srag_", data.ob.srag, ".csv"))
-  df.td.ob.srag <- read.csv(paste0(data.dir, "tempo_duplicacao_obitos_srag_", data.ob.srag, ".csv"))
+  df.ob.srag.diario <- read.csv(paste0(data.dir, "nowcasting_diario_obitos_srag_", data.ob.srag, ".csv"),
+                                stringsAsFactors = FALSE)
+  df.ob.srag.cum <- read.csv(paste0(data.dir, "nowcasting_acumulado_obitos_srag_", data.ob.srag, ".csv"),
+                             stringsAsFactors = FALSE)
+  df.td.ob.srag <- read.csv(paste0(data.dir, "tempo_duplicacao_obitos_srag_", data.ob.srag, ".csv"),
+                            stringsAsFactors = FALSE)
   ### diario
   ## N de novos casos observados e por nowcasting
   ## Com linha de média móvel
   plot.nowcast.ob.srag <- df.ob.srag.diario %>%
-    dplyr::slice(which(data > "2020-03-15")) %>%
+    dplyr::filter(data > "2020-03-15") %>%
     plot.nowcast.diario() +
     xlab("Dia") +
     ylab("Número de novos óbitos")
 
   ### acumulado
   plot.nowcast.cum.ob.srag <- df.ob.srag.cum %>%
-    dplyr::slice(which(data > "2020-03-15")) %>%
+    dplyr::filter(data > "2020-03-15") %>%
     plot.nowcast.acumulado() +
     xlab("Dia") +
     ylab("Número acumulado de óbitos")
 
   ### tempo de duplicação
   plot.tempo.dupl.ob.srag <- df.td.ob.srag %>%
-    dplyr::slice(which(data > "2020-03-15")) %>%
+    dplyr::filter(data > "2020-03-15") %>%
     plot.tempo.dupl()
 
   # TABELAS ####
