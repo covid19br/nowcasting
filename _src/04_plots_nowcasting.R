@@ -225,3 +225,54 @@ if (existe.ob.srag) {
 #   plot.nowcast.cum.ob.srag.proaim <- NULL
 #   plot.tempo.dupl.ob.srag.proaim <- NULL
 # }
+
+##@ast trouxe aqui a parte onde salva
+plots.para.atualizar <- makeNamedList(
+  # covid
+  plot.nowcast.covid,
+  plot.nowcast.cum.covid,
+  plot.estimate.R0.covid,
+  plot.tempo.dupl.covid,
+  # srag
+  plot.nowcast.srag,
+  plot.nowcast.cum.srag,
+  plot.estimate.R0.srag,
+  plot.tempo.dupl.srag,
+  # obitos covid
+  plot.nowcast.ob.covid,
+  plot.nowcast.cum.ob.covid,
+  plot.tempo.dupl.ob.covid,
+  # obitos srag
+  plot.nowcast.ob.srag,
+  plot.nowcast.cum.ob.srag,
+  plot.tempo.dupl.ob.srag
+  #obitos srag.proaim
+  #plot.nowcast.ob.srag.proaim,
+  #plot.nowcast.cum.ob.srag.proaim,
+  #plot.tempo.dupl.ob.srag.proaim
+)
+plots.true <- sapply(plots.para.atualizar, function(x) !is.null(x))
+
+filenames <- gsub(".", "_", names(plots.para.atualizar), fixed = TRUE)
+filenames <- paste0(plot.dir, filenames)
+
+n <- 1:length(plots.para.atualizar)
+
+for (i in n[plots.true]) {
+  fig.name <- filenames[i]
+
+  # SVG ####
+  # fazendo todos os graficos svg para o site
+  graph.svg <- plots.para.atualizar[[i]] +
+    theme(axis.text = element_text(size = 6.65)
+          #plot.margin = margin(10, 0, 0, 7, "pt")
+    )
+  ggsave(paste(fig.name, ".svg", sep = ""),
+         plot = graph.svg,
+         device = svg,
+         scale = 1,
+         width = 215,
+         height = 146,
+         units = "mm")
+  #ast nao chequei as dimensoes, só tirei o que parece redundante
+}

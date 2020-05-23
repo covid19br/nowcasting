@@ -51,7 +51,10 @@ if (sys.nframe() == 0L) {
                 metavar = "updateGit"),
     make_option("--outputDir", default = "./dados_processados/nowcasting",
                 help = ("Diretório de destino"),
-                metavar = "outputDir")
+                metavar = "outputDir"),
+    make_option("--plot", default = "FALSE",
+                help = ("Fazer plots?"),
+                metavar = "plot")
   )
   parser_object <- OptionParser(usage = "Rscript %prog [Opções] [ARQUIVO]\n",
                                 option_list = option_list,
@@ -75,6 +78,7 @@ if (sys.nframe() == 0L) {
   formato.data <- opt$options$formatoData
   update.git <- opt$options$updateGit
   out.dir <- opt$options$outputDir
+  plots <- opt$options$plot
 }
 ####################################################
 ### to run INTERACTIVELY:
@@ -119,69 +123,19 @@ print(paste("Atualizando", gsub(x = name_path, pattern = "/", replacement = " ")
 source("_src/01_gera_nowcastings_SIVEP.R")
 source("_src/02_prepara_dados_nowcasting.R")
 source("_src/03_analises_nowcasting.R")
-source("_src/04_plots_nowcasting.R")
-
+if (plots) {
+  source("_src/04_plots_nowcasting.R")
+  files_para_push <- list.files(plot.dir,
+                                pattern = paste0("*.", data, ".csv"),
+                                full.names = TRUE)
+  #falta git plot
+}
 files_para_push <- list.files(output.dir, pattern = paste0("*.", data, ".csv"),
                               full.names = TRUE)
 files_para_push <- files_para_push[-grep(files_para_push, pattern = "post")]
 #aqui também poderia rolar um push das tabelas pro site mesmo
 tabelas_para_push <- list.files(df.path, pattern = paste0("*.", data, ".csv"),
                                 full.names = TRUE)
-
-######plots----
-
-# Graficos a serem atualizados
-plots.para.atualizar <- makeNamedList(
-  # covid
-  plot.nowcast.covid,
-  plot.nowcast.cum.covid,
-  plot.estimate.R0.covid,
-  plot.tempo.dupl.covid,
-  # srag
-  plot.nowcast.srag,
-  plot.nowcast.cum.srag,
-  plot.estimate.R0.srag,
-  plot.tempo.dupl.srag,
-  # obitos covid
-  plot.nowcast.ob.covid,
-  plot.nowcast.cum.ob.covid,
-  plot.tempo.dupl.ob.covid,
-  # obitos srag
-  plot.nowcast.ob.srag,
-  plot.nowcast.cum.ob.srag,
-  plot.tempo.dupl.ob.srag
-  #obitos srag.proaim
-  #plot.nowcast.ob.srag.proaim,
-  #plot.nowcast.cum.ob.srag.proaim,
-  #plot.tempo.dupl.ob.srag.proaim
-)
-plots.true <- sapply(plots.para.atualizar, function(x) !is.null(x))
-
-filenames <- gsub(".", "_", names(plots.para.atualizar), fixed = TRUE)
-filenames <- paste0(plot.dir, filenames)
-
-n <- 1:length(plots.para.atualizar)
-
-for (i in n[plots.true]) {
-  fig.name <- filenames[i]
-
-  # SVG ####
-  # fazendo todos os graficos svg para o site
-  graph.svg <- plots.para.atualizar[[i]] +
-    theme(axis.text = element_text(size = 6.65)
-          #plot.margin = margin(10, 0, 0, 7, "pt")
-    )
-  ggsave(paste(fig.name, ".svg", sep = ""),
-         plot = graph.svg,
-         device = svg,
-         scale = 1,
-         width = 215,
-         height = 146,
-         units = "mm")
-  #ast nao chequei as dimensoes, só tirei o que parece redundante
-}
-
-#
 
 ###############################################################################
 ## Comando git: commits e pushs
@@ -198,5 +152,7 @@ if (update.git) {
   system("git push")
 }
 
+######plots----
 
-#falta git plot
+#
+

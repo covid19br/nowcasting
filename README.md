@@ -14,7 +14,9 @@ Repositório para análises de _nowcasting_ de COVID-19 a partir de microdados d
     │    │    ├── municipios/
     │    │    │     └── [UF]/
     │    │    │         ├── [nome_municipio]/
-    │    │    │         │      └── tabelas_nowcasting_para_grafico/
+    │    │    │         │      ├── output_nowcasting/
+    │    │    │         │      ├── tabelas_nowcasting_para_grafico/
+    │    │    │         │      └── plots/
     │    │    │         └── ...
     │    │    │                 
     │    │    ├── estados/
