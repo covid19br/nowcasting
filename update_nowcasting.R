@@ -142,6 +142,7 @@ if (update.git) {
   ## todos os arquivos da data
   system("git pull")
   system(paste("cd", paste0(out.dir,"/", name_path),
+               "&& git pull",
                "&& git add", paste0(files_para_push , collapse = " "),
                "&& git add", paste0(tabelas_para_push, collapse = " "),
                "&& git commit -m '[auto] nowcasting",
