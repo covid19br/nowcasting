@@ -54,7 +54,10 @@ if (sys.nframe() == 0L) {
                 metavar = "outputDir"),
     make_option("--plot", default = FALSE,
                 help = ("Fazer plots?"),
-                metavar = "plot")
+                metavar = "plot"),
+    make_option("--residentes", default = TRUE,
+                help = ("Filtrar só por residentes? Default: TRUE"),
+                metavar = "residentes")
   )
   parser_object <- OptionParser(usage = "Rscript %prog [Opções] [ARQUIVO]\n",
                                 option_list = option_list,
@@ -79,6 +82,7 @@ if (sys.nframe() == 0L) {
   update.git <- opt$options$updateGit
   out.dir <- opt$options$outputDir
   plots <- opt$options$plot
+  residentes <- opt$options$residentes
 }
 ####################################################
 ### to run INTERACTIVELY:
