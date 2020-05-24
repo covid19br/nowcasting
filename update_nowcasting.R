@@ -123,12 +123,6 @@ if (!plots) {
   source("_src/02_prepara_dados_nowcasting.R")
   source("_src/03_analises_nowcasting.R")
 }
-if (plots) {
-  source("_src/04_plots_nowcasting.R")
-  plots_para_push <- list.files(plot.dir,
-                                pattern = paste0("*.", ".svg"))
-  plots_para_push <- paste0("plots/", plots_para_push)
-}
 
 ###############################################################################
 ## Comando git: commits e pushs
@@ -146,10 +140,28 @@ if (update.git) {
   system(paste("cd", paste0(out.dir,"/", name_path),
                "&& git add", paste0(files_para_push , collapse = " "),
                "&& git add", paste0(tabelas_para_push, collapse = " "),
-               "&& git add", paste0(plots_para_push, collapse = " "),
-               "&& git commit -m ':robot: nowcasting",
+               "&& git commit -m '[auto] nowcasting",
                gsub(x = name_path, pattern = "/", replacement = " "),
                "dados:", data, "'",
                "&& git push")
                )
+}
+
+#Plots / git has to be here
+if (plots) {
+  source("_src/04_plots_nowcasting.R")
+  plots_para_push <- list.files(plot.dir,
+                                pattern = paste0("*.", ".svg"))
+  plots_para_push <- paste0("plots/", plots_para_push)
+  if (update.git) {
+    ## todos os arquivos da data
+    system("git pull")
+    system(paste("cd", paste0(out.dir,"/", name_path),
+                 "&& git add", paste0(plots_para_push, collapse = " "),
+                 "&& git commit -m '[plots] nowcasting",
+                 gsub(x = name_path, pattern = "/", replacement = " "),
+                 "dados:", data, "'",
+                 "&& git push")
+    )
+  }
 }
