@@ -53,16 +53,25 @@ read.sivep <- function(dir, # diretorio onde esta o dado
     }
     if (escala == "micro") {
       co.muns <- municipio.code[micro.code == geocode]
-      dados <- dados[dados$co_mun_res %in% as.numeric(co.muns), ]
+      if(residentes)
+        dados <- dados[dados$co_mun_res %in% co.muns, ]
+      else
+        dados <- dados[dados$co_mun_not %in% co.muns, ]
     }
     if (escala == "meso") {
       co.muns <- municipio.code[meso.code == geocode]
-      dados <- dados[dados$co_mun_res %in% co.muns, ]
+      if(residentes)
+        dados <- dados[dados$co_mun_res %in% co.muns, ]
+      else
+        dados <- dados[dados$co_mun_not %in% co.muns, ]
     }
     if (escala == "drs") {
       drs <- read.csv(paste0('./dados/DRS_', sigla, '.csv'))
       co.muns <- drs[drs$DRS == geocode, 'id']
-      dados <- dados[dados$co_mun_res %in% co.muns, ]
+      if(residentes)
+        dados <- dados[dados$co_mun_res %in% co.muns, ]
+      else
+        dados <- dados[dados$co_mun_not %in% co.muns, ]
     }
   }
   # formata datas
