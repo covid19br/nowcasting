@@ -49,7 +49,7 @@ if (sys.nframe() == 0L) {
     make_option("--updateGit", default = "FALSE",
                 help = ("Fazer git add, commit e push?"),
                 metavar = "updateGit"),
-    make_option("--outputDir", default = "./dados_processados/nowcasting",
+    make_option("--outputDir", default = "dados_processados/nowcasting",
                 help = ("Diretório de destino"),
                 metavar = "outputDir"),
     make_option("--plot", default = FALSE,
@@ -100,7 +100,7 @@ if (!exists('geocode')) {
 name_path <- check.geocode(escala = escala,
                            geocode = geocode, sigla = sigla)
 
-output.dir <- paste0(out.dir, "/", name_path, "/")
+output.dir <- paste0("./",out.dir, "/", name_path, "/")
 # só para o output
 out.path <- paste0(output.dir, "output_nowcasting/")
 # só para as tabelas
@@ -134,7 +134,6 @@ if (plots) {
 ## Comando git: commits e pushs
 ################################################################################
 if (update.git) {
-  system("git pull")
   files_para_push <- list.files(out.path, pattern = paste0("*.", data, ".csv"))
   files_para_push <- files_para_push[-grep(files_para_push, pattern = "post")]
   files_para_push <- paste0("output_nowcasting/", files_para_push)
@@ -143,12 +142,14 @@ if (update.git) {
   tabelas_para_push <- paste0("tabelas_nowcasting_para_grafico/",  tabelas_para_push)
 
   ## todos os arquivos da data
-  system(paste("cd", output.dir, "&& git pull",
-               "&& git add", files_para_push,
-               "&& git add", tabelas_para_push,
-               "&& git add", plots_para_push,
+  system("git pull")
+  system(paste("cd", paste0(out.dir,"/", name_path),
+               "&& git add", paste0(files_para_push , collapse = " "),
+               "&& git add", paste0(tabelas_para_push, collapse = " "),
+               "&& git add", paste0(plots_para_push, collapse = " "),
                "&& git commit -m ':robot: nowcasting",
                gsub(x = name_path, pattern = "/", replacement = " "),
                "dados:", data, "'",
-               "&& git push", collapse = " "))
+               "&& git push")
+               )
 }
