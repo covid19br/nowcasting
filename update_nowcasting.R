@@ -91,11 +91,6 @@ if (sys.nframe() == 0L) {
 #data <- "2020_05_20"
 #######################################################
 
-################################################################################
-## comandos git: PULL ANTES de adicionar arquivos
-################################################################################
-system("git pull")
-
 if (!exists('geocode')) {
   print("Geocode não definido")
   quit(status = 1)
@@ -104,7 +99,7 @@ if (!exists('geocode')) {
 name_path <- check.geocode(escala = escala,
                            geocode = geocode, sigla = sigla)
 
-output.dir <- paste0("./",out.dir, "/", name_path, "/")
+output.dir <- paste0(out.dir, "/", name_path, "/")
 # só para o output
 out.path <- paste0(output.dir, "output_nowcasting/")
 # só para as tabelas
@@ -114,6 +109,11 @@ if (!file.exists(df.path))
   dir.create(df.path, showWarnings = TRUE, recursive = TRUE)
 if (!file.exists(out.path))
   dir.create(out.path, showWarnings = TRUE, recursive = TRUE)
+
+################################################################################
+## comandos git: PULL ANTES de adicionar arquivos
+################################################################################
+system(paste("cd",  output.dir, "; git pull --ff-only"))
 
 # pegando a data mais recente
 if (is.null(data)) {
@@ -140,12 +140,10 @@ if (update.git) {
   tabelas_para_push <- paste0("tabelas_nowcasting_para_grafico/",  tabelas_para_push)
 
   ## todos os arquivos da data
-  system("git pull")
   system(paste("cd", paste0(out.dir,"/", name_path),
-               "&& git pull",
                "&& git add", paste0(files_para_push , collapse = " "),
                "&& git add", paste0(tabelas_para_push, collapse = " "),
-               "&& git commit -m '[auto] nowcasting",
+               "&& git commit -m ':robot: outputs nowcasting",
                gsub(x = name_path, pattern = "/", replacement = " "),
                "dados:", data, "'",
                "&& git push")
@@ -160,10 +158,9 @@ if (plots) {
   plots_para_push <- paste0("plots/", plots_para_push)
   if (update.git) {
     ## todos os arquivos da data
-    system("git pull")
     system(paste("cd", paste0(out.dir,"/", name_path),
                  "&& git add", paste0(plots_para_push, collapse = " "),
-                 "&& git commit -m '[plots] nowcasting",
+                 "&& git commit -m ':robot: plots nowcasting",
                  gsub(x = name_path, pattern = "/", replacement = " "),
                  "dados:", data, "'",
                  "&& git push")
