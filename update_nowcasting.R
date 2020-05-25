@@ -113,7 +113,8 @@ if (!file.exists(out.path))
 ################################################################################
 ## comandos git: PULL ANTES de adicionar arquivos
 ################################################################################
-system(paste("cd",  output.dir, "; git pull --ff-only"))
+if (update.git)
+    system(paste("cd",  output.dir, "; git pull --ff-only"))
 
 # pegando a data mais recente
 if (is.null(data)) {
