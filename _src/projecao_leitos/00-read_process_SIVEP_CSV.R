@@ -19,6 +19,7 @@ srag.20.raw <- read.sivep(dir = DATAROOT,
                           escala = escala,
                           geocode = geocode,
                           data = format(data_date, "%Y_%m_%d"),
+                          sigla = sigla,
                           residentes = FALSE)
 dt.cols <- grepl("dt_", names(srag.20.raw))
 names(srag.20.raw)[dt.cols] <- substr(names(srag.20.raw[,dt.cols]), start=1, stop=6)
