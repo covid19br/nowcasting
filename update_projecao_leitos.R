@@ -42,6 +42,9 @@ if (sys.nframe() == 0L) {
     make_option("--n_cores", default = 2,
                 help = ("Numero de cores usado para a projeção de leitos"),
                 metavar = "n_cores"),
+    make_option("--nowcasting", default = TRUE,
+                help = ("Booleano. Executa ou não nowcasting. Precisa ser feito antes de ajustar os modelos."),
+                metavar = "nowcasting"),
     make_option("--fit_models", default = TRUE,
                 help = ("Booleano. Ajusta ou não os modelos de projeção. Precisa ser feito antes do relatório."),
                 metavar = "fit_models"),
@@ -72,6 +75,7 @@ if (sys.nframe() == 0L) {
   n_cores <- opt$options$n_cores
   make_report <- opt$options$report
   fit_models <- opt$options$fit_models
+  nowcasting <- opt$options$nowcasting
   out.root <- if(is.null(opt$options$out_dir)) {"./dados_processados"} else opt$options$out_dir
 }
 
@@ -123,7 +127,8 @@ C = function(...) file.path(CODEROOT, ...)
 
 source(C("00-read_process_SIVEP_CSV.R"))
 
-source(C("01-nowcast_inHospital_byAge.R"))
+if(nowcasting)
+    source(C("01-nowcast_inHospital_byAge.R"))
 
 if(fit_models)
   source(C("02-runFits_generalized_Exponential_Logistic_fit.R"))
