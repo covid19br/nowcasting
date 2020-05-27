@@ -1,6 +1,4 @@
-# copia local do repo do site
-para_o_site/
-central_covid_data/
+dados_processados/nowcasting/*/*/*/output_nowcasting/*_post_*.csv
 
 *.Rproj
 *.Rproj.user
