@@ -239,7 +239,8 @@ if(escala == "municipio") escala = "município"
 plots = last(covidPlots)
 olderPlots = olderPlotsCovid
 render(input = C("relatorio.Rmd"),
-       output_file = P(R(paste0(data.atual, "_relatorio_projecoes_demanda_hospitalar_covid.pdf"))),
+       output_file = paste0(data.atual, "_relatorio_projecoes_demanda_hospitalar_covid.pdf"),
+       output_dir = report.dir,
        encoding = "utf8")
 
 data.atual = last(date_list)
@@ -248,6 +249,7 @@ disease_text = "SRAG"
 plots = last(sragPlots)
 olderPlots = olderPlotsSrag
 render(input = C("relatorio.Rmd"),
-       output_file = P(R(paste0(data.atual, "_relatorio_projecoes_demanda_hospitalar_srag.pdf"))),
+       output_file = paste0(data.atual, "_relatorio_projecoes_demanda_hospitalar_srag.pdf"),
+       output_dir = report.dir,
        encoding = "utf8")
 

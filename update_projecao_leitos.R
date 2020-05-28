@@ -50,7 +50,10 @@ if (sys.nframe() == 0L) {
                 metavar = "fit_models"),
     make_option("--report", default = TRUE,
                 help = ("Booleano. Gera ou não relatório automático."),
-                metavar = "report")
+                metavar = "report"),
+    make_option("--report_dir", default = NULL,
+                help = ("Paste de saida dos reports."),
+                metavar = "report_dir")
     # make_option("--updateGit", default = "FALSE",
     #             help = ("Fazer git add, commit e push?"),
     #             metavar = "updateGit")
@@ -77,6 +80,7 @@ if (sys.nframe() == 0L) {
   fit_models <- opt$options$fit_models
   nowcasting <- opt$options$nowcasting
   out.root <- if(is.null(opt$options$out_dir)) {"../dados_processados"} else opt$options$out_dir
+  report.dir <- opt$options$report_dir
 }
 
 ####################################################
@@ -93,7 +97,11 @@ if (sys.nframe() == 0L) {
 # escala  = "drs"
 # sigla = "SP"
 # geocode = 1  
-# out.root =  "../dados/estado_SP/SRAG_hospitalizados/outputs"
+# out.root =  "../dados_processados/"
+# nowcasting = FALSE 
+# fit_models = FALSE 
+# make_report = TRUE
+# report.dir  = "~/Desktop"
 #######################################################
 
 
@@ -117,16 +125,17 @@ if (!file.exists(file.path(output.dir, "hospitalizados")))
   dir.create(file.path(output.dir, "hospitalizados"), showWarnings = TRUE, recursive = TRUE)
 if (!file.exists(file.path(output.dir, "curve_fits")))
   dir.create(file.path(output.dir, "curve_fits"), showWarnings = TRUE, recursive = TRUE)
-if(make_report)
-  if (!file.exists(file.path(output.dir, "relatorios")))
-    dir.create(file.path(output.dir, "relatorios"), showWarnings = TRUE, recursive = TRUE)
-
+if(make_report){
+  if(is.null(report.dir))
+    report.dir = file.path(output.dir, "relatorios")
+  if (!file.exists(report.dir))
+      dir.create(report.dir, showWarnings = TRUE, recursive = TRUE)
+}
 update_site = FALSE
 
 registerDoMC(n_cores)
 
 O = function(...) file.path(output.dir, ...)
-R = function(...) file.path(output.dir, "relatorios", ...)
 P = function(...) file.path(PRJROOT, ...)
 CODEROOT = paste0(PRJROOT, "/_src/projecao_leitos")
 C = function(...) file.path(CODEROOT, ...)	
