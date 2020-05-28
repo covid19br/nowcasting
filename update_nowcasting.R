@@ -49,7 +49,8 @@ if (sys.nframe() == 0L) {
     make_option("--updateGit", default = "FALSE",
                 help = ("Fazer git add, commit e push?"),
                 metavar = "updateGit"),
-    make_option("--outputDir", default = "dados_processados/nowcasting",
+    make_option("--outputDir",
+                default = "../dados_processados/nowcasting",
                 help = ("Diretório de destino"),
                 metavar = "outputDir"),
     make_option("--plot", default = FALSE,
@@ -70,7 +71,8 @@ if (sys.nframe() == 0L) {
   #opt <- parse_args(parser_object, args = command.args, positional_arguments = TRUE)
   ## SKIP opt line below
   ## aliases
-  opt <- parse_args(parser_object, args = commandArgs(trailingOnly = TRUE), positional_arguments = TRUE)
+  opt <- parse_args(parser_object, args = commandArgs(trailingOnly = TRUE),
+                    positional_arguments = TRUE)
   dir <- opt$options$dir
   escala <- opt$options$escala
   sigla <- opt$options$sigla
@@ -154,8 +156,7 @@ if (update.git) {
 #Plots / git has to be here
 if (plots) {
   source("_src/04_plots_nowcasting.R")
-  plots_para_push <- list.files(plot.dir,
-                                pattern = paste0("*.", ".svg"))
+  plots_para_push <- list.files(plot.dir)
   plots_para_push <- paste0("plots/", plots_para_push)
   if (update.git) {
     ## todos os arquivos da data
