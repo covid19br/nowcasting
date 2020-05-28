@@ -4,7 +4,8 @@ library(textclean)
 #' @param geocode Caractere. Geocode IBGE. Município 6 ou 7 dígitos; microrregião 5 dígitos; mesorregião 4 dígitos; estado 2 dígitos
 check.geocode <- function(escala,
                           geocode,
-                          sigla) {
+                          sigla,
+                          nonascii = TRUE) {
 
   #url <- paste0("https://servicodados.ibge.gov.br/api/v1/localidades/municipios")
   #df <- jsonlite::fromJSON(url)
@@ -26,26 +27,15 @@ check.geocode <- function(escala,
         geocode <- substr(geocode, start = 1, stop = 6)
     if (geocode %in% municipio.code) {
       id <- which(municipio.code == geocode)
-      nome <- paste0("municipios/", estado.sigla[id], "/", df$nome.nonascii[id]) # municipios/SP/Sao_Paulo
+      if(nonascii)
+        nome <- paste0("municipios/", estado.sigla[id], "/", df$nome.nonascii[id]) # municipios/SP/Sao_Paulo
+      else
+        nome <- df$nome[id] # municipios/SP/Sao_Paulo
     } else {
       stop("geocode de municipio invalido")
     }
     }
   
-  if (escala == "label") {
-    if (!nchar(geocode) %in% c(6, 7))
-      stop("geocode não bate com escala")
-    if (nchar(geocode) == 7)
-      geocode <- substr(geocode, start = 1, stop = 6)
-    if (geocode %in% municipio.code) {
-      id <- which(municipio.code == geocode)
-      nome <- paste0(df$nome.nonascii[id], "-", estado.sigla[id]) # municipios/SP/Sao_Paulo
-    } else {
-      stop("geocode de municipio invalido")
-    }
-  }
-  
-
   if (escala == "micro") {
     if (nchar(geocode) != 5)
       stop("geocode não bate com escala")
@@ -91,7 +81,10 @@ check.geocode <- function(escala,
     drs <- read.csv(paste0('./dados/DRS_', sigla, '.csv'))
     if (geocode %in% drs$DRS) {
       id <- which(drs$DRS == geocode)[1]
-      nome <- paste0("DRS/", sigla, "/", drs[id, 'DRS.nome.nonascii'])
+      if(nonascii)
+        nome <- paste0("DRS/", sigla, "/", drs[id, 'DRS.nome.nonascii'])
+      else
+        nome <- drs[id, 'DRS.nome']
     } else {
       stop("geocode de DRS inválido")
     }

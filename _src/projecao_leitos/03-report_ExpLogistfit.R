@@ -234,7 +234,8 @@ knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
 data.atual = last(date_list)
 disease = "covid"
 disease_text = "COVID-19"
-label_municipio = check.geocode("label", geocode = geocode)
+label_escala = check.geocode(geocode = geocode, escala = escala, sigla = sigla, nonascii = FALSE)
+if(escala == "municipio") escala = "município"
 plots = last(covidPlots)
 olderPlots = olderPlotsCovid
 render(input = C("relatorio.Rmd"),
@@ -244,7 +245,6 @@ render(input = C("relatorio.Rmd"),
 data.atual = last(date_list)
 disease = "srag"
 disease_text = "SRAG"
-label_municipio = check.geocode("label", geocode = geocode)
 plots = last(sragPlots)
 olderPlots = olderPlotsSrag
 render(input = C("relatorio.Rmd"),

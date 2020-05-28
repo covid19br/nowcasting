@@ -7,7 +7,7 @@ if (sys.nframe() == 0L) {
   option_list <- list(
     make_option("--dir",
                 help = ("Caminho até o diretório com os arquivos csv com base sivep gripe"),
-                default = "../dados/municipio_SP/SRAG_hospitalizados/dados/",
+                default = "../dados/estado_SP/SRAG_hospitalizados/dados/",
                 metavar = "dir"),
     make_option("--tipo", default = "srag",
                 help = ("tipo da internação. Todos os 'srag' ou só 'covid'"),
@@ -18,7 +18,7 @@ if (sys.nframe() == 0L) {
     make_option("--sigla", default = "SP", # ainda nao estamos usando
                  help = ("Sigla do estado a ser atualizado"),
                  metavar = "sigla"),
-    make_option("--geocode", default = 355030,
+    make_option("--geocode", default = 3550308,
                 help = ("Geocode de município, micro-mesorregião ou estado"),
                 metavar = "geocode"),
     make_option("--window", type = "integer", default = 40,
@@ -76,7 +76,7 @@ if (sys.nframe() == 0L) {
   make_report <- opt$options$report
   fit_models <- opt$options$fit_models
   nowcasting <- opt$options$nowcasting
-  out.root <- if(is.null(opt$options$out_dir)) {"./dados_processados"} else opt$options$out_dir
+  out.root <- if(is.null(opt$options$out_dir)) {"../dados_processados"} else opt$options$out_dir
 }
 
 ####################################################
@@ -87,6 +87,13 @@ if (sys.nframe() == 0L) {
 # DATAROOT <- "../dados/municipio_campinas/SRAG_hospitalizados/dados/"
 # intial_date <- as.Date("2020-03-16")
 #data <- "2020_05_16"
+# DATAROOT = "../dados/estado_SP/SRAG_hospitalizados/dados/"
+# initial_date = as.Date("2020-03-08")
+# data_date = as.Date("2020_05_27", format = "%Y_%m_%d")
+# escala  = "drs"
+# sigla = "SP"
+# geocode = 1  
+# out.root =  "../dados/estado_SP/SRAG_hospitalizados/outputs"
 #######################################################
 
 

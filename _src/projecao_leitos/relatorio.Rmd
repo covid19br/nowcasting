@@ -1,5 +1,5 @@
 ---
-title: "Projeções de curto prazo para número de hospitalizados por `r disease_text` no município de `r label_municipio`"
+title: "Projeções de curto prazo para número de hospitalizados por `r disease_text` no `r escala` de `r label_escala`"
 subtitle: "Baseado nas notificações de SRAG Hospitalizados na base SIVEP Gripe"
 author: "Observatório COVID-19 BR"
 date: "`r format(Sys.time(), '%d-%m-%Y_%Hh%Mmin%Ss')`"
