@@ -5,30 +5,11 @@
 Repositório para análises de _nowcasting_ de COVID-19 a partir de microdados de SIVEP-Gripe.
 
     .
-    ├── update_nowcasting.R    # Script principal para rodar o workflow
-    ├── _src/                  # Scripts secundários para rodar as análises (source files)
-    ├── fct/                   # Funções auxiliares
-    ├── dados/                 # Dados auxiliares, IBGE e DRS
-    ├── dados_processados/     # Dados com as saídas de nowcasting
-    │    ├─ nowcasting/
-    │    │    ├── municipios/
-    │    │    │     └── [UF]/
-    │    │    │         ├── [nome_municipio]/
-    │    │    │         │      ├── output_nowcasting/
-    │    │    │         │      ├── tabelas_nowcasting_para_grafico/
-    │    │    │         │      └── plots/
-    │    │    │         └── ...
-    │    │    │                 
-    │    │    ├── estados/
-    │    │    |     ├── [UF]/
-    │    │    │     └── ...
-    │    │    │    
-    │    │    └── ...  
-    │    │
-    │    └─ projecao_leitos/
-    │         └── municipio_SP/
-    │
-    ├── docs                  # Relatórios automatizados de nowcasting por escala 
+    ├── update_nowcasting.R         # Script principal para rodar o workflow de nowcasting
+    ├── update_projecao_leitos.R    # Script principal para rodar o workflow de projeção de leitos
+    ├── _src/                       # Scripts secundários para rodar as análises (source files)
+    ├── fct/                        # Funções auxiliares
+    ├── dados/                      # Dados auxiliares, IBGE e DRS
     ├── .gitignore 
     │
     └── README.md
@@ -39,7 +20,7 @@ Os dados de entrada são parametrizados no script `update_nowcasting.R` usando o
 
 ### Caminho para outputs
 
-Os outputs gerados por `update_nowcasting.R` vão para `dados_processados/nowcasting/[escala]/[sigla_UF]/[nome]`. Os dados processados de *nowcasting* estão na raiz desse caminho e há uma subpasta `dados_processados/nowcasting/[escala]/[sigla_UF]/[nome]/tabelas_nowcasting_para_grafico` onde são guardadas as tabelas de *nowcasting* consolidadas. 
+Os outputs gerados por `update_nowcasting.R` vão por default para o repositório central_covid, `../dados_processados/nowcasting/[escala]/[sigla_UF]/[nome]`. Os dados processados de *nowcasting* estão na raiz desse caminho e há uma subpasta `dados_processados/nowcasting/[escala]/[sigla_UF]/[nome]/tabelas_nowcasting_para_grafico` onde são guardadas as tabelas de *nowcasting* consolidadas. 
 
 ## Para rodar os scripts
 
