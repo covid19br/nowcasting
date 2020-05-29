@@ -74,9 +74,10 @@ srag.now_casted = fillNowcastedLines(srag.dt, srag.now.day,
                                      probsFits$srag$uti[,"Estimate"],
                                      .parallel = TRUE)
 
-march_present = seq(intial_date, today(), by = "day")
-march_present.covid = seq(intial_date, now.Date.covid, by = "day")
-march_present.srag  = seq(intial_date, now.Date.srag, by = "day")
+start_date = as.Date("2020-03-01")
+march_present = seq(start_date, today(), by = "day")
+march_present.covid = seq(start_date, now.Date.covid, by = "day")
+march_present.srag  = seq(start_date, now.Date.srag, by = "day")
 
 covid_in_hospital = lapply(covid.now_casted, makeHospitalTable, march_present.covid)
 covid_in_UTI      = lapply(covid.now_casted, makeHospitalTable, march_present.covid, UTI = TRUE)

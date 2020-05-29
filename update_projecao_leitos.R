@@ -72,7 +72,7 @@ if (sys.nframe() == 0L) {
   geocode <- opt$options$geocode
   window <- opt$options$window
   data_date <- if(is.null(opt$options$dataBase)) {NULL} else as.Date(opt$options$dataBase, format("%Y_%m_%d"))
-  intial_date <- as.Date(opt$options$dataInicial)
+  initial_date <- as.Date(opt$options$dataInicial)
   formato.data <- opt$options$formatoData
   fix_missing_dates <- opt$options$fix_dates
   n_cores <- opt$options$n_cores
@@ -101,7 +101,7 @@ if (sys.nframe() == 0L) {
 # nowcasting = FALSE 
 # fit_models = FALSE 
 # make_report = TRUE
-# report.dir  = "~/Desktop"
+report.dir  = "~/Desktop"
 #######################################################
 
 

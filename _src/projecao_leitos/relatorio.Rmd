@@ -25,22 +25,22 @@ prev_exp = tail(data.frame(date = latest_data$fits[[disease]]$Exp$estimate$pred$
                            limite_inferior = latest_data$fits[[disease]]$Exp$lower$pred[, "X20."],
                            media = latest_data$fits[[disease]]$Exp$estimate$pred$mean,
                            limite_superior = latest_data$fits[[disease]]$Exp$upper$pred[, "X80."]), 
-                7) %>% filter(date > today())
+                7) %>% filter(date > data_date)
 prev_Logist = tail(data.frame(date = latest_data$fits[[disease]]$Logist$estimate$pred$date,
                               limite_inferior = latest_data$fits[[disease]]$Logist$lower$pred[, "X20."],
                               media = latest_data$fits[[disease]]$Logist$estimate$pred$mean,
                               limite_superior = latest_data$fits[[disease]]$Logist$upper$pred[, "X80."]), 
-                   7) %>% filter(date > today())
+                   7) %>% filter(date > data_date)
 prev_UTIexp = tail(data.frame(date = latest_data$fits[[disease]]$UTIExp$estimate$pred$date,
                               limite_inferior = latest_data$fits[[disease]]$UTIExp$lower$pred[, "X20."],
                               media = latest_data$fits[[disease]]$UTIExp$estimate$pred$mean,
                               limite_superior = latest_data$fits[[disease]]$UTIExp$upper$pred[, "X80."]), 
-                   7) %>% filter(date > today())
+                   7) %>% filter(date > data_date)
 prev_UTILogist = tail(data.frame(date = latest_data$fits[[disease]]$UTILogist$estimate$pred$date,
                                  limite_inferior = latest_data$fits[[disease]]$UTILogist$lower$pred[, "X20."],
                                  media = latest_data$fits[[disease]]$UTILogist$estimate$pred$mean,
                                  limite_superior = latest_data$fits[[disease]]$UTILogist$upper$pred[, "X80."]), 
-                      7) %>% filter(date > today())
+                      7) %>% filter(date > data_date)
 n_int = hosp[nrow(hosp),]
 n_uti = UTI[nrow(UTI),]
 n_fore_exp = prev_exp[nrow(prev_exp),]

@@ -91,6 +91,11 @@ hospital_data$date = as.Date(hospital_data$date)
 UTI_data = read.csv(current_UTI_table)
 UTI_data$date = as.Date(UTI_data$date)
 
+covid = hospital_data %>% filter(type == "covid", date >= initial_date)
+covid_UTI = UTI_data %>% filter(type == "covid", date >= initial_date)
+srag = hospital_data %>% filter(type == "srag", date >= initial_date)
+srag_UTI = UTI_data %>% filter(type == "srag", date >= initial_date)
+
 ########################
 # Covid
 ########################
@@ -99,7 +104,6 @@ UTI_data$date = as.Date(UTI_data$date)
 # Hospitalized
 ########################
 
-covid = hospital_data %>% filter(type == "covid")
 print("Exp covid")
 fitsExpCovid = runExpFit(covid)    
 print("Logist covid")
@@ -109,7 +113,6 @@ fitsLogistCovid = runLogistFit(covid)
 # UTI
 ########################
 
-covid_UTI = UTI_data %>% filter(type == "covid")
 print("Exp covid UTI")
 fitsExpCovidUTI = runExpFit(covid_UTI)
 print("Logist covid UTI")
@@ -123,7 +126,6 @@ fitsLogitCovidUTI = runLogistFit(covid_UTI)
 # Hospitalized
 #######################
 
-srag = hospital_data %>% filter(type == "srag")
 print("Exp srag")
 fitsExpSrag = runExpFit(srag, trim = 2, iter = 4000)
 print("Logist srag")
@@ -133,7 +135,6 @@ fitsLogistSrag = runLogistFit(srag, trim = 2, iter = 4000)
 # UTI
 ########################
 
-srag_UTI = UTI_data %>% filter(type == "srag")
 print("Exp srag UTI")
 fitsExpSragUTI = runExpFit(srag_UTI, trim = 2, iter = 4000)
 print("Logist srag UTI")
