@@ -18,7 +18,7 @@ fit_generalizedExp = function(y, trim = 2, iter = 2000, project = 7){
                control = list(adapt_delta = 0.99, max_treedepth = 12))
   y_pred = data.frame(summary(model, pars = "cases_pred", 
                               probs = c(0.025, 0.1, 0.2, 0.5, 0.8, 0.9, 0.975))[[1]])
-  y_pred$date = as.Date((1:nrow(y_pred))-1, origin = intial_date)
+  y_pred$date = as.Date((1:nrow(y_pred))-1, origin = initial_date)
   y_pred$type = "covid"
   #list(model=model, pred = y_pred)
   list(pred = y_pred)
@@ -39,7 +39,7 @@ fit_generalizedLogistic = function(y, trim = 2, iter = 2000, project = 7){
                control = list(adapt_delta = 0.99, max_treedepth = 12))
   y_pred = data.frame(summary(model, pars = "cases_pred", 
                               probs = c(0.025, 0.1, 0.2, 0.5, 0.8, 0.9, 0.975))[[1]])
-  y_pred$date = as.Date((1:nrow(y_pred))-1, origin = intial_date)
+  y_pred$date = as.Date((1:nrow(y_pred))-1, origin = initial_date)
   y_pred$type = "covid"
   #list(model=model, pred = y_pred)
   list(pred = y_pred)

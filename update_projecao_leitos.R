@@ -101,7 +101,7 @@ if (sys.nframe() == 0L) {
 # nowcasting = FALSE 
 # fit_models = FALSE 
 # make_report = TRUE
-report.dir  = "~/Desktop"
+# report.dir  = "~/Desktop"
 #######################################################
 
 
@@ -141,11 +141,12 @@ CODEROOT = paste0(PRJROOT, "/_src/projecao_leitos")
 C = function(...) file.path(CODEROOT, ...)	
 
 
-source(C("00-read_process_SIVEP_CSV.R"))
 
-if(nowcasting)
-    source(C("01-nowcast_inHospital_byAge.R"))
-
+if(nowcasting){
+  source(C("00-read_process_SIVEP_CSV.R"))
+  source(C("01-nowcast_inHospital_byAge.R"))
+}
+  
 if(fit_models)
   source(C("02-runFits_generalized_Exponential_Logistic_fit.R"))
 

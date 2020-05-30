@@ -53,7 +53,10 @@ UTI_files = sort(grep("hopitalized_UTI_2020", dir(O("hospitalizados"), full.name
 fit_files = sort(grep("curve_fits_2020", dir(O("curve_fits"), full.names = TRUE), value = TRUE))
 
 date_list = sort(gsub( ".*(\\d{4}-\\d{2}-\\d{2}).*", "\\1", fit_files))
+date_list = date_list[as.Date(date_list) <= as.Date(data_date)]
 date_list = tail(date_list, n = 8)
+say(paste("Making report for date", format(data_date, "%d %B %Y")), "bat")
+
 
 #######################
 # reading vintage and current data
