@@ -10,7 +10,7 @@ if (sys.nframe() == 0L) {
                 default = "../dados/estado_SP/SRAG_hospitalizados/dados/",
                 metavar = "dir"),
     make_option("--tipo", default = "srag",
-                help = ("tipo da internação. Todos os 'srag' ou só 'covid'"),
+                help = ("tipo da internação. Só 'srag' ou 'all', srag e covid"),
                 metavar = "tipo"),
     make_option("--escala", default = "municipio",
                  help = ("Nível administrativo, um de: municipio, micro, meso, estado, país"),
@@ -53,7 +53,10 @@ if (sys.nframe() == 0L) {
                 metavar = "report"),
     make_option("--report_dir", default = NULL,
                 help = ("Paste de saida dos reports."),
-                metavar = "report_dir")
+                metavar = "report_dir"),
+    make_option("--check_report", default = FALSE,
+                help = ("Não faz nada se o relatório já existir."),
+                metavar = "check_report")
     # make_option("--updateGit", default = "FALSE",
     #             help = ("Fazer git add, commit e push?"),
     #             metavar = "updateGit")
@@ -81,6 +84,8 @@ if (sys.nframe() == 0L) {
   nowcasting <- opt$options$nowcasting
   out.root <- if(is.null(opt$options$out_dir)) {"../dados_processados"} else opt$options$out_dir
   report.dir <- opt$options$report_dir
+  check_report <- opt$options$check_report
+  
 }
 
 ####################################################
@@ -132,6 +137,19 @@ if(make_report){
       dir.create(report.dir, showWarnings = TRUE, recursive = TRUE)
 }
 update_site = FALSE
+
+if (is.null(data_date)) {
+  data_date <- as.Date(get.last.date(DATAROOT), format = "%Y_%m_%d")
+}
+
+say(paste("Data date is set to:", format(data_date, "%d %B %Y")), "cow")
+
+if(check_report){
+  if(any(grepl(data_date, dir(report.dir)))){
+    say(paste("Report exisist for date", format(data_date, "%d %B %Y")), "yoda")
+    quit(save="no")
+  }
+}
 
 registerDoMC(n_cores)
 

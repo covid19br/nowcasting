@@ -9,12 +9,6 @@ srag_files = sort(grep("SRAGH_2020", dir(file.path(DATAROOT), full.names = TRUE)
 #data_date = as.Date("2020-04-02")
 #data_date = NULL\
 
-if (is.null(data_date)) {
-  data_date <- as.Date(get.last.date(DATAROOT), format = "%Y_%m_%d")
-}
-
-say(paste("Data date is set to:", format(data_date, "%d %B %Y")), "cow")
-
 srag.20.raw <- read.sivep(dir = DATAROOT,
                           escala = escala,
                           geocode = geocode,

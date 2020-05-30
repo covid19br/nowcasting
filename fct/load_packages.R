@@ -14,4 +14,3 @@ if(!require(doMC)){install.packages("doMC"); library(doMC)}
 if(!require(cowsay)){install.packages("cowsay"); library(cowsay)}
 if(!require(aweek)){install.packages("aweek"); library(aweek)}
 options(mc.cores = parallel::detectCores())
-rstan_options(auto_write = TRUE)
