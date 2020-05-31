@@ -39,7 +39,7 @@ if (sys.nframe() == 0L) {
     make_option("--out_dir", default = NULL,
                 help = ("Pasta de saida dos resultados"),
                 metavar = "out_dir"),
-    make_option("--n_cores", default = 2,
+    make_option("--n_cores", default = 4,
                 help = ("Numero de cores usado para a projeção de leitos"),
                 metavar = "n_cores"),
     make_option("--nowcasting", default = TRUE,
@@ -157,8 +157,6 @@ O = function(...) file.path(output.dir, ...)
 P = function(...) file.path(PRJROOT, ...)
 CODEROOT = paste0(PRJROOT, "/_src/projecao_leitos")
 C = function(...) file.path(CODEROOT, ...)	
-
-
 
 if(nowcasting){
   source(C("00-read_process_SIVEP_CSV.R"))

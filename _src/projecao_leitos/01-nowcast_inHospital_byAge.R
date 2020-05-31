@@ -27,7 +27,7 @@ covid.now.day <- NobBS.strat(
   specs = list(nAdapt = 3000, nBurnin = 3000, nThin = 1, nSamp = 10000)
 )
 
-nowcasts.covid <- data.frame(covid.now.day$estimates)
+# nowcasts.covid <- data.frame(covid.now.day$estimates)
 # p1 <-
 #   ggplot(nowcasts.covid) + geom_line(aes(onset_date,estimate,col="Estimado"),linetype="longdash") +
 #   geom_line(aes(onset_date,n.reported,col="Notificado"),linetype="solid") +
@@ -49,7 +49,7 @@ srag.now.day <- NobBS.strat(
   specs = list(nAdapt = 3000, nBurnin = 3000, nThin = 1, nSamp = 10000)
 )
 
-nowcasts.srag <- data.frame(srag.now.day$estimates)
+# nowcasts.srag <- data.frame(srag.now.day$estimates)
 # p2 <-
 #   ggplot(nowcasts.srag) + geom_line(aes(onset_date,estimate,col="Estimado"),linetype="longdash") +
 #   geom_line(aes(onset_date,n.reported,col="Notificado"),linetype="solid") +
@@ -59,20 +59,21 @@ nowcasts.srag <- data.frame(srag.now.day$estimates)
 #   xlab("Primeiro dia do sintoma") + ylab("Número de casos") + facet_wrap(~stratum)
 
 ## Using Nowcast and survival analysis com complete covid table with unobserved cases
-covid.now_casted = fillNowcastedLines(covid.dt, covid.now.day, 
-                                      time_fits1$covid$notUTI, 
-                                      time_fits0$covid$Int, 
-                                      time_fits0$covid$UTI, 
-                                      time_fits0$covid$afterUTI, 
-                                      probsFits$covid$uti[,"Estimate"],
-                                      .parallel = TRUE)
-srag.now_casted = fillNowcastedLines(srag.dt, srag.now.day, 
-                                     time_fits1$srag$notUTI, 
-                                     time_fits0$srag$Int, 
-                                     time_fits0$srag$UTI, 
-                                     time_fits0$srag$afterUTI, 
-                                     probsFits$srag$uti[,"Estimate"],
-                                     .parallel = TRUE)
+
+covid.now_casted = fillNowcastedLinesFast(covid.dt, covid.now.day, 
+                                          time_fits1$covid$notUTI, 
+                                          time_fits0$covid$Int, 
+                                          time_fits0$covid$UTI, 
+                                          time_fits0$covid$afterUTI, 
+                                          probsFits$covid$uti[,"Estimate"],
+                                          .parallel = TRUE)
+srag.now_casted = fillNowcastedLinesFast(srag.dt, srag.now.day, 
+                                         time_fits1$srag$notUTI, 
+                                         time_fits0$srag$Int, 
+                                         time_fits0$srag$UTI, 
+                                         time_fits0$srag$afterUTI, 
+                                         probsFits$srag$uti[,"Estimate"],
+                                         .parallel = TRUE)
 
 start_date = as.Date("2020-03-01")
 march_present = seq(start_date, today(), by = "day")
