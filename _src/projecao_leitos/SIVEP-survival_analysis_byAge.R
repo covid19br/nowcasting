@@ -1,16 +1,32 @@
-PRJROOT =  rprojroot::find_root(criterion=rprojroot::is_git_root)  
-source(C("load_packages_set_paths.R"))
+if(!require(ggridges)){install.packages("ggridges"); library(ggridges)}
+
+if(exists("PRJROOT")){
+  if(!is.null(PRJROOT)) 
+    PRJROOT = rprojroot::find_root(criterion=rprojroot::is_git_root)  
+} else 
+  PRJROOT = rprojroot::find_root(criterion=rprojroot::is_git_root)  
+
+P = function(...) file.path(PRJROOT, ...)
+CODEROOT = paste0(PRJROOT, "/_src/projecao_leitos")
+C = function(...) file.path(CODEROOT, ...)	
+
+source(P("fct/load_packages.R"))
+source(P("_src/funcoes.R"))
 
 all_models = TRUE
 
-source(P("funcoes.R"))
-
 ### Set if looking for specific date
 #data_date = as.Date("2020-04-02")
-data_date = NULL
+
 fix_missing_dates = FALSE
+
+DATAROOT = "../dados/estado_SP/SRAG_hospitalizados/dados/"
+escala = "estado"
+sigla = "SP"
+geocode = 35
+data_date <- as.Date(get.last.date(DATAROOT), format = "%Y_%m_%d")
 source(C("00-read_process_SIVEP_CSV.R"))
-EXPORT = function(...) file.path(CODEROOT, ...)
+EXPORT = function(...) file.path("../dados_processados/parametros_epidemicos", paste0(data_date, "_", ..., ".csv" ))
 #probabilidade de hospitalizado ir pra UTI, 
 
 getProbUTI = function(df){
@@ -26,7 +42,7 @@ getProbUTI = function(df){
   
   out = coef(UTI_prob_model) %>%
     {inv_logit_scaled(.$age_class)}
-  data.frame(out[,,"Intercept"])
+  data.frame(out[,-2,"Intercept"])
 }
 
 prob_uti_covid = getProbUTI(covid.dt) %>% mutate(faixas = age_table$faixas) %>% select(faixas, everything()) 
@@ -52,10 +68,11 @@ getProbDeath = function(df, UTI = FALSE){
                          deaths | trials(trials) ~ 1 + (1|age_class),
                          c(prior("normal(0, 1)", class = "Intercept"),
                            prior("normal(0, 1)", class = "sd")),
-                         control = list(adapt_delta = 0.99))
+                         control = list(adapt_delta = 0.99, max_treedepth = 12),
+                         iter = 4000)
   out = coef(death_prob_model) %>%
     {inv_logit_scaled(.$age_class)}
-  data.frame(out[,,"Intercept"])
+  data.frame(out[,-2,"Intercept"])
 }
 
 if(all_models){
@@ -105,67 +122,28 @@ if(all_models){
 ## Survival analysis
 ##################################
 
-getTimes = function(x, late, early, censored = FALSE){  
-  if(!censored){
-    time = as.numeric(x[[late]] - x[[early]])
-    data.frame(ID = x$ID, time = time, age_class = x$age_class, 
-               early =  x[[early]], late = x[[late]])
-  } else{
-    if(is.na(x[[late]])){ 
-      time = as.numeric(today() - x[[early]])
-      censored = 0
-    } else{
-      time = as.numeric(x[[late]] -x[[early]])
-      censored = 1
-    } 
-    data.frame(ID = x$ID, evolucao = x$evolucao, time = time, age_class = x$age_class, censored = censored,
-               early =  x[[early]], late = x[[late]])
-  }
-}
-
-plotTimesValidation = function(times_table, fit1, age = TRUE){
-  if(age){
-    sim_times = sapply(times_table$age_class, function(a) rwaittime_age(1, a, fit1))
-    times_table$sim = sim_times
-    times_table$age = age_table$faixas[match(times_table$age_class, age_table$ID)]
-    d = pivot_longer(times_table, c(sim, time))
-    ggplot(data = d, aes(x = value, group = name, fill = name)) + 
-      geom_density(alpha= 0.5) + facet_wrap(~age) + 
-      theme_cowplot() + scale_fill_discrete(labels = c("Simulado", "Observado"), name = "Categoria") 
-  } else{
-    sim_times = rwaittime(nrow(times_table), fit1)
-    times_table$sim = sim_times
-    d = pivot_longer(times_table, c(sim, time))
-    ggplot(data = d, aes(x = value, group = name, fill = name)) + 
-      geom_density(alpha= 0.5) + 
-      theme_cowplot() + scale_fill_discrete(labels = c("Simulado", "Observado"), name = "Categoria") 
-  }
-}
-
 # #save_plot(filename = "plots/survival_dist_byAge.png", p1, base_height = 3, ncol = 3, nrow = 3)
 # 
 # current_age = age_table$ID[1]
 # ldply(age_table$ID, function(current_age) quantile(rwaittime_age(10000, current_age, fit1_hosp), c(0.1, 0.5, 0.9))) %>%
 #   round(1) %>% mutate(age = age_table$faixas) %>% select(age, everything()) 
 
-
-
 # tempo de hospitalização em leito comum, 
 
 notUTIStay_covid = ddply(filter(covid.dt, UTI != 1), .(ID), getTimes, "dt_evo", "dt_int", censored = TRUE) %>% 
-  mutate(time = time + 1) 
+  mutate(time = time + 1) %>% filter(time >= 1 & time <= today() - as.Date("2020-03-08"))
 notUTIStay_srag  = ddply(filter(srag.dt,  UTI != 1), .(ID), getTimes, "dt_evo", "dt_int", censored = TRUE) %>% 
-  mutate(time = time + 1) 
+  mutate(time = time + 1) %>% filter(time >= 1 & time <= today() - as.Date("2020-03-08"))
 #qplot(data = notUTIStay_covid, x = time, geom = "histogram") + facet_wrap(~age_class)
 
-fit0_notUTIStay_covid <- brm(time | cens(censored) ~ 1, 
+fit0_notUTIStay_covid <- brm(time ~ 1, 
                              data = notUTIStay_covid, family = weibull, inits = "0", 
                              prior = c(prior("normal(0, 1)", class = "Intercept"),
                                        prior("normal(0, 0.5)", class = "shape")),
                              control = list(adapt_delta = 0.99))
 plotTimesValidation(notUTIStay_covid, fit0_notUTIStay_covid, FALSE)
 
-fit0_notUTIStay_srag <- brm(time | cens(censored) ~ 1, 
+fit0_notUTIStay_srag <- brm(time ~ 1, 
                             data = notUTIStay_srag, family = weibull, inits = "0", 
                             prior = c(prior("normal(0, 1)", class = "Intercept"),
                                       prior("normal(0, 0.5)", class = "shape")),
@@ -173,7 +151,7 @@ fit0_notUTIStay_srag <- brm(time | cens(censored) ~ 1,
 plotTimesValidation(notUTIStay_srag, fit0_notUTIStay_srag, FALSE)
 
 
-fit1_notUTIStay_covid <- brm(time | cens(censored) ~ 1 + (1|age_class), 
+fit1_notUTIStay_covid <- brm(time ~ 1 + (1|age_class), 
                              data = notUTIStay_covid, family = weibull, inits = "0", 
                              prior = c(prior("normal(0, 1)", class = "sd"), 
                                        prior("normal(0, 1)", class = "Intercept"),
@@ -182,7 +160,7 @@ fit1_notUTIStay_covid <- brm(time | cens(censored) ~ 1 + (1|age_class),
 plotTimesValidation(notUTIStay_covid, fit1_notUTIStay_covid)
 
 
-fit1_notUTIStay_srag <- brm(time | cens(censored) ~ 1 + (1|age_class), 
+fit1_notUTIStay_srag <- brm(time ~ 1 + (1|age_class), 
                             data = notUTIStay_srag, family = weibull, inits = "0", 
                             prior = c(prior("normal(0, 1)", class = "sd"), 
                                       prior("normal(0, 1)", class = "Intercept"),
@@ -206,12 +184,12 @@ if(all_models){
 
 # Tempo entre Entrar e sair da UTI
 UTIStay_covid = ddply(filter(covid.dt, UTI == 1), .(ID), getTimes, "dt_saiuti", "dt_entuti", censored = TRUE) %>% 
-  mutate(time = time + 1) 
+  mutate(time = time + 1) %>% filter(time >= 1 & time <= today() - as.Date("2020-03-08"))
 UTIStay_srag  = ddply(filter(srag.dt,  UTI == 1), .(ID), getTimes, "dt_saiuti", "dt_entuti", censored = TRUE) %>% 
-  mutate(time = time + 1) %>% filter(time > 0)
+  mutate(time = time + 1) %>% filter(time >= 1 & time <= today() - as.Date("2020-03-08"))
 #qplot(data = UTIStay_covid, x = time, geom = "histogram") + facet_wrap(~age_class)
 
-fit0_UTIStay_covid <- brm(time | cens(censored) ~ 1, 
+fit0_UTIStay_covid <- brm(time ~ 1, 
                           data = UTIStay_covid, family = weibull, inits = "0", 
                           prior = c(prior("normal(0, 1)", class = "Intercept"),
                                     prior("normal(0, 0.5)", class = "shape")),
@@ -219,7 +197,7 @@ fit0_UTIStay_covid <- brm(time | cens(censored) ~ 1,
 plotTimesValidation(UTIStay_covid, fit0_UTIStay_covid, FALSE)
 
 
-fit0_UTIStay_srag <- brm(time | cens(censored) ~ 1, 
+fit0_UTIStay_srag <- brm(time ~ 1, 
                          data = UTIStay_srag, family = weibull, inits = "0", 
                          prior = c(prior("normal(0, 1)", class = "Intercept"),
                                    prior("normal(0, 0.5)", class = "shape")),
@@ -227,7 +205,7 @@ fit0_UTIStay_srag <- brm(time | cens(censored) ~ 1,
 plotTimesValidation(UTIStay_srag, fit0_UTIStay_srag, FALSE)
 
 
-fit1_UTIStay_covid <- brm(time | cens(censored) ~ 1 + (1|age_class), 
+fit1_UTIStay_covid <- brm(time ~ 1 + (1|age_class), 
                           data = UTIStay_covid, family = weibull, inits = "0", 
                           prior = c(prior("normal(0, 1)", class = "sd"), 
                                     prior("normal(0, 1)", class = "Intercept"),
@@ -235,7 +213,7 @@ fit1_UTIStay_covid <- brm(time | cens(censored) ~ 1 + (1|age_class),
                           control = list(adapt_delta = 0.99))
 plotTimesValidation(UTIStay_covid, fit1_UTIStay_covid)
 
-fit1_UTIStay_srag <- brm(time | cens(censored) ~ 1 + (1|age_class), 
+fit1_UTIStay_srag <- brm(time ~ 1 + (1|age_class), 
                          data = UTIStay_srag, family = weibull, inits = "0", 
                          prior = c(prior("normal(0, 1)", class = "sd"), 
                                    prior("normal(0, 1)", class = "Intercept"),
@@ -268,9 +246,9 @@ if(all_models){
 ## Tempo entre sintomas e internação
 
 int_times_covid = ddply(covid.dt, .(ID), getTimes, late = "dt_int", early = "dt_sin") %>% 
-  mutate(time = time + 1) %>% filter(time > 0)
+  mutate(time = time + 1) %>% filter(time >= 1 & time <= today() - as.Date("2020-03-08"))
 int_times_srag  = ddply(srag.dt,  .(ID), getTimes, late = "dt_int", early = "dt_sin") %>% 
-  mutate(time = time + 1) %>% filter(time > 0)  
+  mutate(time = time + 1) %>% filter(time >= 1 & time <= today() - as.Date("2020-03-08"))  
 #qplot(data = int_times_covid, x = time, geom = "histogram") + facet_wrap(~age_class)
 
 fit0_int_covid <- brm(time ~ 1,
@@ -321,9 +299,9 @@ if(all_models){
 # Tempo entre sair da UTI e evolução
 
 UTIAfter_covid = ddply(filter(covid.dt, !is.na(dt_saiuti), dt_saiuti <= today(), UTI == 1, evolucao == 1), .(ID), getTimes, "dt_evo", "dt_saiuti", censored = FALSE)%>% 
-  mutate(time = time + 1) %>% filter(time > 0) 
+  mutate(time = time + 1) %>% filter(time >= 1 & time <= today() - as.Date("2020-03-08"))
 UTIAfter_srag  = ddply(filter(srag.dt,  !is.na(dt_saiuti), dt_saiuti <= today(), UTI == 1, evolucao == 2), .(ID), getTimes, "dt_evo", "dt_saiuti", censored = FALSE) %>% 
-  mutate(time = time + 1) %>% filter(time > 0, time < 20) %>% arrange(desc(time))
+  mutate(time = time + 1) %>% filter(time >= 1 & time <= today() - as.Date("2020-03-08"))
 #qplot(data = UTIAfter_srag, x = time, geom = "histogram", binwidth = 1)
 
 fit0_AfterUTI_covid <- brm(time ~ 1, 
@@ -410,4 +388,52 @@ save(time_fits0, time_fits1, probsFits,
 # current_age = age_table$ID[1]
 # ldply(age_table$ID, function(current_age) quantile(rwaittime_age(10000, current_age, fit1_hosp), c(0.1, 0.5, 0.9))) %>%
 #   round(1) %>% mutate(age = age_table$faixas) %>% select(age, everything()) 
+
+int_times_covid = ddply(covid.dt, .(ID), getTimes, late = "dt_int", early = "dt_sin") %>% filter(time > 0, time < 20)
+notUTIStay_covid = ddply(filter(covid.dt, UTI != 1), .(ID), getTimes, "dt_evo", "dt_int", censored = TRUE) %>% filter(time >= 0)
+UTIStay_covid = ddply(filter(covid.dt, UTI == 1), .(ID), getTimes, "dt_saiuti", "dt_entuti", censored = TRUE) %>% filter(time >= 0)
+notUTIStay_covid %>% filter(age_class == "age_1")
+srag.20.raw %>%
+  filter(nu_idade_n < 10, pcr_sars2 == 1 | classi_fin == 5, uti == 1, evolucao == 2)
+times_table = UTIStay_covid
+times_table %>% filter(!(is.na(evolucao) & !is.na(late)), age_class == "age_1")
+
+plotTimesCensored = function(times_table, age = TRUE){
+  if(age){
+    times_table$age = age_table$faixas[match(times_table$age_class, age_table$ID)]
+    if(!is.null(times_table$censored)){
+      times_table = dplyr::filter(times_table, !(is.na(evolucao) & !is.na(late)))
+      #times_table$evolucao[is.na(times_table$evolucao)] = "Caso Ativo"
+      times_table = dplyr::filter(times_table, evolucao == 1 | evolucao == 2)
+      times_table$evolucao[times_table$evolucao == 1] = "Alta"
+      times_table$evolucao[times_table$evolucao == 2] = "Obito"
+      ggplot(data = times_table, aes(x = time, y = age, 
+                                     fill = evolucao)) + 
+        geom_density_ridges2(alpha = 0.6) + #facet_wrap(~age, ncol = 1) +
+        scale_x_continuous(breaks = seq(0, 100, 10)) +
+        scale_fill_viridis_d(name = "Categoria") +
+        theme_cowplot() + 
+        labs(x = "Tempos (dias)", y = "Classe Etária")
+    } else{
+      ggplot(data = times_table, aes(x = time, y = age)) + 
+        geom_density_ridges2(alpha = 0.6) + scale_fill_viridis_d(labels = c("Casos encerrados", "Casos ativos"), name = "Categoria") +
+        theme_cowplot() + 
+        labs(x = "Tempos (dias)", y = "Classe Etária")
+    }
+    
+  } else{
+    ggplot(data = times_table, aes(x = time, y = 1)) + 
+      geom_density_ridges2(alpha = 0.7) + scale_fill_viridis_d(labels = c("Casos encerrados", "Casos ativos"), name = "Categoria") +
+      theme_cowplot() + 
+      labs(x = "Tempos (dias)", y = "Classe Etária")
+  }
+}
+
+sintomas_internacao = plotTimesCensored(int_times_covid) + ggtitle("Sintoma -> Internação")
+internacao_leito = plotTimesCensored(notUTIStay_covid) + ggtitle("Internação -> Encerramento\n (Leito comum, casos encerrados)")
+internacao_UTI = plotTimesCensored(UTIStay_covid) + ggtitle("Internação -> Encerramento\n (Leito de UTI, casos encerrados)")
+
+#plot_grid(sintomas_internacao, internacao_leito + theme(legend.position = "none"), internacao_UTI, ncol = 3)
+p = sintomas_internacao + internacao_leito + theme(legend.position = "bottom") + internacao_UTI + theme(legend.position = "bottom")
+save_plot("~/Desktop/tempos.png", p, ncol = 3, base_height = 9, base_asp = 0.5)          
 

@@ -1,6 +1,8 @@
 plotTimesValidation = function(times_table, fit1, age = TRUE){
   if(age){
-    sim_times = sapply(times_table$age_class, function(a) rwaittime_age(1, a, fit1))
+    times_table = times_table %>% arrange(age_class)
+    tb = table(times_table$age_class)
+    sim_times = unlist(sapply(names(tb), function(a) rwaittime_age(tb[a], a, fit1)))
     times_table$sim = sim_times
     times_table$age = age_table$faixas[match(times_table$age_class, age_table$ID)]
     d = pivot_longer(times_table, c(sim, time))
