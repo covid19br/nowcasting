@@ -389,22 +389,21 @@ save(time_fits0, time_fits1, probsFits,
 # ldply(age_table$ID, function(current_age) quantile(rwaittime_age(10000, current_age, fit1_hosp), c(0.1, 0.5, 0.9))) %>%
 #   round(1) %>% mutate(age = age_table$faixas) %>% select(age, everything()) 
 
-int_times_covid = ddply(covid.dt, .(ID), getTimes, late = "dt_int", early = "dt_sin") %>% filter(time > 0, time < 20)
-notUTIStay_covid = ddply(filter(covid.dt, UTI != 1), .(ID), getTimes, "dt_evo", "dt_int", censored = TRUE) %>% filter(time >= 0)
-UTIStay_covid = ddply(filter(covid.dt, UTI == 1), .(ID), getTimes, "dt_saiuti", "dt_entuti", censored = TRUE) %>% filter(time >= 0)
-notUTIStay_covid %>% filter(age_class == "age_1")
-srag.20.raw %>%
-  filter(nu_idade_n < 10, pcr_sars2 == 1 | classi_fin == 5, uti == 1, evolucao == 2)
-times_table = UTIStay_covid
-times_table %>% filter(!(is.na(evolucao) & !is.na(late)), age_class == "age_1")
+int_times_covid = ddply(covid.dt, .(ID), getTimes, late = "dt_int", early = "dt_sin") %>% 
+  filter(time >= 1 & time <= 30)
+notUTIStay_covid = ddply(filter(covid.dt, UTI != 1), .(ID), getTimes, "dt_evo", "dt_int", censored = TRUE) %>% 
+  filter(time >= 1 & time <= today() - as.Date("2020-03-08"))
+UTIStay_covid = ddply(filter(covid.dt, UTI == 1), .(ID), getTimes, "dt_saiuti", "dt_entuti", censored = TRUE) %>% 
+  filter(time >= 1 & time <= today() - as.Date("2020-03-08"))
 
+times_table = UTIStay_covid
 plotTimesCensored = function(times_table, age = TRUE){
   if(age){
     times_table$age = age_table$faixas[match(times_table$age_class, age_table$ID)]
     if(!is.null(times_table$censored)){
-      times_table = dplyr::filter(times_table, !(is.na(evolucao) & !is.na(late)))
-      #times_table$evolucao[is.na(times_table$evolucao)] = "Caso Ativo"
-      times_table = dplyr::filter(times_table, evolucao == 1 | evolucao == 2)
+      #times_table = dplyr::filter(times_table, !(is.na(evolucao) & !is.na(late)))
+      times_table$evolucao[is.na(times_table$evolucao)] = "Caso Ativo"
+      times_table = dplyr::filter(times_table, evolucao == 1 | evolucao == 2 | evolucao == "Caso Ativo")
       times_table$evolucao[times_table$evolucao == 1] = "Alta"
       times_table$evolucao[times_table$evolucao == 2] = "Obito"
       ggplot(data = times_table, aes(x = time, y = age, 
@@ -430,8 +429,8 @@ plotTimesCensored = function(times_table, age = TRUE){
 }
 
 sintomas_internacao = plotTimesCensored(int_times_covid) + ggtitle("Sintoma -> Internação")
-internacao_leito = plotTimesCensored(notUTIStay_covid) + ggtitle("Internação -> Encerramento\n (Leito comum, casos encerrados)")
-internacao_UTI = plotTimesCensored(UTIStay_covid) + ggtitle("Internação -> Encerramento\n (Leito de UTI, casos encerrados)")
+internacao_leito = plotTimesCensored(notUTIStay_covid) + ggtitle("Internação -> Encerramento\n (Leito enfermaria)")
+internacao_UTI = plotTimesCensored(UTIStay_covid) + ggtitle("Internação UTI -> Saida UTI\n (Leito de UTI)")
 
 #plot_grid(sintomas_internacao, internacao_leito + theme(legend.position = "none"), internacao_UTI, ncol = 3)
 p = sintomas_internacao + internacao_leito + theme(legend.position = "bottom") + internacao_UTI + theme(legend.position = "bottom")
