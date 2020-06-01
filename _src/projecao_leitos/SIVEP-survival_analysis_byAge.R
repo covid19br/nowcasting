@@ -38,7 +38,7 @@ getProbUTI = function(df){
                        UTIadmissions | trials(trials) ~ 1 + (1|age_class),
                        c(prior("normal(0, 1)", class = "Intercept"),
                          prior("normal(0, 1)", class = "sd")),
-                       control = list(adapt_delta = 0.99))
+                       control = list(adapt_delta = 0.99), silent = TRUE, refresh = 0)
   
   out = coef(UTI_prob_model) %>%
     {inv_logit_scaled(.$age_class)}

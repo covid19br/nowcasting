@@ -14,7 +14,7 @@ fit_generalizedExp = function(y, trim = 2, iter = 2000, project = 7){
                    initial_y = as.vector(y)[1])
   model = stan(C("stan_files/generalized_exponential_fit.stan"), 
                model_name = "g_exponential", data = stan_data, 
-               iter = iter, chains = 4, 
+               iter = iter, chains = 4, refresh = -1,
                control = list(adapt_delta = 0.99, max_treedepth = 12))
   y_pred = data.frame(summary(model, pars = "cases_pred", 
                               probs = c(0.025, 0.1, 0.2, 0.5, 0.8, 0.9, 0.975))[[1]])
@@ -35,7 +35,7 @@ fit_generalizedLogistic = function(y, trim = 2, iter = 2000, project = 7){
                    K_prior = last(y))
   model = stan(C("stan_files/generalized_logistic_fit.stan"), 
                model_name = "g_logistic", data = stan_data, 
-               iter = iter, chains = 4, 
+               iter = iter, chains = 4, refresh = -1,
                control = list(adapt_delta = 0.99, max_treedepth = 12))
   y_pred = data.frame(summary(model, pars = "cases_pred", 
                               probs = c(0.025, 0.1, 0.2, 0.5, 0.8, 0.9, 0.975))[[1]])
