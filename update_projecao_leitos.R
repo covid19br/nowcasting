@@ -122,6 +122,7 @@ source(P("fct/load_packages.R"))
 source(P("_src/funcoes.R"))
 
 name_path <- check.geocode(escala = escala, geocode = geocode, sigla = sigla)#ast falta checar outras escalas e fontes de dados e destinos para push
+label_escala = check.geocode(geocode = geocode, escala = escala, sigla = sigla, nonascii = FALSE)
 output.dir <- file.path(out.root, "projecao_leitos", name_path)
 
 if (!file.exists(output.dir))
@@ -142,7 +143,7 @@ if (is.null(data_date)) {
   data_date <- as.Date(get.last.date(DATAROOT), format = "%Y_%m_%d")
 }
 
-say(paste("Data date is set to:", format(data_date, "%d %B %Y")), "cow")
+say(paste("Data date is set to:", format(data_date, "%d %B %Y"), "\nScale:", escala, "\nLocal:", label_escala), "cow")
 
 if(check_report){
   if(any(grepl(data_date, dir(report.dir)))){
