@@ -150,3 +150,20 @@ write_csv(UTI_totals, O("hospitalizados", paste0("hopitalized_UTI_", data_date,"
 # write_csv(srag_in_hospital$estimate, 
 #           O("hospitalizados", paste0("covid_municipioSP_hospitalizados_nowcast_porDia_", data_date, ".csv")))
 
+get_internacoes = function(x){
+  x %>%
+    mutate(dt_int = as.character(dt_int)) %>%
+    group_by(dt_int) %>%
+    count() %>%
+    rename(internacoes = n) %>%
+    arrange(dt_int) %>%
+    ungroup() %>%
+    mutate(dt_int = as.Date(dt_int)) %>% 
+    filter(!dt_int > today())
+}
+srag_int_por_dia = ldply(srag.now_casted, get_internacoes) %>% pivot_wider(names_from = .id, values_from = internacoes, values_fill = 0)
+covid_int_por_dia = ldply(covid.now_casted, get_internacoes) %>% pivot_wider(names_from = .id, values_from = internacoes,
+                                                                             values_fill = 0)
+write_csv(srag_int_por_dia, O(paste0("hospitalizados/", data_date, "_internacoes_por_dia_srag.csv")))
+write_csv(covid_int_por_dia, O(paste0("hospitalizados/", data_date, "_internacoes_por_dia_covid.csv")))
+
