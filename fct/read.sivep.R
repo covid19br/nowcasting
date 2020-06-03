@@ -11,13 +11,16 @@ read.sivep <- function(dir, # diretorio onde esta o dado
                        geocode,
                        data,  #formato com _
                        residentes = TRUE,
-                       ...) { # qq parametro de read.csv()
+                       ...) {
   # lendo os dados
   file.name <- list.files(dir, pattern = paste0(".*", data, ".csv"), full.names = TRUE)
-  dados <- read.csv(file.name, sep = ";", header = TRUE, stringsAsFactors = FALSE, ...)
+  dados <- data.table::fread(file = file.name,
+                             stringsAsFactors = FALSE,
+                             integer64 = "numeric", ...)
+  dados <- data.frame(dados)
   # conveniencia mudando para minusculas
   names(dados) <- tolower(names(dados))
-  
+
   df <- read.csv("./dados/geocode_ibge.csv")
   #geocode <- as.numeric(geocode)
   municipio.code <- sapply(df$id, function(x) substr(x, start = 1, stop = 6))
