@@ -17,6 +17,7 @@ read.sivep <- function(dir, # diretorio onde esta o dado
   dados <- data.table::fread(file = file.name,
                              stringsAsFactors = FALSE,
                              integer64 = "numeric", ...)
+  dados <- data.frame(dados)
   # conveniencia mudando para minusculas
   names(dados) <- tolower(names(dados))
 
