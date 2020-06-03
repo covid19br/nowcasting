@@ -24,7 +24,7 @@ covid.now.day <- NobBS.strat(
   report_date = "dt_rec",
   units = "1 day",
   moving_window =  window,
-  specs = list(nAdapt = 3000, nBurnin = 3000, nThin = 1, nSamp = 10000)
+  specs = list(nAdapt = 6000, nBurnin = 6000, nThin = 1, nSamp = 10000)
 )
 
 # nowcasts.covid <- data.frame(covid.now.day$estimates)
@@ -46,7 +46,7 @@ srag.now.day <- NobBS.strat(
   report_date = "dt_mnd",
   units = "1 day",
   moving_window =  window,
-  specs = list(nAdapt = 3000, nBurnin = 3000, nThin = 1, nSamp = 10000)
+  specs = list(nAdapt = 6000, nBurnin = 6000, nThin = 1, nSamp = 10000)
 )
 
 # nowcasts.srag <- data.frame(srag.now.day$estimates)
@@ -161,9 +161,8 @@ get_internacoes = function(x){
     mutate(dt_int = as.Date(dt_int)) %>% 
     filter(!dt_int > today())
 }
-srag_int_por_dia = ldply(srag.now_casted, get_internacoes) %>% pivot_wider(names_from = .id, values_from = internacoes, values_fill = 0)
-covid_int_por_dia = ldply(covid.now_casted, get_internacoes) %>% pivot_wider(names_from = .id, values_from = internacoes,
-                                                                             values_fill = 0)
+srag_int_por_dia = ldply(srag.now_casted, get_internacoes) %>% pivot_wider(names_from = .id, values_from = internacoes)
+covid_int_por_dia = ldply(covid.now_casted, get_internacoes) %>% pivot_wider(names_from = .id, values_from = internacoes)
 write_csv(srag_int_por_dia, O(paste0("hospitalizados/", data_date, "_internacoes_por_dia_srag.csv")))
 write_csv(covid_int_por_dia, O(paste0("hospitalizados/", data_date, "_internacoes_por_dia_covid.csv")))
 
