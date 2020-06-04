@@ -101,8 +101,8 @@ if (sys.nframe() == 0L) {
 # data_date = as.Date("2020_05_27", format = "%Y_%m_%d")
 # escala  = "drs"
 # sigla = "SP"
-# geocode = 1  
-# out.root =  "../dados_processados/"
+# geocode = 16
+# out.root =  "../dados/estado_SP/SRAG_hospitalizados/outputs/"
 # nowcasting = FALSE 
 # fit_models = FALSE 
 # make_report = TRUE
@@ -143,7 +143,7 @@ if (is.null(data_date)) {
   data_date <- as.Date(get.last.date(DATAROOT), format = "%Y_%m_%d")
 }
 
-say(paste("Data date is set to:", format(data_date, "%d %B %Y"), "\nScale:", escala, "\nLocal:", label_escala), "cow")
+say(paste("Data date is set to:", format(data_date, "%d %B %Y"), "\nScale:", escala, "\nLocal:", label_escala, geocode), "cow")
 
 if(check_report){
   if(any(grepl(data_date, dir(report.dir)))){
