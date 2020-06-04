@@ -5,6 +5,7 @@ if(exists("PRJROOT")){
     PRJROOT = rprojroot::find_root(criterion=rprojroot::is_git_root)  
 } else 
   PRJROOT = rprojroot::find_root(criterion=rprojroot::is_git_root)  
+setwd(PRJROOT)
 
 P = function(...) file.path(PRJROOT, ...)
 CODEROOT = paste0(PRJROOT, "/_src/projecao_leitos")
@@ -141,7 +142,6 @@ fit0_notUTIStay_covid <- brm(time ~ 1,
                              prior = c(prior("normal(0, 1)", class = "Intercept"),
                                        prior("normal(0, 0.5)", class = "shape")),
                              control = list(adapt_delta = 0.99))
-plotTimesValidation(notUTIStay_covid, fit0_notUTIStay_covid, FALSE)
 
 fit0_notUTIStay_srag <- brm(time ~ 1, 
                             data = notUTIStay_srag, family = weibull, inits = "0", 
@@ -189,13 +189,11 @@ UTIStay_srag  = ddply(filter(srag.dt,  UTI == 1), .(ID), getTimes, "dt_saiuti", 
   mutate(time = time + 1) %>% filter(time >= 1 & time <= today() - as.Date("2020-03-08"))
 #qplot(data = UTIStay_covid, x = time, geom = "histogram") + facet_wrap(~age_class)
 
-fit0_UTIStay_covid <- brm(time ~ 1, 
-                          data = UTIStay_covid, family = weibull, inits = "0", 
+fit0_UTIStay_covid <- brm(time ~ 1, data = UTIStay_covid, family = weibull, inits = "0", 
                           prior = c(prior("normal(0, 1)", class = "Intercept"),
                                     prior("normal(0, 0.5)", class = "shape")),
                           control = list(adapt_delta = 0.99))
 plotTimesValidation(UTIStay_covid, fit0_UTIStay_covid, FALSE)
-
 
 fit0_UTIStay_srag <- brm(time ~ 1, 
                          data = UTIStay_srag, family = weibull, inits = "0", 
@@ -374,6 +372,13 @@ time_fits0 = list(covid = list(notUTI   = fit0_notUTIStay_covid,
                                Int      = fit0_int_srag, 
                                afterUTI = fit0_AfterUTI_srag))
 
+extractParams = function(fit0){
+    mu = fixef(fit0)[1,"Estimate"]
+    shape = mean(as.data.frame(fit0)$shape)
+    lambda = exp(mu) / gamma( 1 + 1/shape )
+    data.frame(lambda = lambda, shape = shape)
+}
+write_csv(ldply(time_fits0$covid,extractParams), "../dados_processados/parametros_epidemicos/weibull_time_parameters.csv")
 save(time_fits0, time_fits1, probsFits, 
      file = C("hospitalStatsFits.Rdata"))
 # sim_hosp = sapply(hospitalization_times$age_class, function(a) rwaittime_age(1, a, fit1_hosp))
