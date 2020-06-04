@@ -13,10 +13,21 @@ read.sivep <- function(dir, # diretorio onde esta o dado
                        residentes = TRUE,
                        ...) {
   # lendo os dados
-  file.name <- list.files(dir, pattern = paste0(".*", data, ".csv"), full.names = TRUE)
-  dados <- data.table::fread(file = file.name,
-                             stringsAsFactors = FALSE,
-                             integer64 = "numeric", ...)
+  file.name <- list.files(dir, pattern = paste0(".*", data, ".(csv|zip)"), full.names = TRUE)
+  # múltiplos matches são possíveis
+  file.name <- file.name[1]
+  # detecta e lida com arquivo zip
+  if (endsWith(file.name, '.zip'))
+      file.name <- unz(file.name, basename(gsub('.zip$', '.csv', file.name)))
+  # detecta separador
+  linha1 <- readLines(file.name, n=2)[2]
+  if (count.fields(textConnection(linha1), sep=',') >
+      count.fields(textConnection(linha1), sep=';'))
+      sep <- ','
+  else
+      sep <- ';'
+  dados <- read.csv(file = file.name, stringsAsFactors = FALSE, header = TRUE,
+                    sep = sep, ...)
   dados <- data.frame(dados)
   # conveniencia mudando para minusculas
   names(dados) <- tolower(names(dados))
