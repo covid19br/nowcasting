@@ -67,7 +67,8 @@ if (sys.nframe() == 0L) {
                                 executar nowcasting e salvar os resultados")
   
   ## aliases
-  opt <- parse_args(parser_object, args = commandArgs(trailingOnly = TRUE), positional_arguments = TRUE)
+  opt <- parse_args(parser_object, args = commandArgs(trailingOnly = TRUE), 
+                    positional_arguments = TRUE)
   DATAROOT <- opt$options$dir
   disease <- opt$options$tipo
   escala <- opt$options$escala
