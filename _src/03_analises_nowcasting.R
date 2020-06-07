@@ -149,7 +149,7 @@ if (existe.ob.covid) {
   ## 3.3. Corta a partir do dia com >= 10 casos ####
   dia.zero.ob.covid <- time(lista.ob.covid$now.pred.zoo)[min(which(lista.ob.covid$now.pred.zoo$n.casos >= 10, arr.ind = TRUE))]
   if (!is.na(dia.zero.ob.covid)) {
-    if (dia.zero.ob.covid < 2020-03-15") dia.zero.ob.covid <- as.Date("2020-03-15")
+    if (dia.zero.ob.covid < "2020-03-15") dia.zero.ob.covid <- as.Date("2020-03-15")
     now.ob.covid.pred.zoo <- window(lista.ob.covid$now.pred.zoo, start = dia.zero.ob.covid)
     now.ob.covid.proj.zoo  <- window(now.ob.covid.proj.zoo, start = dia.zero.ob.covid)
     td.now.ob.covid <- window(td.now.ob.covid, start = dia.zero.ob.covid)
