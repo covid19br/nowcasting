@@ -40,6 +40,7 @@ if (existe.covid) {
   ## 1.4. Corta a partir do dia com >= 10 casos ####
   dia.zero <- time(lista.covid$now.pred.zoo)[min(which(lista.covid$now.pred.zoo$n.casos >= 10, arr.ind = TRUE))]
   if (!is.na(dia.zero)) {
+    if (dia.zero < "2020-03-15") dia.zero <- as.Date("2020-03-15")
     now.pred.zoo <- window(lista.covid$now.pred.zoo, start = dia.zero)
     now.proj.zoo <- window(now.proj.zoo, start = dia.zero)
     td.now <- window(td.now, start = dia.zero)
@@ -99,6 +100,7 @@ if (existe.srag) {
   dia.zero.srag <- time(lista.srag$now.pred.zoo)[min(which(lista.srag$now.pred.zoo$n.casos >= 10,
                                                       arr.ind = TRUE))]
   if (!is.na(dia.zero.srag)) {
+    if (dia.zero.srag < "2020-03-15") dia.zero.srag <- as.Date("2020-03-15")
     now.srag.pred.zoo <- window(lista.srag$now.pred.zoo, start = dia.zero.srag)
     now.srag.proj.zoo <- window(now.srag.proj.zoo, start = dia.zero.srag)
     td.now.srag <- window(td.now.srag, start = dia.zero.srag)
@@ -147,6 +149,7 @@ if (existe.ob.covid) {
   ## 3.3. Corta a partir do dia com >= 10 casos ####
   dia.zero.ob.covid <- time(lista.ob.covid$now.pred.zoo)[min(which(lista.ob.covid$now.pred.zoo$n.casos >= 10, arr.ind = TRUE))]
   if (!is.na(dia.zero.ob.covid)) {
+    if (dia.zero.ob.covid < 2020-03-15") dia.zero.ob.covid <- as.Date("2020-03-15")
     now.ob.covid.pred.zoo <- window(lista.ob.covid$now.pred.zoo, start = dia.zero.ob.covid)
     now.ob.covid.proj.zoo  <- window(now.ob.covid.proj.zoo, start = dia.zero.ob.covid)
     td.now.ob.covid <- window(td.now.ob.covid, start = dia.zero.ob.covid)
@@ -193,6 +196,7 @@ if (existe.ob.srag) {
   dia.zero.ob.srag <- time(lista.ob.srag$now.pred.zoo)[min(which(lista.ob.srag$now.pred.zoo$n.casos >= 10,
                                                            arr.ind = TRUE))]
   if (!is.na(dia.zero.ob.srag)) {
+    if (dia.zero.ob.srag < "2020-03-15") dia.zero.ob.srag <- as.Date("2020-03-15")
     now.ob.srag.pred.zoo <- window(lista.ob.srag$now.pred.zoo, start = dia.zero.ob.srag)
     now.ob.srag.proj.zoo <- window(now.ob.srag.proj.zoo, start = dia.zero.ob.srag)
     td.now.ob.srag <- window(td.now.ob.srag, start = dia.zero.srag)
@@ -241,6 +245,7 @@ if (existe.ob.srag.proaim) {
   dia.zero.ob.srag.proaim <- time(lista.ob.srag.proaim$now.pred.zoo)[min(which(lista.ob.srag$now.pred.zoo$n.casos >= 10,
                                                                  arr.ind = TRUE))]
   if (!is.na(dia.zero.ob.srag.proaim)) {
+    if (dia.zero.ob.srag.proaim < "2020-03-15") dia.zero.ob.srag.proaim <- as.Date("2020-03-15")
     now.ob.srag.pred.zoo.proaim <- window(lista.ob.srag.proaim$now.pred.zoo, start = dia.zero.ob.srag.proaim)
     now.ob.srag.proj.zoo.proaim <- window(now.ob.srag.proj.zoo.proaim, start = dia.zero.ob.srag.proaim)
     td.now.ob.srag.proaim <- window(td.now.ob.srag.proaim, start = dia.zero.srag.proaim)

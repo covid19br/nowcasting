@@ -123,7 +123,7 @@ if (is.null(data)) {
   data <- get.last.date(dir)
 }
 
-print(paste("Atualizando", gsub(x = name_path, pattern = "/", replacement = " ")))
+print(paste("Atualizando", gsub(x = name_path, pattern = "/", replacement = " "), data))
 
 if (!plots) {
   source("_src/01_gera_nowcastings_SIVEP.R")

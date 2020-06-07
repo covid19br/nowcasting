@@ -60,15 +60,17 @@ if (existe.covid) {
   ## Tabela que preenche o minimo e o maximo do nowcast, tempo de duplicacao, e r efetivo
   tabelas.web(plot.dir,
               tipo = "covid",
-              df.covid.cum,
-              df.td.covid,
-              df.re.covid)
+              df.cum = df.covid.cum,
+              df.td = df.td.covid,
+              df.re = df.re.covid,
+              data_base = data.covid)
 
 } else {
   plot.nowcast.covid <- NULL
   plot.nowcast.cum.covid <- NULL
   plot.estimate.R0.covid <- NULL
   plot.tempo.dupl.covid <- NULL
+  data_atualizacao <- NULL
 }
 
 ############
@@ -111,14 +113,16 @@ if (existe.srag) {
   # TABELAS ####
   tabelas.web(plot.dir,
               tipo = "srag",
-              df.srag.cum,
-              df.td.srag,
-              df.re.srag)
+              df.cum = df.srag.cum,
+              df.td = df.td.srag,
+              df.re = df.re.srag,
+              data_base = data.srag)
 } else {
   plot.nowcast.srag <- NULL
   plot.nowcast.cum.srag <- NULL
   plot.estimate.R0.srag <- NULL
   plot.tempo.dupl.srag <- NULL
+  data_atualizacao <- NULL
 }
 
 #####################
@@ -151,12 +155,14 @@ if (existe.ob.covid) {
   # TABELAS ####
   tabelas.web(plot.dir,
               tipo = "obitos_covid",
-              df.ob.covid.cum,
-              df.td.ob.covid)
+              df.cum = df.ob.covid.cum,
+              df.td = df.td.ob.covid,
+              data_base = data.ob.covid)
 } else {
   plot.nowcast.ob.covid <- NULL
   plot.nowcast.cum.ob.covid <- NULL
   plot.tempo.dupl.ob.covid <- NULL
+  data_atualizacao <- NULL
 }
 
 ####################
@@ -195,12 +201,14 @@ if (existe.ob.srag) {
   # TABELAS ####
     tabelas.web(plot.dir,
                 tipo = "obitos_srag",
-                df.ob.srag.cum,
-                df.td.ob.srag)
+                df.cum = df.ob.srag.cum,
+                df.td = df.td.ob.srag,
+                data_base = data.ob.srag)
 } else {
   plot.nowcast.ob.srag <- NULL
   plot.nowcast.cum.ob.srag <- NULL
   plot.tempo.dupl.ob.srag <- NULL
+  data_atualizacao <- NULL
 }
 
 #########################
