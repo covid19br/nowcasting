@@ -23,7 +23,7 @@ if (sys.nframe() == 0L) {
   option_list <- list(
     make_option("--dir",
                 help = ("Caminho até o diretório com os arquivos csv com base sivep gripe"),
-                default = "../dados/municipio_SP/SRAG_hospitalizados/dados/",
+                default = "../dados/SIVEP-Gripe/",
                 metavar = "dir"),
     make_option("--escala", default = "municipio",
                 help = ("Nível administrativo, um de: municipio, micro, meso, estado, drs, país"),
