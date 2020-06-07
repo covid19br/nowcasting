@@ -43,7 +43,7 @@ gera.nowcasting <- function(dados, # dados
       ##obitos COVID ####
       dados2 <- dados %>%
         filter(pcr_sars2 == 1 | classi_fin == 5) %>% # covid com nova classificacao
-        filter(hospital == 1 & evolucao == 2) %>% # so hospitalizados que vieram a obito
+        filter(evolucao == 2) %>%
         filter(!is.na(dt_evoluca)) %>%
         mutate(dt_encerra = pmax(dt_encerra, dt_digita, dt_evoluca,
                                  na.rm = TRUE)) %>%
@@ -52,7 +52,7 @@ gera.nowcasting <- function(dados, # dados
     ## 2.2. obitos srag ####
     if (tipo == "srag") {
       dados2 <- dados %>%
-        filter(hospital == 1 & evolucao == 2) %>%
+        filter(evolucao == 2) %>%
         filter(!is.na(dt_evoluca)) %>%
         mutate(dt_encerra = pmax(dt_encerra, dt_digita, dt_evoluca,
                                  na.rm = TRUE)) %>%
