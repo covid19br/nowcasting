@@ -34,15 +34,17 @@ opts_knit$set(width = 75)
 ```{r utilities}
 ## Tabelas de contigencia entre hospitalizacao e evolucao
 f1 <- function(x){
-    tmp <- with(x, addmargins(table(hospital, evolucao, useNA="always"))) 
+    y <- filter(x, pcr_sars2 == 1 | classi_fin == 5) %>%
+        as.data.frame()
+    tmp <- with(y, addmargins(table(hospital, evolucao, useNA="always"))) 
     dimnames(tmp) <- list(Hospitalização = c("Hospitalizado", "Não hospit", "Ignorado", "NA", "Total"),
                           Evolução = c("Alta", "Óbito", "ignorado", "NA", "Total"))
     return(tmp)
 }
-## N de obitos por maior data do óbito
+## N de obitos data do óbito
 f2 <- function(x){
     df <- x %>%
-        filter(evolucao == 2) %>%
+        filter(evolucao == 2 & (pcr_sars2 == 1 | classi_fin == 5)) %>%
         ##mutate(dt_evento = pmax(dt_notific, dt_evolucao, dt_digita, na.rm=TRUE)) %>%
         group_by(dt_evoluca) %>%
         summarise(N = n()) %>%
@@ -105,8 +107,8 @@ recife.sivep.not <- read.sivep(dir = "../dados/SIVEP-Gripe/",
 ## Data 
 recife.data.nowc <- get.last.date(dir = "../dados_processados/nowcasting/municipios/PE/Recife/tabelas_nowcasting_para_grafico")
 ## Leitura
-recife.now.c <- read.csv(paste0("../dados_processados/nowcasting/municipios/PE/Recife/tabelas_nowcasting_para_grafico/nowcasting_acumulado_obitos_srag_",recife.data.nowc,".csv"))
-recife.now <- read.csv(paste0("../dados_processados/nowcasting/municipios/PE/Recife/tabelas_nowcasting_para_grafico/nowcasting_diario_obitos_srag_",recife.data.nowc,".csv"))
+recife.now.c <- read.csv(paste0("../dados_processados/nowcasting/municipios/PE/Recife/tabelas_nowcasting_para_grafico/nowcasting_acumulado_obitos_covid_",recife.data.nowc,".csv"))
+recife.now <- read.csv(paste0("../dados_processados/nowcasting/municipios/PE/Recife/tabelas_nowcasting_para_grafico/nowcasting_diario_obitos_covid_",recife.data.nowc,".csv"))
 recife.now.zoo <- zoo(recife.now$estimate, as.Date(recife.now$data))
 ## Ultima data para a qual tem nowcasting
 recife.data.now <- as.Date(last(recife.now$data))
@@ -253,9 +255,103 @@ kable(f1(jpessoa.sivep.not),
                       format(as.Date(sivep.last.date, "%Y_%m_%d"), "%d/%m/%Y")))
 ```
 
+# Belo Horizonte
+
+```{r BH_leitura_dados}
+## Codigo IBGE
+BH.cod <- "3106200"
+## Brasil.IO
+BH.bio <- get_corona_br(ibge_cod = BH.cod)
+## SIVEP
+## BH, residentes no municipio
+BH.sivep.res <- read.sivep(dir = "../dados/SIVEP-Gripe/",
+                         escala = "municipio",
+                         geocode = BH.cod,
+                         data = sivep.last.date,
+                         residente = TRUE)
+## BH, notificacoes feitas no muncipio
+BH.sivep.not <- read.sivep(dir = "../dados/SIVEP-Gripe/",
+                         escala = "municipio",
+                         geocode = BH.cod,
+                         data = sivep.last.date,
+                         residente = FALSE)
+## Ultimo nowcasting
+## Data 
+BH.data.nowc <- get.last.date(dir = "../dados_processados/nowcasting/municipios/MG/Belo_Horizonte/tabelas_nowcasting_para_grafico")
+## Leitura
+BH.now.c <- read.csv(paste0("../dados_processados/nowcasting/municipios/MG/Belo_Horizonte/tabelas_nowcasting_para_grafico/nowcasting_acumulado_obitos_srag_",BH.data.nowc,".csv"))
+BH.now <- read.csv(paste0("../dados_processados/nowcasting/municipios/MG/Belo_Horizonte/tabelas_nowcasting_para_grafico/nowcasting_diario_obitos_srag_",BH.data.nowc,".csv"))
+BH.now.zoo <- zoo(BH.now$estimate, as.Date(BH.now$data))
+## Ultima data para a qual tem nowcasting
+BH.data.now <- as.Date(last(BH.now$data))
+```
+
+## Casos e óbitos SRAG
+
+### Comparação de óbitos nas duas bases e nowcasting SIVEP
+
+```{r BH_plot_compara, fig.width = 8, fig.height = 4}
+merge(sivep.res = na.fill(f2(BH.sivep.res),0),
+      ##sivep.not = f2(BH.sivep.not),
+      sivep.res.now = BH.now.zoo,
+      br.io=f3(BH.bio)) %>%
+    ##na.fill(fill=0) %>%
+    ggplot(aes(Index)) +
+    geom_line(aes(y=sivep.res.now, col="SIVEP nowcasting")) +
+    geom_line(aes(y=sivep.res, col="SIVEP")) +
+    geom_line(aes(y=br.io, col="Brasil.IO")) +
+    ylab("N de óbitos") +
+    xlab("") +
+    scale_x_date(date_labels = "%d/%b") +
+    theme_bw() +
+    plot.formatos +
+    theme(legend.position = c(0.1, 0.7), legend.title = element_blank())
+```
+
+
+### Casos SRAG por evolução e hospitalização na SIVEP
+
+O total de óbitos acumulados na base do Brasil.IO é 
+`r BH.bio$deaths[BH.bio$date == as.Date(sivep.last.date, "%Y_%m_%d")]`. 
+Os totais e óbitos de residentes em Belo Horizonte na base
+SIVEP é bem maior que isso (ver tabelas abaixo). No entanto,
+o [Boletim Epidemiológico de BH do dia 05/06]
+(https://prefeitura.pbh.gov.br/sites/default/files/estrutura-de-governo/saude/2020/boletim_epidemiologico_34_covid-19_05-06-2020.pdf)
+informa um total de 362 óbitos por SRAG, sendo 57 confimados para COVID. 
+
+O valor do Brasil.IO até dia
+`r format(BH.data.now,  "%d/%m/%Y")` é  de 
+`r BH.bio$deaths[BH.bio$date == BH.data.now]`. 
+compatível com o acumulado das estimativas de nowcasting, que vão
+até este dia. Esta estimativa é de 
+`r BH.now.c$now.mean.c[BH.now.c$data==BH.data.now]`, 
+com intervalo entre
+`r BH.now.c$now.low.c.proj[BH.now.c$data==BH.data.now]`
+e
+`r BH.now.c$now.upp.c.proj[BH.now.c$data==BH.data.now]` .
+
+#### Casos de residentes no município
+
+```{r BH_residentes}
+kable(f1(BH.sivep.res),
+      caption = paste("Belo Horizonte casos SRAG de residentes, classificados por hospitalização e evolução, base SIVEP nacional do MS,",
+                      format(as.Date(sivep.last.date, "%Y_%m_%d"), "%d/%m/%Y")))
+```
+
+#### Casos notificados no município
+
+```{r BH_notif}
+kable(f1(BH.sivep.not),
+      caption = paste("Jaão Pessoa casos SRAG notificados no município, classificados por hospitalização e evolução, base SIVEP nacional do MS,",
+                      format(as.Date(sivep.last.date, "%Y_%m_%d"), "%d/%m/%Y")))
+```
+
+
 
 # Conclusões preliminares
 
+* Pelo menos para óbitos, temos que considerar também casos não
+  hospitalizados. Avaliar se é melhro afzer isso também para casos.
 * Total de óbitos reportados pelo Brasil.IO pode ser maior que o registrado
   no SIVEP-Gripe. Quando acontece, se dá pelo maior número de óbitos nas últimas
   semanas ou dias, nos dados do Brasil.IO. A diferença pode acontece pelo
