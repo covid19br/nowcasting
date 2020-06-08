@@ -1,0 +1,189 @@
+---
+title: "Comparação dados SIVEP Gripe e Brasil.IO"
+date: "`r Sys.Date()`"
+author: "Observatório COVID-19 BR"
+output:
+  rmdformats::readthedown:
+    code_folding: hide
+    self_contained: true
+    thumbnails: false
+    lightbox: false
+    toc_depth: 4
+---
+
+```{r knitr_init, echo=FALSE, results="asis", cache=FALSE}
+library(knitr)
+library(rmdformats)
+library(stringr)
+library(dplyr)
+library(coronabr)
+source("_src/funcoes.R")
+## Global options
+options(max.print = "75")
+opts_chunk$set(echo = FALSE,
+	           cache = FALSE,
+               prompt = FALSE,
+               tidy = FALSE,
+               comment = NA,
+               message = FALSE,
+               warning = FALSE)
+opts_knit$set(width = 75)
+```
+
+
+```{r utilities}
+## Tabelas de contigencia entre hospitalizacao e evolucao
+f1 <- function(x){
+    tmp <- with(x, addmargins(table(hospital, evolucao, useNA="always"))) 
+    dimnames(tmp) <- list(Hospitalização = c("Hospitalizado", "Não hospit", "Ignorado", "NA", "Total"),
+                          Evolução = c("Alta", "Óbito", "ignorado", "NA", "Total"))
+    return(tmp)
+}
+## N de obitos por maior data do óbito
+f2 <- function(x){
+    df <- x %>%
+        filter(evolucao == 2) %>%
+        ##mutate(dt_evento = pmax(dt_notific, dt_evolucao, dt_digita, na.rm=TRUE)) %>%
+        group_by(dt_evoluca) %>%
+        summarise(N = n()) %>%
+        as.data.frame()
+    zoo(df[,2], df[,1])
+}
+## N de obitos por data de notificacao Brasil.IO
+f3 <- function(x){
+    zoo(rev(diff(rev(x$deaths))),x$date[-nrow(x)])
+    }
+## Data da ultima base sivep disponivel
+sivep.last.date <- get.last.date(dir = "../dados/SIVEP-Gripe/")
+```
+# Introdução
+
+A base SIVEP-Gripe tem as notificações de casos de SRAG.  O campo
+`HOSPITAL`, indica se o caso foi hospitalizado. O campo `EVOLUCAO`
+indica a evolução final do caso (alta, óbito, ignorado). Os casos sem
+conclusão têm o campo de evolução não preenchido (NA). Na SIVEP há
+campos que indicam a data da notificação (`DT_NOTIFICA`) e outro campo
+para a data da evolução (`DT_EVOLUCA`). Há, também, a data de
+digitação inicial da notificação (`DT_DIGIT`), que pode ser anterior à
+data da evolução. O dicionário de dados da SIVEp está 
+[aqui](http://189.28.128.100/sivep-gripe/Dicionario_de_Dados_SRAG_Hospitalizado_02.04.2020.pdf). 
+
+A tabela `caso.full` do Brasil.IO tem um só campo de
+data. Segundo a documentação
+(https://github.com/turicas/covid19-br/blob/master/api.md#caso_full),
+é a data da captura do dado. A verificar, mas parece ser a data dos
+boletins epidemiológicos, que somam os óbitos e casos que constam na
+base a cada dia. Se é isto, não corresponde a nenhuma das datas que
+consta em uma base SIVEP. 
+
+Neste relatório comparamos o número diário de óbitos na base SIVEP e
+no conjunto de dados do Brasil.IO, usando a data do óbito que consta
+na SIVEP. 
+
+
+# Recife
+
+```{r Recife_leitura_dados}
+## Codigo IBGE
+recife.cod <- "2611606"
+## Brasil.IO
+recife.bio <- get_corona_br(ibge_cod = recife.cod)
+## SIVEP
+## Recife, residentes no municipio
+recife.sivep.res <- read.sivep(dir = "../dados/SIVEP-Gripe/",
+                         escala = "municipio",
+                         geocode = recife.cod,
+                         data = sivep.last.date,
+                         residente = TRUE)
+## Recife, notificacoes feitas no muncipio
+recife.sivep.not <- read.sivep(dir = "../dados/SIVEP-Gripe/",
+                         escala = "municipio",
+                         geocode = recife.cod,
+                         data = sivep.last.date,
+                         residente = FALSE)
+## Ultimo nowcasting
+## Data 
+recife.data.nowc <- get.last.date(dir = "../dados_processados/nowcasting/municipios/PE/Recife/tabelas_nowcasting_para_grafico")
+## Leitura
+recife.now.c <- read.csv(paste0("../dados_processados/nowcasting/municipios/PE/Recife/tabelas_nowcasting_para_grafico/nowcasting_acumulado_obitos_srag_",recife.data.nowc,".csv"))
+recife.now <- read.csv(paste0("../dados_processados/nowcasting/municipios/PE/Recife/tabelas_nowcasting_para_grafico/nowcasting_diario_obitos_srag_",recife.data.nowc,".csv"))
+recife.now.zoo <- zoo(recife.now$estimate, as.Date(recife.now$data))
+## Ultima data para a qual tem nowcasting
+recife.data.now <- as.Date(last(recife.now$data))
+```
+
+## Casos e óbitos SRAG
+
+### Comparação de óbitos nas duas bases e nowcasting SIVEP
+
+```{r recife_plot_compara, fig.width = 8, fig.height = 4}
+merge(sivep.res = na.fill(f2(recife.sivep.res),0),
+      ##sivep.not = f2(recife.sivep.not),
+      sivep.res.now = recife.now.zoo,
+      br.io=f3(recife.bio)) %>%
+    ##na.fill(fill=0) %>%
+    ggplot(aes(Index)) +
+    geom_line(aes(y=sivep.res.now, col="SIVEP nowcasting")) +
+    geom_line(aes(y=sivep.res, col="SIVEP")) +
+    geom_line(aes(y=br.io, col="Brasil.IO")) +
+    ylab("N de óbitos") +
+    xlab("") +
+    scale_x_date(date_labels = "%d/%b") +
+    theme_bw() +
+    plot.formatos +
+    theme(legend.position = c(0.1, 0.7), legend.title = element_blank())
+```
+
+
+### Casos SRAG por evolução e hospitalização na SIVEP
+
+O total de óbitos acumulados na base do Brasil.IO é 
+`r recife.bio$deaths[recife.bio$date == as.Date(sivep.last.date, "%Y_%m_%d")]`. 
+Os totais e óbitos de residentes em Recife na base
+SIVEP é menor do isso. No entanto, o valor do Brasil.IO até dia
+`r format(recife.data.now,  "%d/%m/%Y")` é  de 
+`r recife.bio$deaths[recife.bio$date == recife.data.now]`. 
+compatível com o acumulado das estimativas de nowcasting, que vão
+até este dia. Esta estimativa é de 
+`r recife.now.c$now.mean.c[recife.now.c$data==recife.data.now]`, 
+com intervalo entre
+`r recife.now.c$now.low.c.proj[recife.now.c$data==recife.data.now]`
+e
+`r recife.now.c$now.upp.c.proj[recife.now.c$data==recife.data.now]` .
+
+#### Casos de residentes no município
+
+```{r recife_residentes}
+kable(f1(recife.sivep.res),
+      caption = paste("Recife casos SRAG de residentes, classificados por hospitalização e evolução, base SIVEP nacional do MS,",
+                      format(as.Date(sivep.last.date, "%Y_%m_%d"), "%d/%m/%Y")))
+```
+
+#### Casos notificados no município
+
+```{r recife_notif}
+kable(f1(recife.sivep.not),
+      caption = paste("Recife casos SRAG notificados no município, classificados por hospitalização e evolução, base SIVEP nacional do MS,",
+                      format(as.Date(sivep.last.date, "%Y_%m_%d"), "%d/%m/%Y")))
+```
+
+# Conclusões preliminares
+
+* Total de óbitos reportados pelo Brasil.IO é maior que o registrado
+  no SIVEP-Gripe. Isto se dá peo maior número de óbitos nas últimas
+  três semanas nos dados do Brasil.IO. A diferença pode acontece pelo
+  maior atraso de notificação de óbitos na SIVEP do que nos
+  boletins. É possível também que haja óbitos que não são lançados no
+  SIVEP (p.e.x que aconteceram no domicílio). Embora menos provável, é
+  possível ainda que óbitos de residentes em outro municípios sejam
+  contabilizados, especialmente em grandes cidades, para onde muitas
+  pessoas de cidades menores se dirigem, em busca de
+  tratamentos. Estas hipóteses não são excludentes.
+* Caso a diferença seja causada por atraso de notificação, seria
+  esperado que o total de óbitos estimados pelo nowcasting se
+  aproximasse do total reportado no boletim. É o que acontece.
+* Brasil.IO soma os óbitos anunciados pelas secretarias a cada dia. A
+  evolução destes números pela data do boletim são afetadas por
+  fatores administrativos. Um melhor acompanhamento da pandemia é
+  feito usando como data de referência a data do evento epidemiológico
+  (primeiros sintomas para casos e data do óbito para óbitos).
