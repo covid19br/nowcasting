@@ -167,11 +167,98 @@ kable(f1(recife.sivep.not),
                       format(as.Date(sivep.last.date, "%Y_%m_%d"), "%d/%m/%Y")))
 ```
 
+# João Pessoa
+
+```{r Jpessoa_leitura_dados}
+## Codigo IBGE
+jpessoa.cod <- "2507507"
+## Brasil.IO
+jpessoa.bio <- get_corona_br(ibge_cod = jpessoa.cod)
+## SIVEP
+## Jpessoa, residentes no municipio
+jpessoa.sivep.res <- read.sivep(dir = "../dados/SIVEP-Gripe/",
+                         escala = "municipio",
+                         geocode = jpessoa.cod,
+                         data = sivep.last.date,
+                         residente = TRUE)
+## Jpessoa, notificacoes feitas no muncipio
+jpessoa.sivep.not <- read.sivep(dir = "../dados/SIVEP-Gripe/",
+                         escala = "municipio",
+                         geocode = jpessoa.cod,
+                         data = sivep.last.date,
+                         residente = FALSE)
+## Ultimo nowcasting
+## Data 
+jpessoa.data.nowc <- get.last.date(dir = "../dados_processados/nowcasting/municipios/PB/Joao_Pessoa/tabelas_nowcasting_para_grafico")
+## Leitura
+jpessoa.now.c <- read.csv(paste0("../dados_processados/nowcasting/municipios/PB/Joao_Pessoa/tabelas_nowcasting_para_grafico/nowcasting_acumulado_obitos_srag_",jpessoa.data.nowc,".csv"))
+jpessoa.now <- read.csv(paste0("../dados_processados/nowcasting/municipios/PB/Joao_Pessoa/tabelas_nowcasting_para_grafico/nowcasting_diario_obitos_srag_",jpessoa.data.nowc,".csv"))
+jpessoa.now.zoo <- zoo(jpessoa.now$estimate, as.Date(jpessoa.now$data))
+## Ultima data para a qual tem nowcasting
+jpessoa.data.now <- as.Date(last(jpessoa.now$data))
+```
+
+## Casos e óbitos SRAG
+
+### Comparação de óbitos nas duas bases e nowcasting SIVEP
+
+```{r jpessoa_plot_compara, fig.width = 8, fig.height = 4}
+merge(sivep.res = na.fill(f2(jpessoa.sivep.res),0),
+      ##sivep.not = f2(jpessoa.sivep.not),
+      sivep.res.now = jpessoa.now.zoo,
+      br.io=f3(jpessoa.bio)) %>%
+    ##na.fill(fill=0) %>%
+    ggplot(aes(Index)) +
+    geom_line(aes(y=sivep.res.now, col="SIVEP nowcasting")) +
+    geom_line(aes(y=sivep.res, col="SIVEP")) +
+    geom_line(aes(y=br.io, col="Brasil.IO")) +
+    ylab("N de óbitos") +
+    xlab("") +
+    scale_x_date(date_labels = "%d/%b") +
+    theme_bw() +
+    plot.formatos +
+    theme(legend.position = c(0.1, 0.7), legend.title = element_blank())
+```
+
+
+### Casos SRAG por evolução e hospitalização na SIVEP
+
+O total de óbitos acumulados na base do Brasil.IO é 
+`r jpessoa.bio$deaths[jpessoa.bio$date == as.Date(sivep.last.date, "%Y_%m_%d")]`. 
+Os totais e óbitos de residentes em João Pessoa na base
+SIVEP é menor do isso. No entanto, o valor do Brasil.IO até dia
+`r format(jpessoa.data.now,  "%d/%m/%Y")` é  de 
+`r jpessoa.bio$deaths[jpessoa.bio$date == jpessoa.data.now]`. 
+compatível com o acumulado das estimativas de nowcasting, que vão
+até este dia. Esta estimativa é de 
+`r jpessoa.now.c$now.mean.c[jpessoa.now.c$data==jpessoa.data.now]`, 
+com intervalo entre
+`r jpessoa.now.c$now.low.c.proj[jpessoa.now.c$data==jpessoa.data.now]`
+e
+`r jpessoa.now.c$now.upp.c.proj[jpessoa.now.c$data==jpessoa.data.now]` .
+
+#### Casos de residentes no município
+
+```{r jpessoa_residentes}
+kable(f1(jpessoa.sivep.res),
+      caption = paste("João Pessoa casos SRAG de residentes, classificados por hospitalização e evolução, base SIVEP nacional do MS,",
+                      format(as.Date(sivep.last.date, "%Y_%m_%d"), "%d/%m/%Y")))
+```
+
+#### Casos notificados no município
+
+```{r jpessoa_notif}
+kable(f1(jpessoa.sivep.not),
+      caption = paste("Jaão Pessoa casos SRAG notificados no município, classificados por hospitalização e evolução, base SIVEP nacional do MS,",
+                      format(as.Date(sivep.last.date, "%Y_%m_%d"), "%d/%m/%Y")))
+```
+
+
 # Conclusões preliminares
 
-* Total de óbitos reportados pelo Brasil.IO é maior que o registrado
-  no SIVEP-Gripe. Isto se dá peo maior número de óbitos nas últimas
-  três semanas nos dados do Brasil.IO. A diferença pode acontece pelo
+* Total de óbitos reportados pelo Brasil.IO pode ser maior que o registrado
+  no SIVEP-Gripe. Quando acontece, se dá pelo maior número de óbitos nas últimas
+  semanas ou dias, nos dados do Brasil.IO. A diferença pode acontece pelo
   maior atraso de notificação de óbitos na SIVEP do que nos
   boletins. É possível também que haja óbitos que não são lançados no
   SIVEP (p.e.x que aconteceram no domicílio). Embora menos provável, é
