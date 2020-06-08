@@ -42,8 +42,6 @@ srag.dt = srag.20.raw %>%
   mutate(dt_saiuti = if_else(UTI==1 & !is.na(evolucao) & !is.na(dt_evo), 
                              coalesce(dt_saiuti, dt_evo), as.Date(NA))) 
 
-covid.dt = srag.dt %>%
-  dplyr::filter(pcr_sars2 == 1 | classi_fin == 5) 
 
 if(!exists("fix_missing_dates") || fix_missing_dates){
   if(!exists("fix_missing_dates"))
@@ -59,10 +57,6 @@ if(!exists("fix_missing_dates") || fix_missing_dates){
       ddply(.(ID), fixUTIDates, time_fits0$srag$UTI) %>%
       ddply(.(ID), fixEVODates, time_fits0$srag$afterUTI, time_fits0$srag$notUTI) %>%
       as.data.frame()
-    covid.dt %<>%
-      ddply(.(ID), fixUTIDates, time_fits0$covid$UTI) %>%
-      ddply(.(ID), fixEVODates, time_fits0$covid$afterUTI, time_fits0$covid$notUTI) %>%
-      as.data.frame()
   }
 } else{
   excluded = srag.dt %>%
@@ -72,9 +66,10 @@ if(!exists("fix_missing_dates") || fix_missing_dates){
   srag.dt = srag.dt %>%
     dplyr::filter(!(!is.na(evolucao) & is.na(dt_evo)))  %>%
     as.data.frame()
-  covid.dt = srag.dt %>%
-    dplyr::filter(pcr_sars2 == 1)  %>%
-    as.data.frame()
 }
+
+covid.dt = srag.dt %>%
+  dplyr::filter(pcr_sars2 == 1 | classi_fin == 5)   %>%
+  as.data.frame()
 
 say(paste("READ FILES FOR DATE:", format(data_date, "%d %B %Y")), "cat")
