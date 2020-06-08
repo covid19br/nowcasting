@@ -54,7 +54,7 @@ read.sivep <- function(dir, # diretorio onde esta o dado
 
     if (escala == "municipio") {
       if(residentes)
-          dados <- dados[dados$co_mun_res == as.numeric(geocode), ]
+          dados <- dados[which(dados$co_mun_res == as.numeric(geocode)), ]
       ## PIP: está selecionando também linhas que têm  NA no campo co_mun_res.
       ## Não seria então
       ## dados <- dados[dados$co_mun_res == as.numeric(geocode)&!is.na(dados$co_mun_res), ]
@@ -63,7 +63,7 @@ read.sivep <- function(dir, # diretorio onde esta o dado
       ## ?
       ## O mesmo para as demais linha análogas
       else
-        dados <- dados[dados$co_mun_not == as.numeric(geocode), ]
+        dados <- dados[which(dados$co_mun_not == as.numeric(geocode)), ]
     }
     if (escala == "estado") {
       estados <- c('12','27','13','16','29','23','53','32','52','21','31','50','51','15','25','26','22','41','33','24','11','14','43','42','28','35','17')
