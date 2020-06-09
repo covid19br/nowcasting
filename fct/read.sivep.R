@@ -20,11 +20,11 @@ read.sivep <- function(dir, # diretorio onde esta o dado
   if (endsWith(file.name, '.zip'))
       file.name <- unz(file.name, basename(gsub('.zip$', '.csv', file.name)))
   # detecta separador
-  linha1 <- readLines(file.name, n=2)[2]
-  if (count.fields(textConnection(linha1), sep=',') >
-      count.fields(textConnection(linha1), sep=';'))
+  linha1 <- readLines(file.name, n = 2)[2]
+  if (count.fields(textConnection(linha1), sep = ',') >
+      count.fields(textConnection(linha1), sep = ';')) {
       sep <- ','
-  else
+  } else
       sep <- ';'
   dados <- read.csv(file = file.name, stringsAsFactors = FALSE, header = TRUE,
                     sep = sep, ...)
@@ -32,6 +32,10 @@ read.sivep <- function(dir, # diretorio onde esta o dado
   # conveniencia mudando para minusculas
   names(dados) <- tolower(names(dados))
 
+
+  # filtro por estados ou municipio
+  ## ö dá pra implementar meso e microrregiao ast: super dá, por enquanto tirei filtro
+  if (escala != "pais") {
   df <- read.csv("./dados/geocode_ibge.csv")
   #geocode <- as.numeric(geocode)
   municipio.code <- sapply(df$id, function(x) substr(x, start = 1, stop = 6))
@@ -39,10 +43,6 @@ read.sivep <- function(dir, # diretorio onde esta o dado
   meso.code    <- df$microrregiao.mesorregiao.id
   estado.code  <- df$microrregiao.mesorregiao.UF.id
   estado.sigla <- df$microrregiao.mesorregiao.UF.sigla
-
-  # filtro por estados ou municipio
-  ## ö dá pra implementar meso e microrregiao ast: super dá, por enquanto tirei filtro
-  if (escala != "pais") {
     n.geo <- nchar(geocode)
     n.geocodes <- c(estado = 2, meso = 4, micro = 5, municipio = 7)
     #ö ast estava pensando num check de escala vs geocode tipo "seu geocode não corresponde ao n.char". não sei como renato resolveu isto no site. teria que ter a exceção de municipiom claro. mas a pessoa pode querer vir com o geocode de 7, né.
