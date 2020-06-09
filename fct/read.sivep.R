@@ -101,6 +101,6 @@ read.sivep <- function(dir, # diretorio onde esta o dado
   ## usa lubridate
   dados[, dt.cols] <- lapply(dados[, dt.cols],
                              function(x)
-                                 as_date(parse_date_time(x, c("dmy", "ymd", "mdy", "dmy HMs"))))
+                                 as_date(parse_date_time(x, c("dmy", "ymd", "mdy", "dmy HMs", "ymd HMs"))))
   return(dados)
 }
