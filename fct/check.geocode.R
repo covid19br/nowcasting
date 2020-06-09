@@ -7,6 +7,7 @@ check.geocode <- function(escala,
                           sigla,
                           nonascii = TRUE) {
 
+  if (escala == "pais") return(nome <- "/pais/Brasil")
   #url <- paste0("https://servicodados.ibge.gov.br/api/v1/localidades/municipios")
   #df <- jsonlite::fromJSON(url)
   #df$nome.nonascii <- gsub(" ", "_", textclean::replace_non_ascii(df$nome))
@@ -35,7 +36,7 @@ check.geocode <- function(escala,
       stop("geocode de municipio invalido")
     }
     }
-  
+
   if (escala == "micro") {
     if (nchar(geocode) != 5)
       stop("geocode não bate com escala")

@@ -166,7 +166,7 @@ if (existe.ob.covid) {
 }
 
 ####################
-## OBTITOS SRAG ####
+## OBITOS SRAG ####
 ####################
 
 if (existe.ob.srag) {
@@ -248,8 +248,14 @@ if (existe.ob.srag) {
 #   plot.tempo.dupl.ob.srag.proaim <- NULL
 # }
 
-##@ast trouxe aqui a parte onde salva
-plots.para.atualizar <- makeNamedList(
+################################################################# ###############
+## Atualiza gráficos por estado
+################################################################################
+print("Atualizando plots...")
+
+# Graficos a serem atualizados
+plots.para.atualizar <-
+  makeNamedList(
   # covid
   plot.nowcast.covid,
   plot.nowcast.cum.covid,
@@ -273,6 +279,7 @@ plots.para.atualizar <- makeNamedList(
   #plot.nowcast.cum.ob.srag.proaim,
   #plot.tempo.dupl.ob.srag.proaim
 )
+# pegando apenas os plots que existem mesmo
 plots.true <- sapply(plots.para.atualizar, function(x) !is.null(x))
 
 filenames <- gsub(".", "_", names(plots.para.atualizar), fixed = TRUE)
