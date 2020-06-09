@@ -26,8 +26,7 @@ read.sivep <- function(dir, # diretorio onde esta o dado
       sep <- ','
   } else
       sep <- ';'
-  dados <- read.csv(file = file.name, stringsAsFactors = FALSE, header = TRUE,
-                    sep = sep, ...)
+  dados <- read_delim(file = file.name, delim = sep, ...)
   dados <- data.frame(dados)
   # conveniencia mudando para minusculas
   names(dados) <- tolower(names(dados))
