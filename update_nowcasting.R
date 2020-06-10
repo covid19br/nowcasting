@@ -88,7 +88,7 @@ if (sys.nframe() == 0L) {
   out.dir <- opt$options$outputDir
   plots <- opt$options$plot
   residentes <- opt$options$residentes
-  hopitalizados <- opt$options$hospitalizados
+  hospitalizados <- opt$options$hospitalizados
 }
 ####################################################
 ### to run INTERACTIVELY:
