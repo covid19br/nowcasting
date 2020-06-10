@@ -58,7 +58,10 @@ if (sys.nframe() == 0L) {
                 metavar = "plot"),
     make_option("--residentes", default = TRUE,
                 help = ("Filtrar só por residentes? Default: TRUE"),
-                metavar = "residentes")
+                metavar = "residentes"),
+    make_option("--hospitalizados", default = TRUE,
+                help = ("Filtrar só por hospitalizados? Default: TRUE"),
+                metavar = "hospitalizados")
   )
   parser_object <- OptionParser(usage = "Rscript %prog [Opções] [ARQUIVO]\n",
                                 option_list = option_list,
@@ -85,6 +88,7 @@ if (sys.nframe() == 0L) {
   out.dir <- opt$options$outputDir
   plots <- opt$options$plot
   residentes <- opt$options$residentes
+  hopitalizados <- opt$options$hospitalizados
 }
 ####################################################
 ### to run INTERACTIVELY:

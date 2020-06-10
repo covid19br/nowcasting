@@ -1,16 +1,18 @@
 gera.nowcasting <- function(dados, # dados
                             caso = TRUE, # caso = FALSE faz obitos
                             tipo, # covid ou srag
+                            hospitalizados = TRUE,
                             trim.now, # corte para nowcasting
                             window) { # janela para nowcasting
   # 1. nowcasting de casos ###
   if (caso) {
+      if (hospitalizados)
+        dados <- dados %>% filter(hospital == 1)
     ## 1.1 casos covid ####
     if (tipo == "covid") {
       ##COVID##
       dados2 <- dados %>%
         filter(pcr_sars2 == 1 | classi_fin == 5) %>% #covid com nova classificacao
-        filter(hospital == 1) %>% # so hospitalizados
         select(dt_notific, dt_sin_pri, dt_pcr, dt_digita) %>%
         mutate(dt_pcr_dig = pmax(dt_pcr, dt_digita, dt_notific, na.rm = TRUE))
     }
@@ -19,7 +21,6 @@ gera.nowcasting <- function(dados, # dados
       ## %PIP data de registro é data mais recente entre notificação e digitação, não deve incluir data pcr (dt_pcr)
       ## pq SRAG não precisa de teste para ser confirmado
       dados2 <- dados %>%
-        filter(hospital == 1) %>% # so hospitalizados
         select(dt_notific, dt_sin_pri, dt_digita) %>%
         mutate(dt_pcr_dig = pmax(dt_digita, dt_notific, na.rm = TRUE)) # nome aqui é pcr mas não tem pcr
     }
@@ -71,8 +72,6 @@ gera.nowcasting <- function(dados, # dados
       dados.now <- NULL
     }
   }
-
   out <- list(now = dados.now, dados = dados2)
-
   return(out)
 }
