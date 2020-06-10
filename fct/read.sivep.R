@@ -17,8 +17,12 @@ read.sivep <- function(dir, # diretorio onde esta o dado
   # múltiplos matches são possíveis
   file.name <- file.name[1]
   # detecta e lida com arquivo zip
-  if (endsWith(file.name, '.zip'))
-      file.name <- unz(file.name, basename(gsub('.zip$', '.csv', file.name)))
+  if (endsWith(file.name, '.zip')){
+      is_zip = TRUE
+      file.name <- unzip(file.name, basename(gsub('.zip$', '.csv', file.name)))
+  } else{
+      is_zip = FALSE
+  }
   # detecta separador
   linha1 <- readLines(file.name, n = 2)[2]
   if (count.fields(textConnection(linha1), sep = ',') >
@@ -45,6 +49,8 @@ read.sivep <- function(dir, # diretorio onde esta o dado
   # conveniencia mudando para minusculas
   names(dados) <- tolower(names(dados))
 
+  if(is_zip)
+      file.remove(file.name)
 
   # filtro por estados ou municipio
   ## ö dá pra implementar meso e microrregiao ast: super dá, por enquanto tirei filtro
