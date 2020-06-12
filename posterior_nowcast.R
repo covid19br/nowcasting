@@ -142,10 +142,6 @@ srag.20.raw <- read.sivep(dir = DATAROOT,
 dt.cols <- grepl("dt_", names(srag.20.raw))
 names(srag.20.raw)[dt.cols] <- substr(names(srag.20.raw[,dt.cols]), start=1, stop=6)
 
-dt_cols_class = sapply(srag.20.raw[,dt.cols], is.Date)
-if(!all(dt_cols_class))
-  srag.20.raw[,dt.cols][,!dt_cols_class] = lapply(srag.20.raw[,dt.cols][,!dt_cols_class], as.Date, format = "%Y-%m-%d")
-
 ## Datas de primeiro sintoma e notificação
 set_week_start("Sunday") ## para incluir semana epidemiologica
 

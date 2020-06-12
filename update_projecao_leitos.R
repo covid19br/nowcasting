@@ -7,7 +7,7 @@ if (sys.nframe() == 0L) {
   option_list <- list(
     make_option("--dir",
                 help = ("Caminho até o diretório com os arquivos csv com base sivep gripe"),
-                default = "../dados/estado_SP/SRAG_hospitalizados/dados/",
+                default = "../dados/SIVEP-Gripe",
                 metavar = "dir"),
     make_option("--tipo", default = "srag",
                 help = ("tipo da internação. Só 'srag' ou 'all', srag e covid"),
