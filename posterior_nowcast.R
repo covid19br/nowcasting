@@ -7,8 +7,11 @@ if (sys.nframe() == 0L) {
   option_list <- list(
     make_option("--dir",
                 help = ("Caminho até o diretório com os arquivos csv com base sivep gripe"),
-                default = "../dados/estado_SP/SRAG_hospitalizados/dados/",
+                default = "../dados/SIVEP-Gripe/",
                 metavar = "dir"),
+    make_option("--trim", default = 5,
+                help = ("Número de dias para excluir no final da série."),
+                metavar = "trim"),
     make_option("--tipo", default = "covid",
                 help = ("tipo da internação. 'srag' ou 'covid."),
                 metavar = "tipo"),
@@ -39,15 +42,9 @@ if (sys.nframe() == 0L) {
     make_option("--dataBase", default = NULL,
                 help = ("Data da base de dados, formato 'yyyy_mm_dd'"),
                 metavar = "dataBase"),
-    make_option("--dataInicial", default = as.Date("2020-03-08"),
-                help = ("Data do início dos casos, formato 'yyyy_mm_dd'"),
-                metavar = "dataInicial"),
     make_option("--formatoData", default = "%Y_%m_%d",
                 help = ("Formato do campo de datas no csv, confome padrão da função as.Date"),#ast antes de tirar checar outras fontes de dados
                 metavar = "formatoData"),
-    make_option("--fix_dates", default = FALSE,
-                help = ("Booleana. Define se as os casos com datas inconsistentes devem ser concertadas (TRUE) ou excluídas (FALSE)"),
-                metavar = "fix_dates"),
     make_option("--out_dir", default = NULL,
                 help = ("Pasta de saída dos resultados"),
                 metavar = "out_dir")
@@ -66,21 +63,18 @@ if (sys.nframe() == 0L) {
   opt <- parse_args(parser_object, args = commandArgs(trailingOnly = TRUE), positional_arguments = TRUE)
   DATAROOT <- opt$options$dir
   out.root <- if(is.null(opt$options$out_dir)) {"../dados_processados"} else opt$options$out_dir
+  trim <- opt$options$trim
   disease <- opt$options$tipo
   escala <- opt$options$escala
   sigla <- opt$options$sigla
   geocode <- opt$options$geocode
   window <- opt$options$window
   data_date <- if(is.null(opt$options$dataBase)) {NULL} else as.Date(opt$options$dataBase, format("%Y_%m_%d"))
-  initial_date <- as.Date(opt$options$dataInicial)
   formato.data <- opt$options$formatoData
-  fix_missing_dates <- opt$options$fix_dates
   nAdapt = opt$options$nAdapt
   nBurnin = opt$options$nBurnin
   nThin = opt$options$nThin
   nSamp = opt$options$nSamp
-
-
 }
 
 ####################################################
@@ -134,8 +128,6 @@ P = function(...) file.path(PRJROOT, ...)
 CODEROOT = paste0(PRJROOT, "/_src/projecao_leitos")
 C = function(...) file.path(CODEROOT, ...)	
 
-srag_files = sort(grep("SRAGH_2020", dir(file.path(DATAROOT), full.names = TRUE), value = TRUE))
-
 ### Set if looking for specific date
 #data_date = as.Date("2020-04-02")
 #data_date = NULL\
@@ -177,43 +169,11 @@ srag.dt = srag.20.raw %>%
 covid.dt = srag.dt %>%
   dplyr::filter(pcr_sars2 == 1 | classi_fin == 5) 
 
-if(!exists("fix_missing_dates") || fix_missing_dates){
-  if(!exists("fix_missing_dates"))
-    warning("'fix_missing_dates' variable is missing, assuming TRUE.")
-  excluded = srag.dt %>%
-    dplyr::filter((!is.na(evolucao) & is.na(dt_evo))) %>%
-    nrow
-  if(excluded > 0){
-    warning(paste("Fixing", excluded, "records with inconsistent dates."))
-    load(C("hospitalStatsFits.Rdata"))
-    if(!require(brms)){install.packages("brms"); library(brms)}
-    srag.dt %<>%
-      ddply(.(ID), fixUTIDates, time_fits0$srag$UTI) %>%
-      ddply(.(ID), fixEVODates, time_fits0$srag$afterUTI, time_fits0$srag$notUTI) %>%
-      as.data.frame()
-    covid.dt %<>%
-      ddply(.(ID), fixUTIDates, time_fits0$covid$UTI) %>%
-      ddply(.(ID), fixEVODates, time_fits0$covid$afterUTI, time_fits0$covid$notUTI) %>%
-      as.data.frame()
-  }
-} else{
-  excluded = srag.dt %>%
-    dplyr::filter((!is.na(evolucao) & is.na(dt_evo))) %>%
-    nrow
-  warning(paste("Excluded", excluded, "records for inconsistent dates."))
-  srag.dt = srag.dt %>%
-    dplyr::filter(!(!is.na(evolucao) & is.na(dt_evo)))  %>%
-    as.data.frame()
-  covid.dt = srag.dt %>%
-    dplyr::filter(pcr_sars2 == 1)  %>%
-    as.data.frame()
-}
-
 say(paste("READ FILES FOR DATE:", format(data_date, "%d %B %Y")), "cat")
 
 if(disease=="srag") dados = srag.dt
 if(disease=="covid") dados = covid.dt
-now.Date  <-  max(dados$dt_sin)
+now.Date  <-  max(dados$dt_sin) - trim
 nowcast_posterior <- NobBS.posterior(
   data = dados,
   now = now.Date,
