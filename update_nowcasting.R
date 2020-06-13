@@ -1,17 +1,5 @@
 # Libraries
-library(widgetframe)
-library(tidyverse)
-library(plotly)
-library(lubridate)
 library(optparse)
-library(Hmisc)
-library(stringr)
-library(foreign)
-library(dplyr)
-library(NobBS)
-library(zoo)
-library(tidyr)
-
 
 # carrega funcoes----
 source("_src/funcoes.R")

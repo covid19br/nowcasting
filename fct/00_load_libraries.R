@@ -1,3 +1,4 @@
+if(!require(Hmisc)){install.packages("Hmisc"); library(Hmisc)}
 if(!require(plyr)){install.packages("plyr"); library(plyr)}
 if(!require(tidyverse)){install.packages("tidyverse"); library(tidyverse)}
 if(!require(lubridate)){install.packages("lubridate"); library(lubridate)}
@@ -13,4 +14,9 @@ if(!require(brms)){install.packages("brms"); library(brms)}
 if(!require(doMC)){install.packages("doMC"); library(doMC)}
 if(!require(cowsay)){install.packages("cowsay"); library(cowsay)}
 if(!require(aweek)){install.packages("aweek"); library(aweek)}
+if(!require(dplyr))    {install.packages("dplyr")    }; library(dplyr)
+if(!require(textclean)){install.packages("textclean")}; library(textclean)
+if(!require(zoo))      {install.packages("zoo")      }; library(zoo)
+if(!require(EpiEstim)) {install.packages("EpiEstim") }; library(EpiEstim)
+if(!require(stringr))  {install.packages("stringr")  }; library(stringr)
 options(mc.cores = parallel::detectCores())
