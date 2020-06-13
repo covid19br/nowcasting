@@ -119,7 +119,6 @@ if(exists("PRJROOT")){
 
 P = function(...) file.path(PRJROOT, ...)
 
-source(P("fct/load_packages.R"))
 source(P("_src/funcoes.R"))
 
 name_path <- check.geocode(escala = escala, geocode = geocode, sigla = sigla)#ast falta checar outras escalas e fontes de dados e destinos para push
