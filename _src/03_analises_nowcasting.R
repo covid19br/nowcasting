@@ -38,12 +38,12 @@ if (existe.covid) {
   names(td.now) <- c("estimativa", "ic.inf", "ic.sup")
 
   ## 1.4. Corta a partir do dia com >= 10 casos ####
-  dia.zero <- time(lista.covid$now.pred.zoo)[min(which(lista.covid$now.pred.zoo$n.casos >= 10, arr.ind = TRUE))]
-  if (!is.na(dia.zero)) {
-    if (dia.zero < "2020-03-15") dia.zero <- as.Date("2020-03-15")
-    now.pred.zoo <- window(lista.covid$now.pred.zoo, start = dia.zero)
-    now.proj.zoo <- window(now.proj.zoo, start = dia.zero)
-    td.now <- window(td.now, start = dia.zero)
+  dia.zero.covid <- time(lista.covid$now.pred.zoo)[min(which(lista.covid$now.pred.zoo$n.casos >= 1, arr.ind = TRUE))]
+  if (!is.na(dia.zero.covid)) {
+    if (dia.zero.covid < "2020-03-15") dia.zero.covid <- as.Date("2020-03-15")
+    now.pred.zoo <- window(lista.covid$now.pred.zoo, start = dia.zero.covid)
+    now.proj.zoo <- window(now.proj.zoo, start = dia.zero.covid)
+    td.now <- window(td.now, start = dia.zero.covid)
   } else {
     now.pred.zoo <- lista.covid$now.pred.zoo
   }
@@ -97,7 +97,7 @@ if (existe.srag) {
   names(td.now.srag) <- c("estimativa", "ic.inf", "ic.sup")
 
   ## 2.4. Corta a casos >=10
-  dia.zero.srag <- time(lista.srag$now.pred.zoo)[min(which(lista.srag$now.pred.zoo$n.casos >= 10,
+  dia.zero.srag <- time(lista.srag$now.pred.zoo)[min(which(lista.srag$now.pred.zoo$n.casos >= 1,
                                                       arr.ind = TRUE))]
   if (!is.na(dia.zero.srag)) {
     if (dia.zero.srag < "2020-03-15") dia.zero.srag <- as.Date("2020-03-15")
@@ -146,8 +146,10 @@ if (existe.ob.covid) {
   td.now.ob.covid <- td.now.ob.covid[, c(1, 3, 2)]
   names(td.now.ob.covid) <- c("estimativa", "ic.inf", "ic.sup")
 
-  ## 3.3. Corta a partir do dia com >= 10 casos ####
-  dia.zero.ob.covid <- time(lista.ob.covid$now.pred.zoo)[min(which(lista.ob.covid$now.pred.zoo$n.casos >= 10, arr.ind = TRUE))]
+  ## 3.3. Corta a partir do dia com >= 1 casos ####
+  if (!is.na(dia.zero.covid)) dia.zero.ob.covid <- dia.zero.covid
+  else dia.zero.ob.covid <- time(lista.ob.covid$now.pred.zoo)[min(which(lista.ob.covid$now.pred.zoo$n.casos >= 1, arr.ind = TRUE))]
+
   if (!is.na(dia.zero.ob.covid)) {
     if (dia.zero.ob.covid < "2020-03-15") dia.zero.ob.covid <- as.Date("2020-03-15")
     now.ob.covid.pred.zoo <- window(lista.ob.covid$now.pred.zoo, start = dia.zero.ob.covid)
@@ -192,8 +194,9 @@ if (existe.ob.srag) {
   td.now.ob.srag <- td.now.ob.srag[, c(1, 3, 2)]
   names(td.now.ob.srag) <- c("estimativa", "ic.inf", "ic.sup")
 
-  ## 4.3. Corta a casos >=10
-  dia.zero.ob.srag <- time(lista.ob.srag$now.pred.zoo)[min(which(lista.ob.srag$now.pred.zoo$n.casos >= 10,
+  ## 4.3. Corta a casos >=1
+  if (!is.na(dia.zero.srag)) dia.zero.ob.srag <- dia.zero.srag
+  else dia.zero.ob.srag <- time(lista.ob.srag$now.pred.zoo)[min(which(lista.ob.srag$now.pred.zoo$n.casos >= 1,
                                                            arr.ind = TRUE))]
   if (!is.na(dia.zero.ob.srag)) {
     if (dia.zero.ob.srag < "2020-03-15") dia.zero.ob.srag <- as.Date("2020-03-15")
@@ -242,7 +245,7 @@ if (existe.ob.srag.proaim) {
   names(td.now.ob.srag.proaim) <- c("estimativa", "ic.inf", "ic.sup")
 
   ## 4.4. Corta a casos >=10
-  dia.zero.ob.srag.proaim <- time(lista.ob.srag.proaim$now.pred.zoo)[min(which(lista.ob.srag$now.pred.zoo$n.casos >= 10,
+  dia.zero.ob.srag.proaim <- time(lista.ob.srag.proaim$now.pred.zoo)[min(which(lista.ob.srag$now.pred.zoo$n.casos >= 1,
                                                                  arr.ind = TRUE))]
   if (!is.na(dia.zero.ob.srag.proaim)) {
     if (dia.zero.ob.srag.proaim < "2020-03-15") dia.zero.ob.srag.proaim <- as.Date("2020-03-15")
