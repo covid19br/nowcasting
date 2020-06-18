@@ -25,9 +25,13 @@ if (existe.covid) {
 
 
   ## 1.2 Cálculo do R efetivo ####
-  Re.now <- Re.com.data(ncasos = lista.covid$now.pred.zoo$upper.merged,
-                        datas = time(lista.covid$now.pred.zoo),
-                        delay = 7)
+  if (Rmethod == "old_Cori")
+    Re.now <- Re.com.data(ncasos = lista.covid$now.pred.zoo$upper.merged,
+                          datas = time(lista.covid$now.pred.zoo),
+                          delay = 7)
+  else
+    # TODO
+    Re.now <- Re.generico
   ## Objeto time series indexado pela data de fim de cada janela de cálculo
   Re.now.zoo <- zoo(Re.now$R[, -(12:13)], Re.now$R[, 13])
 
@@ -85,8 +89,12 @@ if (existe.srag) {
 
   ## 2.2 Cálculo do R efetivo ####
   ## SRAG ##
-  Re.now.srag <- Re.com.data(ncasos = lista.srag$now.pred.zoo$upper.merged,
-                             datas = time(lista.srag$now.pred.zoo), delay = 7)
+  if (Rmethod == "old_Cori")
+    Re.now.srag <- Re.com.data(ncasos = lista.srag$now.pred.zoo$upper.merged,
+                               datas = time(lista.srag$now.pred.zoo), delay = 7)
+  else
+    # TODO
+    Re.now.srag <- Re.generico
   ## Objeto time series indexado pela data de fim de cada janela de cálculo
   Re.now.srag.zoo <- zoo(Re.now.srag$R[, -(12:13)], Re.now.srag$R[, 13])
 

@@ -179,4 +179,4 @@ nowcast_posterior <- NobBS.posterior(
   specs = list(nAdapt = nAdapt, nBurnin = nBurnin, nThin = nThin, nSamp = nSamp)
 )
 
-write_csv(nowcast_posterior, path = O(paste0(data_date, "_posterior_trajetoria_nowcast_", disease, ".csv")))
+write_csv(nowcast_posterior$trajectories, path = O(paste0(data_date, "_posterior_trajetoria_nowcast_", disease, ".csv")))

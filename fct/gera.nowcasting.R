@@ -3,7 +3,10 @@ gera.nowcasting <- function(dados, # dados
                             tipo, # covid ou srag
                             hospitalizados = TRUE,
                             trim.now, # corte para nowcasting
-                            window) { # janela para nowcasting
+                            window, # janela para nowcasting
+                            trajectories = FALSE) { # retorna trajetórias
+  if(trajectories)
+      NobBS  <- NobBS.posterior
   # 1. nowcasting de casos ###
   if (caso) {
       if (hospitalizados)
