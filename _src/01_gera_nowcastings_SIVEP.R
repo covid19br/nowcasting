@@ -36,13 +36,15 @@ now.covid <- gera.nowcasting(dados = dados,
                              caso = TRUE,
                              tipo = "covid",
                              trim.now = trim.now,
-                             window = window)
+                             window = window,
+                             trajectories = trajectories)
 
 now.srag <- gera.nowcasting(dados = dados,
                             caso = TRUE,
                             tipo = "srag",
                             trim.now = trim.now,
-                            window = window)
+                            window = window,
+                            trajectories = trajectories)
 
 now.ob.covid <- gera.nowcasting(dados = dados,
                                 caso = FALSE,

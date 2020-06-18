@@ -49,7 +49,10 @@ if (sys.nframe() == 0L) {
                 metavar = "residentes"),
     make_option("--hospitalizados", default = TRUE,
                 help = ("Filtrar só por hospitalizados? Default: TRUE"),
-                metavar = "hospitalizados")
+                metavar = "hospitalizados"),
+    make_option("--Rmethod", default = "old_Cori",
+                help = ("Método de cálculo do R efetivo. Default: old_Cori"),
+                metavar = "Rmethod")
   )
   parser_object <- OptionParser(usage = "Rscript %prog [Opções] [ARQUIVO]\n",
                                 option_list = option_list,
@@ -77,6 +80,7 @@ if (sys.nframe() == 0L) {
   plots <- opt$options$plot
   residentes <- opt$options$residentes
   hospitalizados <- opt$options$hospitalizados
+  Rmethod <- opt$Rmethod
 }
 ####################################################
 ### to run INTERACTIVELY:
@@ -114,6 +118,13 @@ if (update.git)
 if (is.null(data)) {
   data <- get.last.date(dir)
 }
+
+# métodos de cálculo de R "novos" dependem de trajetórias de nowcasting
+if (Rmethod == "old_Cori")
+    trajectories <- FALSE
+# TODO: especificar outros métodos explicitamente
+else
+    trajectories <- TRUE
 
 print(paste("Atualizando", gsub(x = name_path, pattern = "/", replacement = " "), data))
 

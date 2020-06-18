@@ -4,9 +4,11 @@
 #' Função para automatizar a preparação dos dados de nowcasting por unidade administrativa
 #' @details Retira datas dos sufixos dos nomes das bases e identifica a maior data. Só funciona se os nomes das bases forem mantidos no padrão
 #' @param tipo Caractere. Nome da base de dados para preparar. Tipos possíveis: `covid` para casos de COVID-19, `srag` para casos de SRAG, `obitos_covid` para óbitos por COVID-19 e `obitos_srag` para óbitos por SRAG
+#' @param trajectories bool carregar trajetórias de projeções do nowcasting
 prepara.dados <- function(tipo = "covid",
                           data.base,
-                          output.dir = output.dir) { # tipos possiveis: covid, srag, obitos_covid e obitos_srag
+                          output.dir = output.dir, # tipos possiveis: covid, srag, obitos_covid e obitos_srag
+                          trajectories = FALSE) {
     casos <- c("covid", "srag")
     obitos <- c("obitos_covid", "obitos_srag")
     proaim <- c("proaim_obitos_srag")
@@ -85,6 +87,12 @@ prepara.dados <- function(tipo = "covid",
                  now.pred.zoo.original = now.pred.zoo.original
                  ##now.lista = now.lista
     )
+
+    ## Data frame com as trajetórias de projeções do Nowcasting
+    if (trajectories) {
+        pred[["trajectories"]] <- read.csv(paste0(nome.dir, "nowcasting_", tipo, "_traj_", data.base, ".csv"))
+        pred$trajectories$date <- as.Date(pred$trajectories$date)
+    }
 
     return(pred)
 }

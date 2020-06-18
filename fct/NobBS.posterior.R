@@ -275,7 +275,8 @@ NobBS.posterior <- function(data, now, units, onset_date, report_date, moving_wi
   trajetoria = pivot_wider(m_post, names_from = sample, values_from = value) %>%
     dplyr::mutate(variable = as.Date(as.numeric(variable), origin = now-moving_window)) %>%
     dplyr::rename(date = variable)
-  trajetoria
+
+  list(estimates=estimates,estimates.inflated=estimates.inflated, nowcast.post.samps=nowcast.post.samps,params.post=parameter_extract[,2:ncol(parameter_extract)],trajectories=trajetoria)
 }
 
 #now.Date.covid  <-  max(covid.dt$dt_sin)

@@ -37,7 +37,8 @@ if (existe.covid) {
   data.covid <- data
   lista.covid <- prepara.dados(tipo = "covid",
                                data.base = data.covid,
-                               output.dir = out.path)
+                               output.dir = out.path,
+                               trajectories = trajectories)
     }
 
 ################################################################################
@@ -47,7 +48,8 @@ if (existe.srag) {
     data.srag <- data
     lista.srag <- prepara.dados(tipo = "srag",
                                 data.base = data.srag,
-                                output.dir = out.path)
+                                output.dir = out.path,
+                                trajectories = trajectories)
   }
 
 ################################################################################
