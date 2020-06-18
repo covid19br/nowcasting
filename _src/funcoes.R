@@ -168,6 +168,28 @@ countByAgeClass = function(df){
   out[is.na(out)] = 0
   return(out)
 }
+#' Conta número de linhas de um arquivo de texto, zipado ou bzipado ou xzeado
+#' @param filename Caractere. Caminho do arquivo
+count.lines <- function(filename){
+    if (endsWith(filename, 'csv'))
+        return(as.integer(system2('wc',
+                                  args=c('-l', filename, ' | cut -d" " -f1'),
+                                  stdout=T)))
+    else if (endsWith(filename, 'zip'))
+        return(as.integer(system2('zgrep', args=c('-c', '$', filename),
+                                  stdout=T)))
+    else if (endsWith(filename, 'bz2'))
+        return(as.integer(system2('bzgrep', args=c('-c', '$', filename),
+                                  stdout=T)))
+    else if (endsWith(filename, 'xz'))
+        return(as.integer(system2('xzgrep', args=c('-c', '$', filename),
+                                  stdout=T)))
+    else {
+        print("Tipo de arquivo desconhecido")
+        return(0)
+    }
+}
+
 #' Corta uma série temporal no dia zero.
 #' @details Esta função corta um objeto da classe zoo, tirando todos
 #'     os valores anteriores ao primeiro valor igual a um certo limite
@@ -532,7 +554,10 @@ gera.nowcasting <- function(dados, # dados
                             tipo, # covid ou srag
                             hospitalizados = TRUE,
                             trim.now, # corte para nowcasting
-                            window) { # janela para nowcasting
+                            window, # janela para nowcasting
+                            trajectories = FALSE) { # retorna trajetórias
+  if(trajectories)
+      NobBS  <- NobBS.posterior
   # 1. nowcasting de casos ###
   if (caso) {
       if (hospitalizados)
@@ -998,7 +1023,8 @@ NobBS.posterior <- function(data, now, units, onset_date, report_date, moving_wi
   trajetoria = pivot_wider(m_post, names_from = sample, values_from = value) %>%
     dplyr::mutate(variable = as.Date(as.numeric(variable), origin = now-moving_window)) %>%
     dplyr::rename(date = variable)
-  trajetoria
+
+  list(estimates=estimates,estimates.inflated=estimates.inflated, nowcast.post.samps=nowcast.post.samps,params.post=parameter_extract[,2:ncol(parameter_extract)],trajectories=trajetoria)
 }
 
 #now.Date.covid  <-  max(covid.dt$dt_sin)
@@ -1211,9 +1237,11 @@ preenche.now <- function(vetor.now, vetor.casos) {
 #' Função para automatizar a preparação dos dados de nowcasting por unidade administrativa
 #' @details Retira datas dos sufixos dos nomes das bases e identifica a maior data. Só funciona se os nomes das bases forem mantidos no padrão
 #' @param tipo Caractere. Nome da base de dados para preparar. Tipos possíveis: `covid` para casos de COVID-19, `srag` para casos de SRAG, `obitos_covid` para óbitos por COVID-19 e `obitos_srag` para óbitos por SRAG
+#' @param trajectories bool carregar trajetórias de projeções do nowcasting
 prepara.dados <- function(tipo = "covid",
                           data.base,
-                          output.dir = output.dir) { # tipos possiveis: covid, srag, obitos_covid e obitos_srag
+                          output.dir = output.dir, # tipos possiveis: covid, srag, obitos_covid e obitos_srag
+                          trajectories = FALSE) {
     casos <- c("covid", "srag")
     obitos <- c("obitos_covid", "obitos_srag")
     proaim <- c("proaim_obitos_srag")
@@ -1292,6 +1320,12 @@ prepara.dados <- function(tipo = "covid",
                  now.pred.zoo.original = now.pred.zoo.original
                  ##now.lista = now.lista
     )
+
+    ## Data frame com as trajetórias de projeções do Nowcasting
+    if (trajectories) {
+        pred[["trajectories"]] <- read.csv(paste0(nome.dir, "nowcasting_", tipo, "_traj_", data.base, ".csv"))
+        pred$trajectories$date <- as.Date(pred$trajectories$date)
+    }
 
     return(pred)
 }
@@ -1574,6 +1608,14 @@ write.nowcasting <- function(now,
   write.csv(now$params.post,
             file = nome.now.post,
             row.names = FALSE)
+
+  # seria melhor usar um argumento?
+  if ("trajectories" %in% names(now)){
+    nome.now.traj <- paste0(output.dir, "nowcasting_", tipo, "_traj_", data, ".csv")
+    write.csv(now$trajectories,
+              file = nome.now.traj,
+              row.names = FALSE)
+  }
 }
 
 # funcao para converter zoo em df
