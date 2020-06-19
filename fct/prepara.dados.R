@@ -8,7 +8,8 @@
 prepara.dados <- function(tipo = "covid",
                           data.base,
                           output.dir = output.dir, # tipos possiveis: covid, srag, obitos_covid e obitos_srag
-                          trajectories = FALSE) {
+                          trajectories = FALSE,
+                          include.post = TRUE) {
     casos <- c("covid", "srag")
     obitos <- c("obitos_covid", "obitos_srag")
     proaim <- c("proaim_obitos_srag")
@@ -76,18 +77,18 @@ prepara.dados <- function(tipo = "covid",
     ## Lista com todos os resultados no nowcasting
     ##now.lista <- readRDS(paste0(nome.dir, "nowcasting_", tipo, "_", data.base, ".rds"))
 
-    ## Data frame com as posteriores dos parametros estimados do Nowcasting
-    now.params.post <- read.csv(paste0(nome.dir, "nowcasting_", tipo, "_post_", data.base, ".csv"))
-
     # lista para salvar os objetos
     pred <- list(now.pred = now.pred,
                  now.pred.zoo = now.pred.zoo,
-                 now.params.post = now.params.post,
+                 ##now.params.post = now.params.post,
                  now.pred.original = now.pred.original,
                  now.pred.zoo.original = now.pred.zoo.original
                  ##now.lista = now.lista
-    )
-
+                 )
+    ## PIP: argumento que permite incluir ou não as posteriores dos parâmetros do nowcasting
+    if(include.post)
+        pred[["now.params.post"]] <- read.csv(paste0(nome.dir, "nowcasting_", tipo, "_post_", data.base, ".csv"))
+    
     ## Data frame com as trajetórias de projeções do Nowcasting
     if (trajectories) {
         pred[["trajectories"]] <- read.csv(paste0(nome.dir, "nowcasting_", tipo, "_traj_", data.base, ".csv"))
