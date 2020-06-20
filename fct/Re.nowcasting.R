@@ -9,8 +9,9 @@ Re.nowcasting <- function(R.method,
                           ...) {
   if (missing(Nsamples))
       Nsamples <- ncol(trajectories) - 1
-  # replace or not?
-  samples <- sample(2:ncol(trajectories), Nsamples, replace = TRUE)
+  # trajetórias são auto-correlacionas, melhor sampling é com maior distância
+  # possível entre os índices - usamos intervalos regulares
+  samples <- round(seq(1, N, length.out = Nsamples))
   fun <- function(traj){
     casos <- fill.dates(data.frame(onset = trajectories$date, n.casos = traj), 2)
     res <- R.method(casos$incidence)$r_sample
