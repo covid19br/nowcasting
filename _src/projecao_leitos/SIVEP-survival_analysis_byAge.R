@@ -11,7 +11,6 @@ P = function(...) file.path(PRJROOT, ...)
 CODEROOT = paste0(PRJROOT, "/_src/projecao_leitos")
 C = function(...) file.path(CODEROOT, ...)	
 
-source(P("fct/load_packages.R"))
 source(P("_src/funcoes.R"))
 
 all_models = TRUE
@@ -139,6 +138,74 @@ if(all_models){
 # current_age = age_table$ID[1]
 # ldply(age_table$ID, function(current_age) quantile(rwaittime_age(10000, current_age, fit1_hosp), c(0.1, 0.5, 0.9))) %>%
 #   round(1) %>% mutate(age = age_table$faixas) %>% select(age, everything()) 
+
+# Time to death
+sintDeath_covid <-
+  ddply(filter(covid.dt, evolucao == 2), 
+        .(ID), 
+        getTimes, "dt_evo", "dt_sin", censored = FALSE) %>% 
+  mutate(time = time + 1) %>% 
+  filter(time >= 1 & time <= today() - as.Date("2020-03-08"))
+
+sintDeath_srag <- 
+  ddply(filter(srag.dt, evolucao == 2), 
+        .(ID), 
+        getTimes, "dt_evo", "dt_sin", censored = FALSE) %>% 
+  mutate(time = time + 1) %>% 
+  filter(time >= 1 & time <= today() - as.Date("2020-03-08"))
+
+fit0_sintDeath_covid <- brm(time ~ 1, 
+                             data = sintDeath_covid, family = weibull,  
+                             prior = c(prior("normal(0, 1)", class = "Intercept"),
+                                       prior("normal(0, 0.5)", class = "shape")),
+                             control = list(adapt_delta = 0.99))
+
+fit0_sintDeath_srag <- brm(time ~ 1, 
+                            data = sintDeath_srag, family = weibull,  
+                            prior = c(prior("normal(0, 1)", class = "Intercept"),
+                                      prior("normal(0, 0.5)", class = "shape")),
+                            control = list(adapt_delta = 0.99))
+plotTimesValidation(sintDeath_srag, fit0_sintDeath_srag, FALSE)
+
+
+fit1_sintDeath_covid <- brm(time ~ 1 + (1|age_class), 
+                             data = sintDeath_covid, family = weibull,  
+                             prior = c(prior("normal(0, 1)", class = "sd"), 
+                                       prior("normal(0, 1)", class = "Intercept"),
+                                       prior("normal(0, 0.5)", class = "shape")),
+                             control = list(adapt_delta = 0.99))
+plotTimesValidation(sintDeath_covid, fit1_sintDeath_covid)
+
+
+fit1_sintDeath_srag <- brm(time ~ 1 + (1|age_class), 
+                            data = sintDeath_srag, family = weibull,  
+                            prior = c(prior("normal(0, 1)", class = "sd"), 
+                                      prior("normal(0, 1)", class = "Intercept"),
+                                      prior("normal(0, 0.5)", class = "shape")),
+                            control = list(adapt_delta = 0.99))
+plotTimesValidation(sintDeath_srag, fit1_sintDeath_srag)
+
+
+if(all_models){
+  sintDeath_times_covid <-
+    ldply(age_table$ID, 
+          function(age, fit1) quantile(rwaittime_posterior_age(100, age, fit1), 
+                                       c(0.025, 0.2, 0.5, 0.8, 0.975)), 
+          fit1_sintDeath_covid) %>% 
+    mutate(faixas = age_table$faixas) %>% 
+    select(faixas, everything())
+  
+  sintDeath_times_srag <-
+    ldply(age_table$ID, 
+          function(age, fit1) quantile(rwaittime_posterior_age(100, age, fit1), 
+                                       c(0.025, 0.2, 0.5, 0.8, 0.975)), 
+          fit1_sintDeath_srag) %>% 
+    mutate(faixas = age_table$faixas) %>% 
+    select(faixas, everything())
+  
+  write_csv(sintDeath_times_covid, EXPORT("sintDeath_times_covid"))
+  write_csv(sintDeath_times_srag, EXPORT("sintDeath_times_srag"))
+}
 
 # tempo de hospitalização em leito comum, 
 
