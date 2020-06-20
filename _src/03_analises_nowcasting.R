@@ -29,9 +29,11 @@ if (existe.covid) {
     Re.now <- Re.com.data(ncasos = lista.covid$now.pred.zoo$upper.merged,
                           datas = time(lista.covid$now.pred.zoo),
                           delay = 7)
-  else
-    # TODO
-    Re.now <- Re.generico
+  else if (Rmethod == "Cori")
+    Re.now <- Re.nowcasting(default.R.cori,
+                            lista.covid$trajectories,
+                            Nsamples = 1000,
+                            .parallel = TRUE)
   ## Objeto time series indexado pela data de fim de cada janela de cálculo
   Re.now.zoo <- zoo(Re.now$R[, -(12:13)], Re.now$R[, 13])
 
@@ -92,9 +94,12 @@ if (existe.srag) {
   if (Rmethod == "old_Cori")
     Re.now.srag <- Re.com.data(ncasos = lista.srag$now.pred.zoo$upper.merged,
                                datas = time(lista.srag$now.pred.zoo), delay = 7)
-  else
-    # TODO
-    Re.now.srag <- Re.generico
+  else if (Rmethod == "Cori")
+    Re.now <- Re.nowcasting(default.R.cori,
+                            lista.covid$trajectories,
+                            Nsamples = 1000,
+                            .parallel = TRUE)
+
   ## Objeto time series indexado pela data de fim de cada janela de cálculo
   Re.now.srag.zoo <- zoo(Re.now.srag$R[, -(12:13)], Re.now.srag$R[, 13])
 
