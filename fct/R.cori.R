@@ -4,16 +4,6 @@ require(coda)
 nd <- read.table("./dados/nishi_si_table.txt", header = TRUE)
 nishi_si <- read.table("./dados/nishi_si_posterior.txt", header = TRUE)
 
-default.R.cori <- partial(estimate.R0.cori,
-                          delay = 7,
-                          day0 = 2,
-                          method = "si_from_sample",
-                          si.data = nd, 
-                          si.sample = nishi_si[,sample(1:ncol(nd), 1)], # Samples 1 SI interval
-                          p.distribution = "G",
-                          modified = TRUE,
-                          n2 = 50)
-
 estimate.R0.cori <- function(novos.casos, day0 = NA, delay=7, method, parameter.table, 
                              p.distribution, bayes.control, si.data, si.sample, modified = FALSE, n2 = NA, ...) {
 
@@ -539,3 +529,15 @@ estimate_R_func <- function(incid,
   class(results) <- "estimate_R"
   return(results)
 }
+
+
+default.R.cori <- partial(estimate.R0.cori,
+                          delay = 7,
+                          day0 = 2,
+                          method = "si_from_sample",
+                          si.data = nd, 
+                          si.sample = nishi_si[,sample(1:ncol(nd), 1)], # Samples 1 SI interval
+                          p.distribution = "G",
+                          modified = TRUE,
+                          n2 = 50)
+
