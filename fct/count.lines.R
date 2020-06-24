@@ -6,7 +6,7 @@ count.lines <- function(filename){
                                   args=c('-l', filename, ' | cut -d" " -f1'),
                                   stdout=T)))
     else if (endsWith(filename, 'zip'))
-        return(as.integer(system2('zgrep', args=c('-c', '$', filename),
+        return(as.integer(system2('unzip', args=c('-c', filename, '| wc -l'),
                                   stdout=T)))
     else if (endsWith(filename, 'bz2'))
         return(as.integer(system2('bzgrep', args=c('-c', '$', filename),

@@ -1,0 +1,80 @@
+---
+title: "`r paste('Análise de integridade dos dados das bases SIVEP até', data)`"
+date: "`r Sys.Date()`"
+author: "Observatório COVID-19 BR"
+output:
+  rmdformats::readthedown:
+    code_folding: hide
+    self_contained: true
+    thumbnails: false
+    lightbox: false
+---
+
+```{r knitr_init, echo=FALSE, results="asis", cache=FALSE}
+library(knitr)
+library(rmdformats)
+library(stringr)
+## Global options
+options(max.print = "75")
+opts_chunk$set(echo = FALSE,
+	           cache = FALSE,
+               prompt = FALSE,
+               tidy = FALSE,
+               comment = NA,
+               message = FALSE,
+               warning = FALSE)
+opts_knit$set(width = 75)
+```
+## Tabela comparativa das bases
+
+```{r tabela}
+kable(db.info[order(db.info$data, decreasing = TRUE), -2],
+      col.names = c("data", "registros lidos", "linhas do arquivo", 
+                      "casos Covid", "casos SRAG",
+                      "óbitos Covid", "óbitos SRAG"),
+      row.names = FALSE
+      )
+```
+
+## Casos SRAG
+
+```{r plot_compara_srag}
+plot.srag
+```
+
+## Casos Covid
+
+```{r plot_compara_covid}
+plot.covid
+```
+
+
+## Óbitos SRAG
+
+```{r plot_compara_obitos_srag}
+plot.obitos.srag
+```
+
+## Óbitos Covid
+
+```{r plot_compara_obitos_covid}
+plot.obitos.covid
+```
+
+
+# Observatório COVID-19 BR
+
+O Observatório Covid-19 BR é uma iniciativa independente, fruto da
+colaboração entre pesquisadores com o desejo de contribuir para a
+disseminação de informação de qualidade baseada em dados atualizados e
+análises cientificamente embasadas. 
+
+Criamos um sítio com códigos de fonte aberta que nos permite
+acompanhar o estado atual da epidemia de Covid-19 no Brasil, incluindo
+análises estatísticas e previsões. Modelos estatísticos e matemáticos
+para previsões da epidemia estão em preparação
+
+**Site:** https://covid19br.github.io
+
+**Contato:** obscovid19br@gmail.com
+
