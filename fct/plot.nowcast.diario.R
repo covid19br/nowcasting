@@ -10,7 +10,7 @@ plot.nowcast.diario <- function(df) {
         geom_point(aes(y = estimate, col = "Nowcasting"), size = 2) +
         geom_line(aes(y = estimate.merged.smooth), alpha = 0.6, size = 2) +
         scale_x_date(date_labels = "%d/%b") +
-        scale_color_manual(name = "", values = RColorBrewer::brewer.pal(3, "Set1")[1:2]) +
+        scale_color_manual(name = "", values = RColorBrewer::brewer.pal(3, "Set1")[2:1]) +
         xlab("Dia do primeiro sintoma") +
         ylab("Número de novos casos") +
         plot.formatos +
