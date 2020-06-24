@@ -70,7 +70,7 @@ for (i in seq(N)) {
     summarise(n = n())
   plot.covid <- plot.covid +
       geom_line(data = dados.br,
-                aes(x = dt_sin_pri, y = n, colour = data))
+                aes(x = dt_sin_pri, y = n, colour = factor(data)))
 
   ## 1.2. casos srag ####
   dados2 <- dados %>%
@@ -86,7 +86,7 @@ for (i in seq(N)) {
     summarise(n = n())
   plot.srag <- plot.srag +
       geom_line(data = dados.br,
-                aes(x = dt_sin_pri, y = n, colour = data))
+                aes(x = dt_sin_pri, y = n, colour = factor(data)))
 
   ## 2.1. obitos covid ####
   dados2 <- dados %>%
@@ -106,7 +106,7 @@ for (i in seq(N)) {
     summarise(n = n())
   plot.obitos.covid <- plot.obitos.covid +
       geom_line(data = dados.br,
-                aes(x = dt_evoluca, y = n, colour = data))
+                aes(x = dt_evoluca, y = n, colour = factor(data)))
 
   ## 2.2. obitos srag ####
   dados2 <- dados %>%
@@ -125,7 +125,7 @@ for (i in seq(N)) {
     summarise(n = n())
   plot.obitos.srag <- plot.obitos.srag +
       geom_line(data = dados.br,
-                aes(x = dt_evoluca, y = n, color = data))
+                aes(x = dt_evoluca, y = n, colour = factor(data)))
 
 }
 
