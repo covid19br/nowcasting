@@ -95,8 +95,8 @@ if (existe.srag) {
     Re.now.srag <- Re.com.data(ncasos = lista.srag$now.pred.zoo$upper.merged,
                                datas = time(lista.srag$now.pred.zoo), delay = 7)
   else if (Rmethod == "Cori")
-    Re.now <- Re.nowcasting(default.R.cori,
-                            lista.covid$trajectories,
+    Re.now.srag <- Re.nowcasting(default.R.cori,
+                            lista.srag$trajectories,
                             Nsamples = 1000,
                             .parallel = TRUE)
 

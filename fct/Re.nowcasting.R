@@ -9,17 +9,23 @@ Re.nowcasting <- function(R.method,
                           Nsamples,
                           quantiles = TRUE,
                           ...) {
-    N <- ncol(trajectories)
-    if (missing(Nsamples))
-        Nsamples <- N - 1
+  N <- ncol(trajectories)
+  if (missing(Nsamples) | Nsamples > N - 1)
+    Nsamples <- N - 1
   ## trajetórias são auto-correlacionas, melhor sampling é com maior distância
   ## possível entre os índices - usamos intervalos regulares
-  samples <- round(seq(1, N, length.out = Nsamples))
+  samples <- round(seq(2, N, length.out = Nsamples))
   fun <- function(traj){
     casos <- fill.dates(data.frame(onset = trajectories$date, n.casos = traj), 2)
     res <- R.method(casos$incidence)$r_sample
   }
-  re.df <- ldply(samples, fun, ...)
+  re.df <- ldply(trajectories[, samples], fun, .id = NULL, ...)
+  # run a single time to get full output
+  casos <- fill.dates(data.frame(onset = trajectories$date, n.casos = trajectories[, 1]), 2)
+  res <- R.method(casos$incidence)
+  re.df["t_start", ] <- res$R$t_start
+  re.df["t_end", ] <- res$R$t_end
+
   if (!quantiles)
       return(re.df)
   # Calculate quantiles and moments
