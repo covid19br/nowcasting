@@ -1,13 +1,8 @@
+# carrega funcoes----
+source("_src/funcoes.R")
 # Libraries
 library(optparse)
 library(rmarkdown)
-library(purrr)
-library(dplyr)
-library(ggplot2)
-
-# carrega funcoes----
-source("_src/funcoes.R")
-source("fct/count.lines.R")
 
 ################################################################################
 ## Parsing command line arguments
@@ -51,70 +46,86 @@ db.info <- data.frame(data = datas,
                       obitos.covid = NA,
                       obitos.srag = NA)
 N <- dim(db.info)[1]
-dados_covid <- list()
-dados_srag <- list()
-dados_obcovid <- list()
-dados_obsrag <- list()
-dados_br <- list()
-dados_br2 <- list()
-dados_br3 <- list()
-dados_br4 <- list()
-dados_estados <- list()
-dados_estados2 <- list()
-dados_estados3 <- list()
-dados_estados4 <- list()
+dados_covid_br <- list()
+dados_srag_br <- list()
+dados_obcovid_br <- list()
+dados_obsrag_br <- list()
+dados_covid_est <- list()
+dados_srag_est <- list()
+dados_obcovid_est <- list()
+dados_obsrag_est <- list()
 
-#le tudo de vez
-all_sivep <- purrr::map(data_v,
-                  ~read.sivep(dir = dir,
-                              escala = "pais",
-                             data = .))
-#save(all_sivep, file = "all.rda")
-#load("all_sivep.rda")
-#ast deveria ter um jeito de guardar as tabelas anteriores e só ler a mais recente.
+old_dados_covid_br <- read.csv(paste0(out.dir, "/dados_covid_br.csv"))
+old_dados_covid_br$dt_sin_pri <- as.Date(old_dados_covid_br$dt_sin_pri)
+
+old_dados_srag_br <- read.csv(paste0(out.dir, "/dados_srag_br.csv"))
+old_dados_srag_br$dt_sin_pri <- as.Date(old_dados_srag_br$dt_sin_pri)
+
+old_dados_obcovid_br <- read.csv(paste0(out.dir, "/dados_obcovid_br.csv"))
+old_dados_obcovid_br$dt_evoluca <- as.Date(old_dados_obcovid_br$dt_evoluca)
+
+old_dados_obsrag_br <- read.csv(paste0(out.dir, "/dados_obsrag_br.csv"))
+old_dados_obsrag_br$dt_evoluca <- as.Date(old_dados_obsrag_br$dt_evoluca)
+
+old_dados_covid_est <- read.csv(paste0(out.dir, "/dados_covid_est.csv"))
+old_dados_covid_est$dt_sin_pri <- as.Date(old_dados_covid_est$dt_sin_pri)
+
+old_dados_srag_est <- read.csv(paste0(out.dir, "/dados_srag_est.csv"))
+old_dados_srag_est$dt_sin_pri <- as.Date(old_dados_srag_est$dt_sin_pri)
+
+old_dados_obcovid_est <- read.csv(paste0(out.dir, "/dados_obcovid_est.csv"))
+old_dados_obcovid_est$dt_evoluca <- as.Date(old_dados_obcovid_est$dt_evoluca)
+
+old_dados_obsrag_est <- read.csv(paste0(out.dir, "/dados_obsrag_est.csv"))
+old_dados_obsrag_est$dt_evoluca <- as.Date(old_dados_obsrag_est$dt_evoluca)
+
 for (i in seq(N)) {
+  # pula bases que já têm dados
+  datadash <- format(db.info[i,"data"], "%Y-%m-%d")
+  if (exists(old_dados_covid_br) & datadash %in% old_dados_covid_br$data)
+      next
+
   data <- format(db.info[i,"data"], "%Y_%m_%d")
-  dados <- all_sivep[[i]]
+  dados <- read.sivep(dir = dir, escala = "pais",
+                      data = data)
   db.info[i, "size.read"] <- dim(dados)[1]
   db.info[i, "size.file"] <- count.lines(paste0(dir, "/", db.info[i, "file"]))
 
-filename <- paste0(dir, "/", db.info[i, "file"])
   ## 1.1 casos covid ####
-   dados_covid[[i]] <- dados %>%
+  dados2 <- dados %>%
      filter(pcr_sars2 == 1 | classi_fin == 5) %>% #covid com nova classificacao
      select(dt_notific, dt_sin_pri, dt_pcr, dt_digita, sg_uf) %>%
      mutate(dt_pcr_dig = pmax(dt_pcr, dt_digita, dt_notific, na.rm = TRUE)) %>%
      filter(!is.na(dt_pcr_dig))
 
-  dados_br[[i]] <- dados_covid[[i]] %>%
+  dados_covid_br[[i]] <- dados2 %>%
      group_by(dt_sin_pri) %>%
      summarise(n = n())
 
-  db.info[i, "casos.covid"] <- sum(dados_br[[i]]$n)
+  db.info[i, "casos.covid"] <- sum(dados_covid_br[[i]]$n)
 
-  dados_estados[[i]] <- dados_covid[[i]] %>%
+  dados_covid_est[[i]] <- dados2 %>%
     group_by(dt_sin_pri, sg_uf) %>%
     summarise(n = n())
 
+  ## 1.2. casos srag ####
+  dados2 <- dados %>%
+    select(dt_notific, dt_sin_pri, dt_digita, sg_uf) %>%
+    mutate(dt_pcr_dig = pmax(dt_digita, dt_notific, na.rm = TRUE)) %>% # nome aqui é pcr mas não tem pcr
+    filter(!is.na(dt_pcr_dig))
 
-   ## 1.2. casos srag ####
-   dados_srag[[i]] <- dados %>%
-     select(dt_notific, dt_sin_pri, dt_digita, sg_uf) %>%
-     mutate(dt_pcr_dig = pmax(dt_digita, dt_notific, na.rm = TRUE)) %>% # nome aqui é pcr mas não tem pcr
-     filter(!is.na(dt_pcr_dig))
-
-  dados_br2[[i]] <- dados_srag[[i]] %>%
+  dados_srag_br[[i]] <- dados2 %>%
     group_by(dt_sin_pri) %>%
     summarise(n = n())
 
-  db.info[i, "casos.srag"] <- sum(dados_br2[[i]]$n)
+  db.info[i, "casos.srag"] <- sum(dados_srag_br[[i]]$n)
 
-  dados_estados2[[i]] <- dados_srag[[i]] %>%
+  dados_srag_est[[i]] <- dados2 %>%
     group_by(dt_sin_pri, sg_uf) %>%
     summarise(n = n())
 
   ## 2.1. obitos covid ####
-  dados_obcovid[[i]] <- dados %>%
+  dados2 <- dados %>%
     filter(pcr_sars2 == 1 | classi_fin == 5) %>% # covid com nova classificacao
     filter(evolucao == 2) %>%
     filter(!is.na(dt_evoluca)) %>%
@@ -123,18 +134,18 @@ filename <- paste0(dir, "/", db.info[i, "file"])
     select(dt_evoluca, dt_notific, dt_encerra, sg_uf) %>%
     filter(! is.na(dt_encerra))
 
-  dados_br3[[i]] <- dados_obcovid[[i]] %>%
+  dados_obcovid_br[[i]] <- dados2 %>%
     group_by(dt_evoluca) %>%
     summarise(n = n())
 
-  db.info[i, "obitos.covid"] <- sum(dados_br3[[i]]$n)
+  db.info[i, "obitos.covid"] <- sum(dados_obcovid_br[[i]]$n)
 
-  dados_estados3[[i]] <- dados_obcovid[[i]] %>%
+  dados_obcovid_est[[i]] <- dados2 %>%
     group_by(dt_evoluca, sg_uf) %>%
     summarise(n = n())
 
   ## 2.2. obitos srag ####
-  dados_obsrag[[i]] <- dados %>%
+  dados2 <- dados %>%
     filter(evolucao == 2) %>%
     filter(!is.na(dt_evoluca)) %>%
     mutate(dt_encerra = pmax(dt_encerra, dt_digita, dt_evoluca,
@@ -142,28 +153,68 @@ filename <- paste0(dir, "/", db.info[i, "file"])
     select(dt_evoluca, dt_notific, dt_encerra, sg_uf) %>%
     filter(! is.na(dt_encerra))
 
-  dados_br4[[i]] <- dados_obsrag[[i]] %>%
+  dados_obsrag_br[[i]] <- dados2 %>%
     group_by(dt_evoluca) %>%
     summarise(n = n())
 
-  db.info[i, "obitos.srag"] <- sum(dados_br4[[i]]$n)
+  db.info[i, "obitos.srag"] <- sum(dados_obsrag_br[[i]]$n)
 
-  dados_estados4[[i]] <- dados_obsrag[[i]] %>%
+  dados_obsrag_est[[i]] <- dados2 %>%
     group_by(dt_evoluca, sg_uf) %>%
     summarise(n = n())
-
 }
 
-##AST: os plots por fora do loop, usando listas, bind_rows
-#junta tudo
-names(dados_br) <- data_v
-#acrescenta coluna de data
-dados.br <- purrr::map2(.x = dados_br,
-            .y = data_v,
-           ~mutate(.x, data = .y))
-#junta tudo
-dados.br <- bind_rows(dados.br)
-plot.covid <- ggplot(dados.br,
+data_v <- as.character(datas)
+
+if (length(dados_covid_br) > 0) {
+  names(dados_covid_br) <- data_v
+  names(dados_srag_br) <- data_v
+  names(dados_obcovid_br) <- data_v
+  names(dados_obsrag_br) <- data_v
+  names(dados_covid_est) <- data_v
+  names(dados_srag_est) <- data_v
+  names(dados_obcovid_est) <- data_v
+  names(dados_obsrag_est) <- data_v
+  dados_covid_br <- bind_rows(dados_covid_br, .id="data")
+  dados_srag_br <- bind_rows(dados_srag_br, .id="data")
+  dados_obcovid_br <- bind_rows(dados_obcovid_br, .id="data")
+  dados_obsrag_br <- bind_rows(dados_obsrag_br, .id="data")
+  dados_covid_est <- bind_rows(dados_covid_est, .id="data")
+  dados_srag_est <- bind_rows(dados_srag_est, .id="data")
+  dados_obcovid_est <- bind_rows(dados_obcovid_est, .id="data")
+  dados_obsrag_est <- bind_rows(dados_obsrag_est, .id="data")
+
+  dados_covid_br <- rbind(dados_covid_br, old_dados_covid_br)
+  dados_srag_br <- rbind(dados_srag_br, old_dados_srag_br)
+  dados_obcovid_br <- rbind(dados_obcovid_br, old_dados_obcovid_br)
+  dados_obsrag_br <- rbind(dados_obsrag_br, old_dados_obsrag_br)
+  dados_covid_est <- rbind(dados_covid_est, old_dados_covid_est)
+  dados_srag_est <- rbind(dados_srag_est, old_dados_srag_est)
+  dados_obcovid_est <- rbind(dados_obcovid_est, old_dados_obcovid_est)
+  dados_obsrag_est <- rbind(dados_obsrag_est, old_dados_obsrag_est)
+
+  write.csv(dados_covid_br, paste0(out.dir, "/dados_covid_br.csv"), row.names=FALSE)
+  write.csv(dados_srag_br, paste0(out.dir, "/dados_srag_br.csv"), row.names=FALSE)
+  write.csv(dados_obcovid_br, paste0(out.dir, "/dados_obcovid_br.csv"), row.names=FALSE)
+  write.csv(dados_obsrag_br, paste0(out.dir, "/dados_obsrag_br.csv"), row.names=FALSE)
+  write.csv(dados_covid_est, paste0(out.dir, "/dados_covid_est.csv"), row.names=FALSE)
+  write.csv(dados_srag_est, paste0(out.dir, "/dados_srag_est.csv"), row.names=FALSE)
+  write.csv(dados_obcovid_est, paste0(out.dir, "/dados_obcovid_est.csv"), row.names=FALSE)
+  write.csv(dados_obsrag_est, paste0(out.dir, "/dados_obsrag_est.csv"), row.names=FALSE)
+} else {
+  dados_covid_br <- old_dados_covid_br
+  dados_srag_br <- old_dados_srag_br
+  dados_obcovid_br <- old_dados_obcovid_br
+  dados_obsrag_br <- old_dados_obsrag_br
+  dados_covid_est <- old_dados_covid_est
+  dados_srag_est <- old_dados_srag_est
+  dados_obcovid_est <- old_dados_obcovid_est
+  dados_obsrag_est <- old_dados_obsrag_est
+}
+
+### plots
+
+plot.covid <- ggplot(dados_covid_br,
                      aes(x = dt_sin_pri, y = n, group = factor(data))) +
   geom_line(aes(col = factor(data))) +
     scale_x_date(date_labels = "%d/%b", limits = c(as.Date("2020-03-15"), NA)) +
@@ -172,17 +223,8 @@ plot.covid <- ggplot(dados.br,
     plot.formatos +
   scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
   NULL
-plot.covid
-#ggsave("covid.png")
 
-#plot.srag
-names(dados_br2) <- data_v
-dados_br2 <- purrr::map2(.x = dados_br2,
-                        .y = data_v,
-                        ~mutate(.x, data = .y))
-dados.br2 <- bind_rows(dados_br2)
-
-plot.srag <- ggplot(dados.br2,
+plot.srag <- ggplot(dados_srag_br,
                      aes(x = dt_sin_pri, y = n, group = factor(data))) +
   geom_line(aes(col = factor(data))) +
   scale_x_date(date_labels = "%d/%b", limits = c(as.Date("2020-03-15"), NA)) +
@@ -191,17 +233,8 @@ plot.srag <- ggplot(dados.br2,
   plot.formatos +
   scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
   NULL
-plot.srag
-#ggsave("srag.png")
 
-##ob covid
-names(dados_br3) <- data_v
-dados_br3 <- purrr::map2(.x = dados_br3,
-                         .y = data_v,
-                         ~mutate(.x, data = .y))
-dados.br3 <- bind_rows(dados_br3)
-
-plot.obitos.covid <- ggplot(dados.br3,
+plot.obitos.covid <- ggplot(dados_obcovid_br,
                     aes(x = dt_evoluca, y = n, group = factor(data))) +
   geom_line(aes(col = factor(data))) +
   scale_x_date(date_labels = "%d/%b", limits = c(as.Date("2020-03-15"), NA)) +
@@ -210,17 +243,8 @@ plot.obitos.covid <- ggplot(dados.br3,
   plot.formatos +
   scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
   NULL
-plot.obitos.covid
-#ggsave("obscov.png")
 
-##ob srag
-names(dados_br4) <- data_v
-dados_br4 <- purrr::map2(.x = dados_br4,
-                         .y = data_v,
-                         ~mutate(.x, data = .y))
-dados.br4 <- bind_rows(dados_br4)
-head(dados.br4)
-plot.obitos.srag <- ggplot(dados.br4,
+plot.obitos.srag <- ggplot(dados_obsrag_br,
                     aes(x = dt_evoluca, y = n, group = factor(data))) +
   geom_line(aes(col = factor(data))) +
   scale_x_date(date_labels = "%d/%b", limits = c(as.Date("2020-03-15"), NA)) +
@@ -229,9 +253,53 @@ plot.obitos.srag <- ggplot(dados.br4,
   plot.formatos +
   scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
   NULL
-plot.obitos.srag
-#ggsave("obsrag.png")
 
+
+## plots com facets por estado
+
+plot.covid.est <- ggplot(dados_covid_est,
+                     aes(x = dt_sin_pri, y = n, group = factor(data))) +
+  geom_line(aes(col = factor(data))) +
+    scale_x_date(date_labels = "%d/%b", limits = c(as.Date("2020-03-15"), NA)) +
+    xlab("Dia do primeiro sintoma") +
+    ylab("Número de novos casos") +
+    plot.formatos +
+  scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
+  facet_wrap(~ sg_uf, scales="free", ncol=4) +
+  NULL
+
+plot.srag.est <- ggplot(dados_srag_est,
+                     aes(x = dt_sin_pri, y = n, group = factor(data))) +
+  geom_line(aes(col = factor(data))) +
+  scale_x_date(date_labels = "%d/%b", limits = c(as.Date("2020-03-15"), NA)) +
+  xlab("Dia do primeiro sintoma") +
+  ylab("Número de novos casos") +
+  plot.formatos +
+  scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
+  facet_wrap(~ sg_uf, scales="free", ncol=4) +
+  NULL
+
+plot.obitos.covid.est <- ggplot(dados_obcovid_est,
+                    aes(x = dt_evoluca, y = n, group = factor(data))) +
+  geom_line(aes(col = factor(data))) +
+  scale_x_date(date_labels = "%d/%b", limits = c(as.Date("2020-03-15"), NA)) +
+    xlab("Dia do óbito") +
+    ylab("Número de novos óbitos") +
+  plot.formatos +
+  scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
+  facet_wrap(~ sg_uf, scales="free", ncol=4) +
+  NULL
+
+plot.obitos.srag.est <- ggplot(dados_obsrag_est,
+                    aes(x = dt_evoluca, y = n, group = factor(data))) +
+  geom_line(aes(col = factor(data))) +
+  scale_x_date(date_labels = "%d/%b", limits = c(as.Date("2020-03-15"), NA)) +
+    xlab("Dia do óbito") +
+    ylab("Número de novos óbitos") +
+  plot.formatos +
+  scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
+  facet_wrap(~ sg_uf, scales="free", ncol=4) +
+  NULL
 
 
 if (!file.exists(out.dir))
@@ -245,8 +313,17 @@ render(input = 'integridade_sivep.Rmd',
        output_dir = out.dir)
 
 if (update.git) {
+  tabelas <- paste("dados_covid_br.csv",
+                   "dados_srag_br.csv",
+                   "dados_obcovid_br.csv",
+                   "dados_obsrag_br.csv",
+                   "dados_covid_est.csv",
+                   "dados_srag_est.csv",
+                   "dados_obcovid_est.csv",
+                   "dados_obsrag_est.csv")
+
   system(paste("cd", out.dir, "&& git pull"))
-  system(paste("cd", out.dir, "&& git add", fname,
+  system(paste("cd", out.dir, "&& git add", fname, tabelas,
                "&& git commit -m ':robot: relatório integridade SIVEP de",
                max(db.info$data), "'",
                "&& git push")

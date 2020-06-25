@@ -42,17 +42,29 @@ kable(db.info[order(db.info$data, decreasing = TRUE), -2],
 plot.srag
 ```
 
+```{r plot_compara_srag_est, fig.asp = 1.7}
+#TODO: investigar pq este plot dá pau
+#plot.srag.est
+```
+
 ## Casos Covid
 
 ```{r plot_compara_covid}
 plot.covid
 ```
 
+```{r plot_compara_covid_est, fig.asp = 1.7}
+plot.covid.est
+```
 
 ## Óbitos SRAG
 
 ```{r plot_compara_obitos_srag}
 plot.obitos.srag
+```
+
+```{r plot_compara_obitos_srag_est, fig.asp = 1.7}
+plot.obitos.srag.est
 ```
 
 ## Óbitos Covid
@@ -61,8 +73,12 @@ plot.obitos.srag
 plot.obitos.covid
 ```
 
+```{r plot_compara_obitos_covid_est, fig.asp = 1.7}
+plot.obitos.covid.est
+```
 
-# Observatório COVID-19 BR
+
+## Observatório COVID-19 BR
 
 O Observatório Covid-19 BR é uma iniciativa independente, fruto da
 colaboração entre pesquisadores com o desejo de contribuir para a
