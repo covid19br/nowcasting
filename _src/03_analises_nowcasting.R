@@ -105,15 +105,28 @@ if (existe.srag) {
 
   ## 2.2 Cálculo do R efetivo ####
   ## SRAG ##
-  if (Rmethod == "old_Cori")
+  if (Rmethod == "old_Cori") {
     Re.now.srag <- Re.com.data(ncasos = lista.srag$now.pred.zoo$upper.merged,
                                datas = time(lista.srag$now.pred.zoo), delay = 7)
-  else if (Rmethod == "Cori")
+  } else if (Rmethod == "Cori") {
+    # junta dados consolidados às trajetórias de nowcasting
+    now.pred.zoo.preenchido <- merge.zoo(lista.srag$now.pred.zoo, zoo(,seq(start(lista.srag$now.pred.zoo),end(lista.srag$now.pred.zoo),by="day")), all=T)
+    consolidated <- na.fill(now.pred.zoo.preenchido$n.casos[is.na(now.pred.zoo.preenchido$estimate)],
+                            fill = 0)
+    df.consolidated <- cbind(time(consolidated),
+        as.data.frame(matrix(rep(as.numeric(consolidated),
+                                 dim(lista.srag$trajectories)[2]-1),
+                             ncol=dim(lista.srag$trajectories)[2]-1)))
+    names(df.consolidated) <- names(lista.srag$trajectories)
+    trajectories <- rbind(df.consolidated, lista.srag$trajectories)
+
     Re.now.srag <- Re.nowcasting(default.R.cori,
-                            lista.srag$trajectories,
+                            trajectories,
                             Nsamples = 1000,
                             .parallel = TRUE)
-
+    Re.now.srag$R$data.inicio <- trajectories$date[Re.now.srag$R$t_start]
+    Re.now.srag$R$data.fim <- trajectories$date[Re.now.srag$R$t_end]
+  }
   ## Objeto time series indexado pela data de fim de cada janela de cálculo
   Re.now.srag.zoo <- zoo(Re.now.srag$R[, -(12:13)], Re.now.srag$R[, 13])
 
