@@ -45,6 +45,7 @@ if (existe.covid) {
                             trajectories,
                             Nsamples = 1000,
                             .parallel = TRUE)
+    names(Re.now$R) <- gsub("\\(R\\)", ".R", names(Re.now$R))
     Re.now$R$data.inicio <- trajectories$date[Re.now$R$t_start]
     Re.now$R$data.fim <- trajectories$date[Re.now$R$t_end]
   }
@@ -124,6 +125,7 @@ if (existe.srag) {
                             trajectories,
                             Nsamples = 1000,
                             .parallel = TRUE)
+    names(Re.now.srag$R) <- gsub("\\(R\\)", ".R", names(Re.now.srag$R))
     Re.now.srag$R$data.inicio <- trajectories$date[Re.now.srag$R$t_start]
     Re.now.srag$R$data.fim <- trajectories$date[Re.now.srag$R$t_end]
   }
