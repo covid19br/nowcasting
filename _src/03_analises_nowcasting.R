@@ -25,15 +25,29 @@ if (existe.covid) {
 
 
   ## 1.2 Cálculo do R efetivo ####
-  if (Rmethod == "old_Cori")
+  if (Rmethod == "old_Cori") {
     Re.now <- Re.com.data(ncasos = lista.covid$now.pred.zoo$upper.merged,
                           datas = time(lista.covid$now.pred.zoo),
                           delay = 7)
-  else if (Rmethod == "Cori")
+  } else if (Rmethod == "Cori") {
+    # junta dados consolidados às trajetórias de nowcasting
+    now.pred.zoo.preenchido <- merge.zoo(lista.covid$now.pred.zoo, zoo(,seq(start(lista.covid$now.pred.zoo),end(lista.covid$now.pred.zoo),by="day")), all=T)
+    consolidated <- na.fill(now.pred.zoo.preenchido$n.casos[is.na(now.pred.zoo.preenchido$estimate)],
+                            fill = 0)
+    df.consolidated <- cbind(time(consolidated),
+        as.data.frame(matrix(rep(as.numeric(consolidated),
+                                 dim(lista.covid$trajectories)[2]-1),
+                             ncol=dim(lista.covid$trajectories)[2]-1)))
+    names(df.consolidated) <- names(lista.covid$trajectories)
+    trajectories <- rbind(df.consolidated, lista.covid$trajectories)
+
     Re.now <- Re.nowcasting(default.R.cori,
-                            lista.covid$trajectories,
+                            trajectories,
                             Nsamples = 1000,
                             .parallel = TRUE)
+    Re.now$R$data.inicio <- trajectories$date[Re.now$R$t_start]
+    Re.now$R$data.fim <- trajectories$date[Re.now$R$t_end]
+  }
   ## Objeto time series indexado pela data de fim de cada janela de cálculo
   Re.now.zoo <- zoo(Re.now$R[, -(12:13)], Re.now$R[, 13])
 
