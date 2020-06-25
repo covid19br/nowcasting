@@ -37,6 +37,37 @@ datas <- stringr::str_extract(file.names,
                               "(19|20)\\d\\d[_ /.](0[1-9]|1[012])[_ /.](0[1-9]|[12][0-9]|3[01])") %>%
           as.Date(format = "%Y_%m_%d")
 
+if (file.exists(paste0(out.dir, "/db.info.csv"))) {
+  old.db.info <- read.csv(paste0(out.dir, "/db.info.csv"))
+  # só datas novas serão analisadas
+  old.db.info$data <- as.Date(old.db.info$data)
+  datas <- datas[which(! datas %in% old.db.info$data)]
+
+  old_dados_covid_br <- read.csv(paste0(out.dir, "/dados_covid_br.csv"))
+  old_dados_covid_br$dt_sin_pri <- as.Date(old_dados_covid_br$dt_sin_pri)
+  
+  old_dados_srag_br <- read.csv(paste0(out.dir, "/dados_srag_br.csv"))
+  old_dados_srag_br$dt_sin_pri <- as.Date(old_dados_srag_br$dt_sin_pri)
+  
+  old_dados_obcovid_br <- read.csv(paste0(out.dir, "/dados_obcovid_br.csv"))
+  old_dados_obcovid_br$dt_evoluca <- as.Date(old_dados_obcovid_br$dt_evoluca)
+  
+  old_dados_obsrag_br <- read.csv(paste0(out.dir, "/dados_obsrag_br.csv"))
+  old_dados_obsrag_br$dt_evoluca <- as.Date(old_dados_obsrag_br$dt_evoluca)
+  
+  old_dados_covid_est <- read.csv(paste0(out.dir, "/dados_covid_est.csv"))
+  old_dados_covid_est$dt_sin_pri <- as.Date(old_dados_covid_est$dt_sin_pri)
+  
+  old_dados_srag_est <- read.csv(paste0(out.dir, "/dados_srag_est.csv"))
+  old_dados_srag_est$dt_sin_pri <- as.Date(old_dados_srag_est$dt_sin_pri)
+  
+  old_dados_obcovid_est <- read.csv(paste0(out.dir, "/dados_obcovid_est.csv"))
+  old_dados_obcovid_est$dt_evoluca <- as.Date(old_dados_obcovid_est$dt_evoluca)
+  
+  old_dados_obsrag_est <- read.csv(paste0(out.dir, "/dados_obsrag_est.csv"))
+  old_dados_obsrag_est$dt_evoluca <- as.Date(old_dados_obsrag_est$dt_evoluca)
+}
+
 db.info <- data.frame(data = datas,
                       file = basename(file.names),
                       size.read = NA,
@@ -45,7 +76,7 @@ db.info <- data.frame(data = datas,
                       casos.srag = NA,
                       obitos.covid = NA,
                       obitos.srag = NA)
-N <- dim(db.info)[1]
+
 dados_covid_br <- list()
 dados_srag_br <- list()
 dados_obcovid_br <- list()
@@ -55,36 +86,8 @@ dados_srag_est <- list()
 dados_obcovid_est <- list()
 dados_obsrag_est <- list()
 
-old_dados_covid_br <- read.csv(paste0(out.dir, "/dados_covid_br.csv"))
-old_dados_covid_br$dt_sin_pri <- as.Date(old_dados_covid_br$dt_sin_pri)
-
-old_dados_srag_br <- read.csv(paste0(out.dir, "/dados_srag_br.csv"))
-old_dados_srag_br$dt_sin_pri <- as.Date(old_dados_srag_br$dt_sin_pri)
-
-old_dados_obcovid_br <- read.csv(paste0(out.dir, "/dados_obcovid_br.csv"))
-old_dados_obcovid_br$dt_evoluca <- as.Date(old_dados_obcovid_br$dt_evoluca)
-
-old_dados_obsrag_br <- read.csv(paste0(out.dir, "/dados_obsrag_br.csv"))
-old_dados_obsrag_br$dt_evoluca <- as.Date(old_dados_obsrag_br$dt_evoluca)
-
-old_dados_covid_est <- read.csv(paste0(out.dir, "/dados_covid_est.csv"))
-old_dados_covid_est$dt_sin_pri <- as.Date(old_dados_covid_est$dt_sin_pri)
-
-old_dados_srag_est <- read.csv(paste0(out.dir, "/dados_srag_est.csv"))
-old_dados_srag_est$dt_sin_pri <- as.Date(old_dados_srag_est$dt_sin_pri)
-
-old_dados_obcovid_est <- read.csv(paste0(out.dir, "/dados_obcovid_est.csv"))
-old_dados_obcovid_est$dt_evoluca <- as.Date(old_dados_obcovid_est$dt_evoluca)
-
-old_dados_obsrag_est <- read.csv(paste0(out.dir, "/dados_obsrag_est.csv"))
-old_dados_obsrag_est$dt_evoluca <- as.Date(old_dados_obsrag_est$dt_evoluca)
-
-for (i in seq(N)) {
-  # pula bases que já têm dados
-  datadash <- format(db.info[i,"data"], "%Y-%m-%d")
-  if (exists(old_dados_covid_br) & datadash %in% old_dados_covid_br$data)
-      next
-
+N <- dim(db.info)[1]
+for (i in seq(length.out = N)) {
   data <- format(db.info[i,"data"], "%Y_%m_%d")
   dados <- read.sivep(dir = dir, escala = "pais",
                       data = data)
@@ -164,9 +167,8 @@ for (i in seq(N)) {
     summarise(n = n())
 }
 
-data_v <- as.character(datas)
-
-if (length(dados_covid_br) > 0) {
+if (N > 0) {
+  data_v <- as.character(datas)
   names(dados_covid_br) <- data_v
   names(dados_srag_br) <- data_v
   names(dados_obcovid_br) <- data_v
@@ -184,15 +186,19 @@ if (length(dados_covid_br) > 0) {
   dados_obcovid_est <- bind_rows(dados_obcovid_est, .id="data")
   dados_obsrag_est <- bind_rows(dados_obsrag_est, .id="data")
 
-  dados_covid_br <- rbind(dados_covid_br, old_dados_covid_br)
-  dados_srag_br <- rbind(dados_srag_br, old_dados_srag_br)
-  dados_obcovid_br <- rbind(dados_obcovid_br, old_dados_obcovid_br)
-  dados_obsrag_br <- rbind(dados_obsrag_br, old_dados_obsrag_br)
-  dados_covid_est <- rbind(dados_covid_est, old_dados_covid_est)
-  dados_srag_est <- rbind(dados_srag_est, old_dados_srag_est)
-  dados_obcovid_est <- rbind(dados_obcovid_est, old_dados_obcovid_est)
-  dados_obsrag_est <- rbind(dados_obsrag_est, old_dados_obsrag_est)
+  if (exists("old.db.info")) {
+    db.info <- rbind(db.info, old.db.info)
+    dados_covid_br <- rbind(dados_covid_br, old_dados_covid_br)
+    dados_srag_br <- rbind(dados_srag_br, old_dados_srag_br)
+    dados_obcovid_br <- rbind(dados_obcovid_br, old_dados_obcovid_br)
+    dados_obsrag_br <- rbind(dados_obsrag_br, old_dados_obsrag_br)
+    dados_covid_est <- rbind(dados_covid_est, old_dados_covid_est)
+    dados_srag_est <- rbind(dados_srag_est, old_dados_srag_est)
+    dados_obcovid_est <- rbind(dados_obcovid_est, old_dados_obcovid_est)
+    dados_obsrag_est <- rbind(dados_obsrag_est, old_dados_obsrag_est)
+  }
 
+  write.csv(db.info, paste0(out.dir, "/db.info.csv"), row.names = FALSE)
   write.csv(dados_covid_br, paste0(out.dir, "/dados_covid_br.csv"), row.names=FALSE)
   write.csv(dados_srag_br, paste0(out.dir, "/dados_srag_br.csv"), row.names=FALSE)
   write.csv(dados_obcovid_br, paste0(out.dir, "/dados_obcovid_br.csv"), row.names=FALSE)
@@ -201,7 +207,9 @@ if (length(dados_covid_br) > 0) {
   write.csv(dados_srag_est, paste0(out.dir, "/dados_srag_est.csv"), row.names=FALSE)
   write.csv(dados_obcovid_est, paste0(out.dir, "/dados_obcovid_est.csv"), row.names=FALSE)
   write.csv(dados_obsrag_est, paste0(out.dir, "/dados_obsrag_est.csv"), row.names=FALSE)
-} else {
+}
+else {
+  db.info <- old.db.info
   dados_covid_br <- old_dados_covid_br
   dados_srag_br <- old_dados_srag_br
   dados_obcovid_br <- old_dados_obcovid_br
@@ -213,6 +221,8 @@ if (length(dados_covid_br) > 0) {
 }
 
 ### plots
+
+N <- dim(db.info)[1]
 
 plot.covid <- ggplot(dados_covid_br,
                      aes(x = dt_sin_pri, y = n, group = factor(data))) +
@@ -313,7 +323,8 @@ render(input = 'integridade_sivep.Rmd',
        output_dir = out.dir)
 
 if (update.git) {
-  tabelas <- paste("dados_covid_br.csv",
+  tabelas <- paste("db.info.csv",
+                   "dados_covid_br.csv",
                    "dados_srag_br.csv",
                    "dados_obcovid_br.csv",
                    "dados_obsrag_br.csv",
