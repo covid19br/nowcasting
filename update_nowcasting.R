@@ -121,10 +121,10 @@ if (is.null(data)) {
 }
 
 # métodos de cálculo de R "novos" dependem de trajetórias de nowcasting
-if (Rmethod == "old_Cori")
+if (Rmethod == "old_Cori"){
     trajectories <- FALSE
 # TODO: especificar outros métodos explicitamente
-else
+} else
     trajectories <- TRUE
 
 print(paste("Atualizando", gsub(x = name_path, pattern = "/", replacement = " "), data))
