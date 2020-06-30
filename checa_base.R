@@ -75,14 +75,18 @@ if (file.exists(paste0(out.dir, "/db.info.csv"))) {
   }
 }
 
-db.info <- data.frame(data = datas,
-                      file = basename(file.names),
-                      size.read = NA,
-                      size.file = NA,
-                      casos.covid = NA,
-                      casos.srag = NA,
-                      obitos.covid = NA,
-                      obitos.srag = NA)
+if (length(datas) == 0) {
+  db.info <- old.db.info
+} else {
+  db.info <- data.frame(data = datas,
+                        file = basename(file.names),
+                        size.read = NA,
+                        size.file = NA,
+                        casos.covid = NA,
+                        casos.srag = NA,
+                        obitos.covid = NA,
+                        obitos.srag = NA)
+}
 
 dados_covid_br <- list()
 dados_srag_br <- list()
@@ -95,7 +99,7 @@ if (facet.estados) {
   dados_obsrag_est <- list()
 }
 
-N <- dim(db.info)[1]
+N <- length(datas)
 for (i in seq(length.out = N)) {
   data <- format(db.info[i,"data"], "%Y_%m_%d")
   print(paste("Lendo base de dados de", data))
