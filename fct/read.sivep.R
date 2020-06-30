@@ -48,6 +48,8 @@ read.sivep <- function(dir, # diretorio onde esta o dado
   dados <- data.frame(dados)
   # conveniencia mudando para minusculas
   names(dados) <- tolower(names(dados))
+  names(dados) <- gsub(" ", "_", names(dados))
+  names(dados) <- gsub("\\.", "_", names(dados))
 
   if(is_zip)
       file.remove(file.name)
