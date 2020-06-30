@@ -17,6 +17,10 @@ if (sys.nframe() == 0L) {
                 default = "../dados_processados/integridade_SIVEP",
                 help = ("Diretório de destino"),
                 metavar = "outputDir"),
+    make_option("--facetEstados",
+                default = "TRUE",
+                help = ("Fazer facets de estados?"),
+                metavar = "facetEstados"),
     make_option("--updateGit", default = "FALSE",
                 help = ("Fazer git add, commit e push?"),
                 metavar = "updateGit")
@@ -29,6 +33,7 @@ if (sys.nframe() == 0L) {
                     positional_arguments = TRUE)
   dir <- opt$options$dir
   out.dir <- opt$options$outputDir
+  facet.estados <- opt$options$facetEstados
   update.git <- opt$options$updateGit
 }
 
@@ -54,18 +59,20 @@ if (file.exists(paste0(out.dir, "/db.info.csv"))) {
   
   old_dados_obsrag_br <- read.csv(paste0(out.dir, "/dados_obsrag_br.csv"))
   old_dados_obsrag_br$dt_evoluca <- as.Date(old_dados_obsrag_br$dt_evoluca)
-  
-  old_dados_covid_est <- read.csv(paste0(out.dir, "/dados_covid_est.csv"))
-  old_dados_covid_est$dt_sin_pri <- as.Date(old_dados_covid_est$dt_sin_pri)
-  
-  old_dados_srag_est <- read.csv(paste0(out.dir, "/dados_srag_est.csv"))
-  old_dados_srag_est$dt_sin_pri <- as.Date(old_dados_srag_est$dt_sin_pri)
-  
-  old_dados_obcovid_est <- read.csv(paste0(out.dir, "/dados_obcovid_est.csv"))
-  old_dados_obcovid_est$dt_evoluca <- as.Date(old_dados_obcovid_est$dt_evoluca)
-  
-  old_dados_obsrag_est <- read.csv(paste0(out.dir, "/dados_obsrag_est.csv"))
-  old_dados_obsrag_est$dt_evoluca <- as.Date(old_dados_obsrag_est$dt_evoluca)
+
+  if (facet.estados) {
+    old_dados_covid_est <- read.csv(paste0(out.dir, "/dados_covid_est.csv"))
+    old_dados_covid_est$dt_sin_pri <- as.Date(old_dados_covid_est$dt_sin_pri)
+    
+    old_dados_srag_est <- read.csv(paste0(out.dir, "/dados_srag_est.csv"))
+    old_dados_srag_est$dt_sin_pri <- as.Date(old_dados_srag_est$dt_sin_pri)
+    
+    old_dados_obcovid_est <- read.csv(paste0(out.dir, "/dados_obcovid_est.csv"))
+    old_dados_obcovid_est$dt_evoluca <- as.Date(old_dados_obcovid_est$dt_evoluca)
+    
+    old_dados_obsrag_est <- read.csv(paste0(out.dir, "/dados_obsrag_est.csv"))
+    old_dados_obsrag_est$dt_evoluca <- as.Date(old_dados_obsrag_est$dt_evoluca)
+  }
 }
 
 db.info <- data.frame(data = datas,
@@ -81,14 +88,17 @@ dados_covid_br <- list()
 dados_srag_br <- list()
 dados_obcovid_br <- list()
 dados_obsrag_br <- list()
-dados_covid_est <- list()
-dados_srag_est <- list()
-dados_obcovid_est <- list()
-dados_obsrag_est <- list()
+if (facet.estados) {
+  dados_covid_est <- list()
+  dados_srag_est <- list()
+  dados_obcovid_est <- list()
+  dados_obsrag_est <- list()
+}
 
 N <- dim(db.info)[1]
 for (i in seq(length.out = N)) {
   data <- format(db.info[i,"data"], "%Y_%m_%d")
+  print(paste("Lendo base de dados de", data))
   dados <- read.sivep(dir = dir, escala = "pais",
                       data = data)
   db.info[i, "size.read"] <- dim(dados)[1]
@@ -107,9 +117,11 @@ for (i in seq(length.out = N)) {
 
   db.info[i, "casos.covid"] <- sum(dados_covid_br[[i]]$n)
 
-  dados_covid_est[[i]] <- dados2 %>%
-    group_by(dt_sin_pri, sg_uf) %>%
-    summarise(n = n())
+  if (facet.estados) {
+    dados_covid_est[[i]] <- dados2 %>%
+      group_by(dt_sin_pri, sg_uf) %>%
+      summarise(n = n())
+  }
 
   ## 1.2. casos srag ####
   dados2 <- dados %>%
@@ -123,9 +135,11 @@ for (i in seq(length.out = N)) {
 
   db.info[i, "casos.srag"] <- sum(dados_srag_br[[i]]$n)
 
-  dados_srag_est[[i]] <- dados2 %>%
-    group_by(dt_sin_pri, sg_uf) %>%
-    summarise(n = n())
+  if (facet.estados) {
+    dados_srag_est[[i]] <- dados2 %>%
+      group_by(dt_sin_pri, sg_uf) %>%
+      summarise(n = n())
+  }
 
   ## 2.1. obitos covid ####
   dados2 <- dados %>%
@@ -143,9 +157,11 @@ for (i in seq(length.out = N)) {
 
   db.info[i, "obitos.covid"] <- sum(dados_obcovid_br[[i]]$n)
 
-  dados_obcovid_est[[i]] <- dados2 %>%
-    group_by(dt_evoluca, sg_uf) %>%
-    summarise(n = n())
+  if (facet.estados) {
+    dados_obcovid_est[[i]] <- dados2 %>%
+      group_by(dt_evoluca, sg_uf) %>%
+      summarise(n = n())
+  }
 
   ## 2.2. obitos srag ####
   dados2 <- dados %>%
@@ -162,9 +178,11 @@ for (i in seq(length.out = N)) {
 
   db.info[i, "obitos.srag"] <- sum(dados_obsrag_br[[i]]$n)
 
-  dados_obsrag_est[[i]] <- dados2 %>%
-    group_by(dt_evoluca, sg_uf) %>%
-    summarise(n = n())
+  if (facet.estados) {
+    dados_obsrag_est[[i]] <- dados2 %>%
+      group_by(dt_evoluca, sg_uf) %>%
+      summarise(n = n())
+  }
 }
 
 if (N > 0) {
@@ -173,18 +191,20 @@ if (N > 0) {
   names(dados_srag_br) <- data_v
   names(dados_obcovid_br) <- data_v
   names(dados_obsrag_br) <- data_v
-  names(dados_covid_est) <- data_v
-  names(dados_srag_est) <- data_v
-  names(dados_obcovid_est) <- data_v
-  names(dados_obsrag_est) <- data_v
   dados_covid_br <- bind_rows(dados_covid_br, .id="data")
   dados_srag_br <- bind_rows(dados_srag_br, .id="data")
   dados_obcovid_br <- bind_rows(dados_obcovid_br, .id="data")
   dados_obsrag_br <- bind_rows(dados_obsrag_br, .id="data")
-  dados_covid_est <- bind_rows(dados_covid_est, .id="data")
-  dados_srag_est <- bind_rows(dados_srag_est, .id="data")
-  dados_obcovid_est <- bind_rows(dados_obcovid_est, .id="data")
-  dados_obsrag_est <- bind_rows(dados_obsrag_est, .id="data")
+  if (facet.estados) {
+    names(dados_covid_est) <- data_v
+    names(dados_srag_est) <- data_v
+    names(dados_obcovid_est) <- data_v
+    names(dados_obsrag_est) <- data_v
+    dados_covid_est <- bind_rows(dados_covid_est, .id="data")
+    dados_srag_est <- bind_rows(dados_srag_est, .id="data")
+    dados_obcovid_est <- bind_rows(dados_obcovid_est, .id="data")
+    dados_obsrag_est <- bind_rows(dados_obsrag_est, .id="data")
+  }
 
   if (exists("old.db.info")) {
     db.info <- rbind(db.info, old.db.info)
@@ -192,10 +212,12 @@ if (N > 0) {
     dados_srag_br <- rbind(dados_srag_br, old_dados_srag_br)
     dados_obcovid_br <- rbind(dados_obcovid_br, old_dados_obcovid_br)
     dados_obsrag_br <- rbind(dados_obsrag_br, old_dados_obsrag_br)
-    dados_covid_est <- rbind(dados_covid_est, old_dados_covid_est)
-    dados_srag_est <- rbind(dados_srag_est, old_dados_srag_est)
-    dados_obcovid_est <- rbind(dados_obcovid_est, old_dados_obcovid_est)
-    dados_obsrag_est <- rbind(dados_obsrag_est, old_dados_obsrag_est)
+    if (facet.estados) {
+      dados_covid_est <- rbind(dados_covid_est, old_dados_covid_est)
+      dados_srag_est <- rbind(dados_srag_est, old_dados_srag_est)
+      dados_obcovid_est <- rbind(dados_obcovid_est, old_dados_obcovid_est)
+      dados_obsrag_est <- rbind(dados_obsrag_est, old_dados_obsrag_est)
+    }
   }
 
   write.csv(db.info, paste0(out.dir, "/db.info.csv"), row.names = FALSE)
@@ -203,21 +225,24 @@ if (N > 0) {
   write.csv(dados_srag_br, paste0(out.dir, "/dados_srag_br.csv"), row.names=FALSE)
   write.csv(dados_obcovid_br, paste0(out.dir, "/dados_obcovid_br.csv"), row.names=FALSE)
   write.csv(dados_obsrag_br, paste0(out.dir, "/dados_obsrag_br.csv"), row.names=FALSE)
-  write.csv(dados_covid_est, paste0(out.dir, "/dados_covid_est.csv"), row.names=FALSE)
-  write.csv(dados_srag_est, paste0(out.dir, "/dados_srag_est.csv"), row.names=FALSE)
-  write.csv(dados_obcovid_est, paste0(out.dir, "/dados_obcovid_est.csv"), row.names=FALSE)
-  write.csv(dados_obsrag_est, paste0(out.dir, "/dados_obsrag_est.csv"), row.names=FALSE)
-}
-else {
+  if (facet.estados) {
+    write.csv(dados_covid_est, paste0(out.dir, "/dados_covid_est.csv"), row.names=FALSE)
+    write.csv(dados_srag_est, paste0(out.dir, "/dados_srag_est.csv"), row.names=FALSE)
+    write.csv(dados_obcovid_est, paste0(out.dir, "/dados_obcovid_est.csv"), row.names=FALSE)
+    write.csv(dados_obsrag_est, paste0(out.dir, "/dados_obsrag_est.csv"), row.names=FALSE)
+  }
+} else {
   db.info <- old.db.info
   dados_covid_br <- old_dados_covid_br
   dados_srag_br <- old_dados_srag_br
   dados_obcovid_br <- old_dados_obcovid_br
   dados_obsrag_br <- old_dados_obsrag_br
-  dados_covid_est <- old_dados_covid_est
-  dados_srag_est <- old_dados_srag_est
-  dados_obcovid_est <- old_dados_obcovid_est
-  dados_obsrag_est <- old_dados_obsrag_est
+  if (facet.estados) {
+    dados_covid_est <- old_dados_covid_est
+    dados_srag_est <- old_dados_srag_est
+    dados_obcovid_est <- old_dados_obcovid_est
+    dados_obsrag_est <- old_dados_obsrag_est
+  }
 }
 
 ### plots
@@ -266,51 +291,52 @@ plot.obitos.srag <- ggplot(dados_obsrag_br,
 
 
 ## plots com facets por estado
+if (facet.estados) {
 
-plot.covid.est <- ggplot(dados_covid_est,
-                     aes(x = dt_sin_pri, y = n, group = factor(data))) +
-  geom_line(aes(col = factor(data))) +
+  plot.covid.est <- ggplot(dados_covid_est,
+                       aes(x = dt_sin_pri, y = n, group = factor(data))) +
+    geom_line(aes(col = factor(data))) +
+      scale_x_date(date_labels = "%d/%b", limits = c(as.Date("2020-03-15"), NA)) +
+      xlab("Dia do primeiro sintoma") +
+      ylab("Número de novos casos") +
+      plot.formatos +
+    scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
+    facet_wrap(~ sg_uf, scales="free", ncol=4) +
+    NULL
+  
+  plot.srag.est <- ggplot(dados_srag_est,
+                       aes(x = dt_sin_pri, y = n, group = factor(data))) +
+    geom_line(aes(col = factor(data))) +
     scale_x_date(date_labels = "%d/%b", limits = c(as.Date("2020-03-15"), NA)) +
     xlab("Dia do primeiro sintoma") +
     ylab("Número de novos casos") +
     plot.formatos +
-  scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
-  facet_wrap(~ sg_uf, scales="free", ncol=4) +
-  NULL
-
-plot.srag.est <- ggplot(dados_srag_est,
-                     aes(x = dt_sin_pri, y = n, group = factor(data))) +
-  geom_line(aes(col = factor(data))) +
-  scale_x_date(date_labels = "%d/%b", limits = c(as.Date("2020-03-15"), NA)) +
-  xlab("Dia do primeiro sintoma") +
-  ylab("Número de novos casos") +
-  plot.formatos +
-  scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
-  facet_wrap(~ sg_uf, scales="free", ncol=4) +
-  NULL
-
-plot.obitos.covid.est <- ggplot(dados_obcovid_est,
-                    aes(x = dt_evoluca, y = n, group = factor(data))) +
-  geom_line(aes(col = factor(data))) +
-  scale_x_date(date_labels = "%d/%b", limits = c(as.Date("2020-03-15"), NA)) +
-    xlab("Dia do óbito") +
-    ylab("Número de novos óbitos") +
-  plot.formatos +
-  scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
-  facet_wrap(~ sg_uf, scales="free", ncol=4) +
-  NULL
-
-plot.obitos.srag.est <- ggplot(dados_obsrag_est,
-                    aes(x = dt_evoluca, y = n, group = factor(data))) +
-  geom_line(aes(col = factor(data))) +
-  scale_x_date(date_labels = "%d/%b", limits = c(as.Date("2020-03-15"), NA)) +
-    xlab("Dia do óbito") +
-    ylab("Número de novos óbitos") +
-  plot.formatos +
-  scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
-  facet_wrap(~ sg_uf, scales="free", ncol=4) +
-  NULL
-
+    scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
+    facet_wrap(~ sg_uf, scales="free", ncol=4) +
+    NULL
+  
+  plot.obitos.covid.est <- ggplot(dados_obcovid_est,
+                      aes(x = dt_evoluca, y = n, group = factor(data))) +
+    geom_line(aes(col = factor(data))) +
+    scale_x_date(date_labels = "%d/%b", limits = c(as.Date("2020-03-15"), NA)) +
+      xlab("Dia do óbito") +
+      ylab("Número de novos óbitos") +
+    plot.formatos +
+    scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
+    facet_wrap(~ sg_uf, scales="free", ncol=4) +
+    NULL
+  
+  plot.obitos.srag.est <- ggplot(dados_obsrag_est,
+                      aes(x = dt_evoluca, y = n, group = factor(data))) +
+    geom_line(aes(col = factor(data))) +
+    scale_x_date(date_labels = "%d/%b", limits = c(as.Date("2020-03-15"), NA)) +
+      xlab("Dia do óbito") +
+      ylab("Número de novos óbitos") +
+    plot.formatos +
+    scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
+    facet_wrap(~ sg_uf, scales="free", ncol=4) +
+    NULL
+}
 
 if (!file.exists(out.dir))
   dir.create(out.dir, showWarnings = TRUE, recursive = TRUE)
@@ -327,12 +353,14 @@ if (update.git) {
                    "dados_covid_br.csv",
                    "dados_srag_br.csv",
                    "dados_obcovid_br.csv",
-                   "dados_obsrag_br.csv",
+                   "dados_obsrag_br.csv")
+  if (facet.estados) {
+    tabelas <- paste(tabelas,
                    "dados_covid_est.csv",
                    "dados_srag_est.csv",
                    "dados_obcovid_est.csv",
                    "dados_obsrag_est.csv")
-
+  }
   system(paste("cd", out.dir, "&& git pull"))
   system(paste("cd", out.dir, "&& git add", fname, tabelas,
                "&& git commit -m ':robot: relatório integridade SIVEP de",

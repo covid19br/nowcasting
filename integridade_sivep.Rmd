@@ -44,7 +44,7 @@ plot.srag
 
 ```{r plot_compara_srag_est, fig.asp = 1.7}
 #TODO: investigar pq este plot dá pau
-#plot.srag.est
+#if(exists("plot.srag.est")) plot.srag.est
 ```
 
 ## Casos Covid
@@ -54,7 +54,7 @@ plot.covid
 ```
 
 ```{r plot_compara_covid_est, fig.asp = 1.7}
-plot.covid.est
+if(exists("plot.covid.est")) plot.covid.est
 ```
 
 ## Óbitos SRAG
@@ -64,7 +64,7 @@ plot.obitos.srag
 ```
 
 ```{r plot_compara_obitos_srag_est, fig.asp = 1.7}
-plot.obitos.srag.est
+if(exists("plot.obitos.srag.est")) plot.obitos.srag.est
 ```
 
 ## Óbitos Covid
@@ -74,7 +74,7 @@ plot.obitos.covid
 ```
 
 ```{r plot_compara_obitos_covid_est, fig.asp = 1.7}
-plot.obitos.covid.est
+if(exists("plot.obitos.covid.est")) plot.obitos.covid.est
 ```
 
 
