@@ -539,5 +539,6 @@ default.R.cori <- partial(estimate.R0.cori,
                           si.sample = nishi_si[,sample(1:ncol(nd), 1)], # Samples 1 SI interval
                           p.distribution = "G",
                           modified = TRUE,
+                          n1 = 50,
                           n2 = 50)
 
