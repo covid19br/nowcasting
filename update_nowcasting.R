@@ -53,7 +53,10 @@ if (sys.nframe() == 0L) {
                 metavar = "hospitalizados"),
     make_option("--Rmethod", default = "old_Cori",
                 help = ("Método de cálculo do R efetivo. Default: old_Cori"),
-                metavar = "Rmethod")
+                metavar = "Rmethod"),
+    make_option("--ncores",
+                help = ("Número de cores a serem utilizados para paralelização."),
+                metavar = "ncores")
   )
   parser_object <- OptionParser(usage = "Rscript %prog [Opções] [ARQUIVO]\n",
                                 option_list = option_list,
@@ -82,6 +85,7 @@ if (sys.nframe() == 0L) {
   residentes <- opt$options$residentes
   hospitalizados <- opt$options$hospitalizados
   Rmethod <- opt$options$Rmethod
+  ncores <- opt$options$ncores
 }
 ####################################################
 ### to run INTERACTIVELY:
@@ -118,6 +122,18 @@ if (update.git)
 # pegando a data mais recente
 if (is.null(data)) {
   data <- get.last.date(dir)
+}
+
+# n cores
+total.cores <- parallel::detectCores()
+if (! is.null(ncores) & ncores <= total.cores) {
+  doParallel::registerDoParallel(cores=ncores)
+} else {
+  ncores <- total.cores
+  # usar todos cores pode ser contraproducente
+  if (ncores > 2)
+      ncores <- ncores - 1
+  doParallel::registerDoParallel(cores=ncores)
 }
 
 # métodos de cálculo de R "novos" dependem de trajetórias de nowcasting
