@@ -533,7 +533,7 @@ estimate_R_func <- function(incid,
 
 default.R.cori <- partial(estimate.R0.cori,
                           delay = 7,
-                          day0 = 2,
+                          day0 = NA,
                           method = "si_from_sample",
                           si.data = nd, 
                           si.sample = nishi_si[,sample(1:ncol(nd), 1)], # Samples 1 SI interval
