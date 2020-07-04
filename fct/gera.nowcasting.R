@@ -65,7 +65,7 @@ gera.nowcasting <- function(dados, # dados
     if (nrow(dados2) != 0) {
       dados.now <- NobBS(
         data = dados2,
-        now = max(dados2$dt_encerra) - trim.now,
+        now = max(dados2$dt_evoluca) - trim.now, ##PIP: nocwasting vai até última data do evento, no caso data do obito
         onset_date = "dt_evoluca",
         report_date = "dt_encerra",
         units = "1 day",
