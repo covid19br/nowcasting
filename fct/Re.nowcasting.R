@@ -21,7 +21,7 @@ Re.nowcasting <- function(R.method,
   }
   re.df <- ldply(trajectories[, samples], fun, .id = NULL, ...)
   # run a single time to get full output
-  casos <- fill.dates(data.frame(onset = trajectories$date, n.casos = trajectories[, 1]), 2)
+  casos <- fill.dates(data.frame(onset = trajectories$date, n.casos = trajectories[, 2]), 2) ## PIP: estava usando a coluna 1 do trajectories, que eram as datas
   res <- R.method(casos$incidence)
   re.df["t_start", ] <- res$R$t_start
   re.df["t_end", ] <- res$R$t_end
