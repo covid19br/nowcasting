@@ -665,7 +665,7 @@ gera.nowcasting <- function(dados, # dados
     if (nrow(dados2) != 0) {
       dados.now <- NobBS(
         data = dados2,
-        now = max(dados2$dt_encerra) - trim.now,
+        now = max(dados2$dt_evoluca) - trim.now, ##PIP: nocwasting vai até última data do evento, no caso data do obito
         onset_date = "dt_evoluca",
         report_date = "dt_encerra",
         units = "1 day",
@@ -1993,7 +1993,7 @@ default.R.cori <- partial(estimate.R0.cori,
                           day0 = NA,
                           method = "si_from_sample",
                           si.data = nd, 
-                          si.sample = nishi_si[,sample(1:ncol(nd), 1)], # Samples 1 SI interval
+                          si.sample = nishi_si[,sample(1:ncol(nishi_si), 1)], # Samples 1 SI interval
                           p.distribution = "G",
                           modified = TRUE,
                           n1 = 50,
@@ -2166,7 +2166,7 @@ Re.nowcasting <- function(R.method,
   }
   re.df <- ldply(trajectories[, samples], fun, .id = NULL, ...)
   # run a single time to get full output
-  casos <- fill.dates(data.frame(onset = trajectories$date, n.casos = trajectories[, 1]), 2)
+  casos <- fill.dates(data.frame(onset = trajectories$date, n.casos = trajectories[, 2]), 2) ## PIP: estava usando a coluna 1 do trajectories, que eram as datas
   res <- R.method(casos$incidence)
   re.df["t_start", ] <- res$R$t_start
   re.df["t_end", ] <- res$R$t_end
