@@ -25,7 +25,7 @@ NobBS.posterior <- function(data, now, units, onset_date, report_date, moving_wi
   }
   
   # Check that "now" is possible in the sequence of reporting data
-  if(dplyr::last(seq(unique(data[,onset_date])[1],now,by=units))!=now){
+  if(dplyr::last(seq(min(data[,onset_date]),now,by=units))!=now){
     stop("The date `now` is not possible to estimate: the possible nowcast dates are seq(unique(data[,onset_date])[1],now,by=units).")
   }
   
