@@ -54,7 +54,7 @@ if (sys.nframe() == 0L) {
     make_option("--Rmethod", default = "old_Cori",
                 help = ("Método de cálculo do R efetivo. Default: old_Cori"),
                 metavar = "Rmethod"),
-    make_option("--ncores", default = NULL,
+    make_option("--ncores", default = 1,
                 help = ("Número de cores a serem utilizados para paralelização."),
                 metavar = "ncores")
   )
@@ -127,7 +127,7 @@ if (is.null(data)) {
 # n cores
 total.cores <- parallel::detectCores()
 if (!is.null(ncores) & ncores <= total.cores) {
-  doParallel::registerDoParallel(cores=ncores)
+  doParallel::registerDoParallel(cores = ncores)
 } else {
   ncores <- total.cores
   # usar todos cores pode ser contraproducente
