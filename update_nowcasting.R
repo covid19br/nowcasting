@@ -54,7 +54,7 @@ if (sys.nframe() == 0L) {
     make_option("--Rmethod", default = "old_Cori",
                 help = ("Método de cálculo do R efetivo. Default: old_Cori"),
                 metavar = "Rmethod"),
-    make_option("--ncores", default = 1,
+    make_option("--ncores",
                 help = ("Número de cores a serem utilizados para paralelização."),
                 metavar = "ncores")
   )
@@ -86,6 +86,9 @@ if (sys.nframe() == 0L) {
   hospitalizados <- opt$options$hospitalizados
   Rmethod <- opt$options$Rmethod
   ncores <- opt$options$ncores
+
+  # quit on error when run non-interactively
+  options(error = function() quit(save="no", status=1))
 }
 ####################################################
 ### to run INTERACTIVELY:
@@ -126,7 +129,7 @@ if (is.null(data)) {
 
 # n cores
 total.cores <- parallel::detectCores()
-if (!is.null(ncores) & ncores <= total.cores) {
+if (!is.null(ncores) && ncores <= total.cores) {
   doParallel::registerDoParallel(cores = ncores)
 } else {
   ncores <- total.cores
