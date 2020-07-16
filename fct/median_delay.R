@@ -1,4 +1,4 @@
-#' Tempo mediana de atraso, com intervalos de cerdibilidade
+#' Quantil de atraso, com intervalos de credibilidade
 #' @details Recebe o output do nowcasting feito pela função NobBS ou
 #'     um dataframe com a distribuição acumulada de atrasos (gerada
 #'     pela funão beta.cumsum) e retorna o tempo mediano de atraso,
@@ -20,25 +20,30 @@
 #'     mediano estimado pelo nowcasting.  Este atraso mediano é obtido
 #'     por interpolação das distribuição de probabilidade acumualdas
 #'     dos atrasos, estimadas pela função beta.cumsum.
-median_delay <- function(cum.betas, NobBS.params.post, NobBS.output, samples){
+quantile_delay <- function(cum.betas, NobBS.params.post, NobBS.output, samples, prob = 0.5){
     if(missing(cum.betas)){
         if(missing(NobBS.params.post))
             NobBS.params.post <- NobBS.output$params.post
         cum.betas <- beta.cumsum(NobBS.output=NULL, NobBS.params.post = NobBS.params.post, samples = samples)
     }
-    result <- sapply(cum.betas[,-1], quantile.cdf, x= cum.betas[,1])
+    result <- sapply(cum.betas[,-1], quantile.cdf, x= cum.betas[,1], prob = prob)
     names(result) <- names(result)[c(1,3,2)] ## quem é lower e upper limit inverte neste calculo, apenas ajeita rotulos.
     return(result)
 }
+
+
+#' Para manter compatibilidade com algum uso antigo da median_delay, agora generalizada pela quantile delay
+median_delay <- function(...)
+    quantile_delay(..., prob = 0.5)
 
 #' Acessory function: estimates quantile(s) by interporlation of a cumulative probability distribution
 #' @param numeric vector of cumulative probabilities
 #' @param numeric vector of quantile at each accumulated probability in cdf
 #' @param numeric vector of acummalated probablities for which the quantile is to be calculated.
 #' @return a vector of quantiles at each value of prob.
-quantile.cdf <- function(cdf, x, prob = 0.5){
-    if(length(cdf)!=length(prob))
+quantile.cdf <- function(cdf, x, prob ){
+    if(length(cdf)!=length(x))
         stop("cdf and prob should be of the same length")
     f1 <- approxfun(x = cdf, y = x)
-    f1(quant)
+    f1(prob)
     }
