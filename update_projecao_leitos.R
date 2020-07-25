@@ -7,7 +7,7 @@ if (sys.nframe() == 0L) {
   option_list <- list(
     make_option("--dir",
                 help = ("Caminho até o diretório com os arquivos csv com base sivep gripe"),
-                default = "../dados/SIVEP-Gripe",
+                default = "../dados/estado_SP/SRAG_hospitalizados/dados",
                 metavar = "dir"),
     make_option("--tipo", default = "srag",
                 help = ("tipo da internação. Só 'srag' ou 'all', srag e covid"),
@@ -97,12 +97,12 @@ if (sys.nframe() == 0L) {
 # DATAROOT <- "../dados/municipio_campinas/SRAG_hospitalizados/dados/"
 # intial_date <- as.Date("2020-03-16")
 #data <- "2020_05_16"
-# DATAROOT = "../dados/estado_SP/SRAG_hospitalizados/dados/"
+ #DATAROOT = "../dados/SIVEP-Gripe"
 # initial_date = as.Date("2020-03-08")
 # data_date = as.Date("2020_05_27", format = "%Y_%m_%d")
-# escala  = "drs"
-# sigla = "SP"
-# geocode = 16
+ #escala  = "estado"
+ #sigla = "GO"
+ #geocode = 52
 # out.root =  "../dados/estado_SP/SRAG_hospitalizados/outputs/"
 # nowcasting = FALSE 
 # fit_models = FALSE 

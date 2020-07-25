@@ -2027,8 +2027,8 @@ read.sivep <- function(dir, # diretorio onde esta o dado
   }
   # detecta separador
   linha1 <- readLines(file.name, n = 2)[2]
-  if (count.fields(textConnection(linha1), sep = ',') >
-      count.fields(textConnection(linha1), sep = ';')) {
+  if (na.omit(count.fields(textConnection(linha1), sep = ',')) >
+      na.omit(count.fields(textConnection(linha1), sep = ';'))) {
       sep <- ','
   } else
       sep <- ';'
