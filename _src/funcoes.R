@@ -1989,7 +1989,7 @@ estimate_R_func <- function(incid,
 
 
 default.R.cori <- partial(estimate.R0.cori,
-                          delay = 7,
+                          delay = 5,
                           day0 = NA,
                           method = "si_from_sample",
                           si.data = nd, 
