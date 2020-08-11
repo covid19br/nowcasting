@@ -1276,7 +1276,7 @@ plotTimesValidation = function(times_table, fit1, age = TRUE){
 }
 # Estimate posterior probabilities for nowcasting AND SI variation
 posteriors <- function(data){
-  r_sample = data[-which(row.names(data) %in% c("t_start","t_end"))]
+  r_sample = data[-which(row.names(data) %in% c("t_start","t_end")),]
   mean_posterior <- apply(r_sample, 2, mean, na.rm = TRUE)
   std_posterior <- apply(r_sample, 2, sd, na.rm = TRUE)
   quantile_0.025_posterior <- apply(r_sample, 2, quantile,
