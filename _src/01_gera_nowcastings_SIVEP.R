@@ -131,20 +131,18 @@ if (!is.null(now.ob.covid$now)) {
                   data = data)
 }
 
-write.notificacoes.data(dados = betas.ob.covid,
-                        output.dir = out.path, 
-                        tipo = "betas_obitos_covid",
-                        data = data)
+write.csv(betas.ob.covid,
+          file = paste0(out.path, "betas_covid_obitos", data, ".csv"),
+          row.names = FALSE)
 
-write.notificacoes.data(dados = betas.ob.covid.sum,
-                        output.dir = out.path, 
-                        tipo = "betas_cumsum_obitos_covid",
-                        data = data)
+write.csv(betas.ob.covid.sum,
+          file = paste0(out.path, "betas_covid_obitos_cumsum", data, ".csv"),
+          row.names = FALSE)
 
-write.notificacoes.data(dados = betas.ob.covid.median,
-                        output.dir = out.path, 
-                        tipo = "betas_median_obitos_covid",
-                        data = data)
+write.csv(betas.ob.covid.median,
+          file = paste0(out.path, "betas_covid_obitos_median", data, ".csv"),
+          row.names = FALSE)
+
 
 # OBITOS SRAG ####
 
