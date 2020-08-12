@@ -9,7 +9,10 @@
 ## 1. read.sivep
 ## 2. gera.nowcasting
 ## 3. write.notificacoes.data
-##    write.nowcasting
+## 4.  write.nowcasting
+## 5. betas.summary
+##    betas.cumsum
+## 6. quantile_delay
 
 
 ################################################################################
@@ -59,6 +62,30 @@ now.ob.srag <- gera.nowcasting(dados = dados,
                                window = window)
 
 ################################################################################
+## Betas
+################################################################################
+## dados necessários: output nowcasting
+## Calculo de betas diáiros, acumulados e medianos
+## Covid
+# betas.covid<-beta.summary(now.covid)
+# betas.covid.sum<-beta.cumsum(now.covid)
+# betas.covid.median<-quantile_delay(betas.covid.sum, prob = c(0.25,0.5,0.75,0.95))
+# ## SRAG
+# betas.srag<-beta.summary(now.srag)
+# betas.srag.sum<-beta.cumsum(now.srag)
+# betas.srag.median<-quantile_delay(betas.srag.sum, prob = c(0.25,0.5,0.75,0.95))
+## Óbitos Covid
+betas.ob.covid<-beta.summary(now.ob.covid)
+betas.ob.covid.sum<-beta.cumsum(now.ob.covid)
+betas.ob.covid.median<-quantile_delay(betas.ob.covid.sum, prob = c(0.25,0.5,0.75,0.95))
+## Óbitos SRAG
+# betas.ob.srag<-beta.summary(now.ob.srag)
+# betas.ob.srag.sum<-beta.cumsum(now.ob.srag)
+# betas.ob.srag.median<-quantile_delay(betas.ob.srag.sum, prob = c(0.25,0.5,0.75,0.95))
+## comentado porque o primeiro interesse é covid ##
+
+
+################################################################################
 ## Exporta data frames com totais observados de casos ou obitos
 ## Exporta data frames com outputs de nowcasting
 ################################################################################
@@ -104,6 +131,20 @@ if (!is.null(now.ob.covid$now)) {
                   data = data)
 }
 
+write.notificacoes.data(dados = betas.ob.covid,
+                        output.dir = out.path, 
+                        tipo = "betas_obitos_covid",
+                        data = data)
+
+write.notificacoes.data(dados = betas.ob.covid.sum,
+                        output.dir = out.path, 
+                        tipo = "betas_cumsum_obitos_covid",
+                        data = data)
+
+write.notificacoes.data(dados = betas.ob.covid.median,
+                        output.dir = out.path, 
+                        tipo = "betas_median_obitos_covid",
+                        data = data)
 
 # OBITOS SRAG ####
 
