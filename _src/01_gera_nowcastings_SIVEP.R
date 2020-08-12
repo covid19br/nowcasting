@@ -104,6 +104,18 @@ if (!is.null(now.covid$now)) {
                    data = data)
 }
 
+# write.csv(betas.covid,
+#           file = paste0(out.path, "betas_covid", data, ".csv"),
+#           row.names = FALSE)
+# 
+# write.csv(betas.covid.sum,
+#           file = paste0(out.path, "betas_covid_cumsum", data, ".csv"),
+#           row.names = FALSE)
+# 
+# write.csv(betas.covid.median,
+#           file = paste0(out.path, "betas_covid_median", data, ".csv"),
+#           row.names = FALSE)
+
 # SRAG ####
 write.notificacoes.data(dados = now.srag$dados,
                         tipo = "srag",
@@ -116,6 +128,18 @@ if (!is.null(now.srag$now)) {
                    tipo = "srag",
                    data = data)
 }
+
+# write.csv(betas.srag,
+#           file = paste0(out.path, "betas_srag", data, ".csv"),
+#           row.names = FALSE)
+# 
+# write.csv(betas.srag.sum,
+#           file = paste0(out.path, "betas_srag_cumsum", data, ".csv"),
+#           row.names = FALSE)
+# 
+# write.csv(betas.srag.median,
+#           file = paste0(out.path, "betas_srag_median", data, ".csv"),
+#           row.names = FALSE)
 
 # OBITOS COVID ####
 
@@ -158,4 +182,14 @@ if (!is.null(now.ob.srag$now)) {
                   data = data)
 }
 
-
+# write.csv(betas.ob.srag,
+#           file = paste0(out.path, "betas_srag_obitos", data, ".csv"),
+#           row.names = FALSE)
+# 
+# write.csv(betas.ob.srag.sum,
+#           file = paste0(out.path, "betas_srag_obitos_cumsum", data, ".csv"),
+#           row.names = FALSE)
+# 
+# write.csv(betas.ob.srag.median,
+#           file = paste0(out.path, "betas_srag_obitos_median", data, ".csv"),
+#           row.names = FALSE)
