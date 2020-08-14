@@ -13,18 +13,20 @@
 #'     portanto podem ser interpretados como a probabilidade cumulativa de casos
 #'     ser notificados D dias após o dias o primeiro sintoma, sendo que
 #'     vai de zero ao máximo definido pelos argumentos do nowcasting
-beta.cumsum <- function(NobBS.output, NobBS.params.post, samples){    
-    if(missing(NobBS.params.post))
+beta.cumsum <- function(NobBS.output, NobBS.params.post, samples) {
+    if (missing(NobBS.params.post))
         df <- NobBS.output$params.post
     else
         df <- NobBS.params.post
     df1 <- df[, names(df)[grepl("Beta",names(df))]]
+    if (missing(samples))
+      samples <- nrow(df1)
     if (samples > nrow(df1))
         stop(paste("samples deve ter tamanho menor ou igual a", nrow(df1)))
     else
-        df2<-df1[sample(nrow(df1), samples), ]
-    df2<-exp(df2)
-    df3<-t(apply(df2, 1, cumsum))
+        df2 <- df1[sample(nrow(df1), samples), ]
+    df2 <- exp(df2)
+    df3 <- t(apply(df2, 1, cumsum))
     data.frame(atraso = as.integer(substr(colnames(df3), 6, 8)),
                         mean = apply(df3, 2, mean),
                lower = apply(df3, 2, quantile, 0.025),

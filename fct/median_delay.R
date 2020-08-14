@@ -20,8 +20,8 @@
 #'     mediano estimado pelo nowcasting.  Este atraso mediano é obtido
 #'     por interpolação das distribuição de probabilidade acumualdas
 #'     dos atrasos, estimadas pela função beta.cumsum.
-quantile_delay <- function(cum.betas, NobBS.params.post, NobBS.output, samples, prob = 0.5){
-    if(missing(cum.betas)){
+quantile_delay <- function(cum.betas, NobBS.params.post, NobBS.output, samples, prob = 0.5) {
+    if (missing(cum.betas)) {
         if(missing(NobBS.params.post))
             NobBS.params.post <- NobBS.output$params.post
         cum.betas <- beta.cumsum(NobBS.output=NULL, NobBS.params.post = NobBS.params.post, samples = samples)
@@ -41,8 +41,8 @@ median_delay <- function(...)
 #' @param numeric vector of quantile at each accumulated probability in cdf
 #' @param numeric vector of acummalated probablities for which the quantile is to be calculated.
 #' @return a vector of quantiles at each value of prob.
-quantile.cdf <- function(cdf, x, prob ){
-    if(length(cdf)!=length(x))
+quantile.cdf <- function(cdf, x, prob ) {
+    if (length(cdf) != length(x))
         stop("cdf and prob should be of the same length")
     f1 <- approxfun(x = cdf, y = x)
     f1(prob)
