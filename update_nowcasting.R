@@ -54,6 +54,9 @@ if (sys.nframe() == 0L) {
     make_option("--Rmethod", default = "old_Cori",
                 help = ("Método de cálculo do R efetivo. Default: old_Cori"),
                 metavar = "Rmethod"),
+    make_option("--betas", default = "FALSE",
+                help = ("Guardar betas"),
+                metavar = "betas"),
     make_option("--ncores",
                 help = ("Número de cores a serem utilizados para paralelização."),
                 metavar = "ncores")
@@ -85,6 +88,7 @@ if (sys.nframe() == 0L) {
   residentes <- opt$options$residentes
   hospitalizados <- opt$options$hospitalizados
   Rmethod <- opt$options$Rmethod
+  betas <- opt$options$betas
   ncores <- opt$options$ncores
 
   # quit on error when run non-interactively
@@ -138,7 +142,6 @@ if (!is.null(ncores) && ncores <= total.cores) {
       ncores <- ncores - 1
   doParallel::registerDoParallel(cores = ncores)
 }
-
 # métodos de cálculo de R "novos" dependem de trajetórias de nowcasting
 if (Rmethod == "old_Cori") {
     trajectories <- FALSE

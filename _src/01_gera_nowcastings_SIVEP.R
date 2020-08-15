@@ -65,25 +65,75 @@ now.ob.srag <- gera.nowcasting(dados = dados,
 ## Betas
 ################################################################################
 ## dados necessários: output nowcasting
-## Calculo de betas diáiros, acumulados e medianos
+## Calculo de betas diários, acumulados e medianos
 ## Covid
-# betas.covid<-beta.summary(now.covid)
-# betas.covid.sum<-beta.cumsum(now.covid)
-# betas.covid.median<-quantile_delay(betas.covid.sum, prob = c(0.25,0.5,0.75,0.95))
-# ## SRAG
-# betas.srag<-beta.summary(now.srag)
-# betas.srag.sum<-beta.cumsum(now.srag)
-# betas.srag.median<-quantile_delay(betas.srag.sum, prob = c(0.25,0.5,0.75,0.95))
-## Óbitos Covid
-betas.ob.covid<-beta.summary(now.ob.covid)
-betas.ob.covid.sum<-beta.cumsum(now.ob.covid)
-betas.ob.covid.median<-quantile_delay(betas.ob.covid.sum, prob = c(0.25,0.5,0.75,0.95))
-## Óbitos SRAG
-# betas.ob.srag<-beta.summary(now.ob.srag)
-# betas.ob.srag.sum<-beta.cumsum(now.ob.srag)
-# betas.ob.srag.median<-quantile_delay(betas.ob.srag.sum, prob = c(0.25,0.5,0.75,0.95))
-## comentado porque o primeiro interesse é covid ##
+if (betas == TRUE) {
+  if (!is.null(now.covid$now)) {
+    betas.covid <- beta.summary(now.covid$now)
+    betas.covid.sum <- beta.cumsum(now.covid$now)
+    betas.covid.median <- quantile_delay(betas.covid.sum,
+                                         prob = c(0.25, 0.5, 0.75, 0.95))
+    write.csv(betas.covid,
+              file = paste0(out.path, "betas_covid_", data, ".csv"),
+              row.names = FALSE)
+    write.csv(betas.covid.sum,
+              file = paste0(out.path, "betas_covid_cumsum_", data, ".csv"),
+              row.names = FALSE)
+    write.csv(betas.covid.median,
+              file = paste0(out.path, "betas_covid_median_", data, ".csv"),
+              row.names = FALSE)
+    }
+  # ## SRAG
+  if (!is.null(now.srag$now)) {
+    betas.srag <- beta.summary(now.srag$now)
+    betas.srag.sum <- beta.cumsum(now.srag$now)
+    betas.srag.median <- quantile_delay(betas.srag.sum, prob = c(0.25, 0.5, 0.75, 0.95))
+    write.csv(betas.srag,
+              file = paste0(out.path, "betas_srag_", data, ".csv"),
+              row.names = FALSE)
+    write.csv(betas.srag.sum,
+              file = paste0(out.path, "betas_srag_cumsum_", data, ".csv"),
+              row.names = FALSE)
+    write.csv(betas.srag.median,
+              file = paste0(out.path, "betas_srag_median_", data, ".csv"),
+              row.names = FALSE)
+    }
+  ## Óbitos Covid
+  if (!is.null(now.ob.covid$now)) {
+    betas.ob.covid <- beta.summary(now.ob.covid$now)
+    betas.ob.covid.sum <- beta.cumsum(now.ob.covid$now)
+    betas.ob.covid.median <- quantile_delay(betas.ob.covid.sum, prob = c(0.25, 0.5, 0.75, 0.95))
+    write.csv(betas.ob.covid,
+              file = paste0(out.path, "betas_obitos_covid_", data, ".csv"),
+              row.names = FALSE)
+    write.csv(betas.ob.covid.sum,
+              file = paste0(out.path, "betas_obitos_covid_cumsum", data, ".csv"),
+              row.names = FALSE)
+    write.csv(betas.ob.covid.median,
+              file = paste0(out.path, "betas_obitos_covid_median", data, ".csv"),
+              row.names = FALSE)
+    }
 
+  ## Óbitos SRAG
+  if (!is.null(now.ob.covid$now)) {
+    betas.ob.srag <- beta.summary(now.ob.srag$now)
+    betas.ob.srag.sum <- beta.cumsum(now.ob.srag$now)
+    betas.ob.srag.median <- quantile_delay(betas.ob.srag.sum, prob = c(0.25,0.5,0.75,0.95))
+    write.csv(betas.ob.srag,
+              file = paste0(out.path, "betas_obitos_srag_", data, ".csv"),
+              row.names = FALSE)
+    write.csv(betas.ob.srag,
+              file = paste0(out.path, "betas_obitos_srag", data, ".csv"),
+              row.names = FALSE)
+    write.csv(betas.ob.srag.sum,
+              file = paste0(out.path, "betas_obitos_srag_cumsum", data, ".csv"),
+              row.names = FALSE)
+    write.csv(betas.ob.srag.median,
+              file = paste0(out.path, "betas_obitos_srag_median", data, ".csv"),
+              row.names = FALSE)
+  }
+  }
+## comentado porque o primeiro interesse é covid ##
 
 ################################################################################
 ## Exporta data frames com totais observados de casos ou obitos
@@ -104,17 +154,6 @@ if (!is.null(now.covid$now)) {
                    data = data)
 }
 
-# write.csv(betas.covid,
-#           file = paste0(out.path, "betas_covid", data, ".csv"),
-#           row.names = FALSE)
-# 
-# write.csv(betas.covid.sum,
-#           file = paste0(out.path, "betas_covid_cumsum", data, ".csv"),
-#           row.names = FALSE)
-# 
-# write.csv(betas.covid.median,
-#           file = paste0(out.path, "betas_covid_median", data, ".csv"),
-#           row.names = FALSE)
 
 # SRAG ####
 write.notificacoes.data(dados = now.srag$dados,
@@ -128,18 +167,6 @@ if (!is.null(now.srag$now)) {
                    tipo = "srag",
                    data = data)
 }
-
-# write.csv(betas.srag,
-#           file = paste0(out.path, "betas_srag", data, ".csv"),
-#           row.names = FALSE)
-# 
-# write.csv(betas.srag.sum,
-#           file = paste0(out.path, "betas_srag_cumsum", data, ".csv"),
-#           row.names = FALSE)
-# 
-# write.csv(betas.srag.median,
-#           file = paste0(out.path, "betas_srag_median", data, ".csv"),
-#           row.names = FALSE)
 
 # OBITOS COVID ####
 
@@ -155,19 +182,6 @@ if (!is.null(now.ob.covid$now)) {
                   data = data)
 }
 
-write.csv(betas.ob.covid,
-          file = paste0(out.path, "betas_covid_obitos", data, ".csv"),
-          row.names = FALSE)
-
-write.csv(betas.ob.covid.sum,
-          file = paste0(out.path, "betas_covid_obitos_cumsum", data, ".csv"),
-          row.names = FALSE)
-
-write.csv(betas.ob.covid.median,
-          file = paste0(out.path, "betas_covid_obitos_median", data, ".csv"),
-          row.names = FALSE)
-
-
 # OBITOS SRAG ####
 
 write.notificacoes.data(dados = now.ob.srag$dados,
@@ -182,14 +196,3 @@ if (!is.null(now.ob.srag$now)) {
                   data = data)
 }
 
-# write.csv(betas.ob.srag,
-#           file = paste0(out.path, "betas_srag_obitos", data, ".csv"),
-#           row.names = FALSE)
-# 
-# write.csv(betas.ob.srag.sum,
-#           file = paste0(out.path, "betas_srag_obitos_cumsum", data, ".csv"),
-#           row.names = FALSE)
-# 
-# write.csv(betas.ob.srag.median,
-#           file = paste0(out.path, "betas_srag_obitos_median", data, ".csv"),
-#           row.names = FALSE)

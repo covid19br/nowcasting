@@ -5,8 +5,8 @@ gera.nowcasting <- function(dados, # dados
                             trim.now, # corte para nowcasting
                             window, # janela para nowcasting
                             trajectories = FALSE, # retorna trajetórias
-                            obito_sin_pri = FALSE)  { # nowcasting obitos pela data de sintoma primario?) 
-  if(trajectories)
+                            obito_sin_pri = FALSE)  { # nowcasting obitos pela data de sintoma primario?)
+  if (trajectories)
       NobBS  <- NobBS.posterior
   # 1. nowcasting de casos ###
   if (caso) {
