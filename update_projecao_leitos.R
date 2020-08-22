@@ -83,7 +83,7 @@ if (sys.nframe() == 0L) {
   make_report <- opt$options$report
   fit_models <- opt$options$fit_models
   nowcasting <- opt$options$nowcasting
-  out.root <- if(is.null(opt$options$out_dir)) {"../dados_processados"} else opt$options$out_dir
+  out.root <- if(is.null(opt$options$out_dir)) {"../site/dados"} else opt$options$out_dir
   report.dir <- opt$options$report_dir
   check_report <- opt$options$check_report
   

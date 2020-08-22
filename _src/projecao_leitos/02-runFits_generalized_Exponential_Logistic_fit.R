@@ -95,32 +95,36 @@ hospital_data$date = as.Date(hospital_data$date)
 UTI_data = read.csv(current_UTI_table)
 UTI_data$date = as.Date(UTI_data$date)
 
-covid = hospital_data %>% filter(type == "covid", date >= initial_date)
-covid_UTI = UTI_data %>% filter(type == "covid", date >= initial_date)
+
 srag = hospital_data %>% filter(type == "srag", date >= initial_date)
 srag_UTI = UTI_data %>% filter(type == "srag", date >= initial_date)
 
-########################
-# Covid
-########################
-
-########################
-# Hospitalized
-########################
-
-print("Exp covid")
-fitsExpCovid = runExpFit(covid)    
-print("Logist covid")
-fitsLogistCovid = runLogistFit(covid)
-
-########################
-# UTI
-########################
-
-print("Exp covid UTI")
-fitsExpCovidUTI = runExpFit(covid_UTI)
-print("Logist covid UTI")
-fitsLogitCovidUTI = runLogistFit(covid_UTI)
+if(disease == "all"){
+  covid = hospital_data %>% filter(type == "covid", date >= initial_date)
+  covid_UTI = UTI_data %>% filter(type == "covid", date >= initial_date)
+  
+  ########################
+  # Covid
+  ########################
+  
+  ########################
+  # Hospitalized
+  ########################
+  
+  print("Exp covid")
+  fitsExpCovid = runExpFit(covid)    
+  print("Logist covid")
+  fitsLogistCovid = runLogistFit(covid)
+  
+  ########################
+  # UTI
+  ########################
+  
+  print("Exp covid UTI")
+  fitsExpCovidUTI = runExpFit(covid_UTI)
+  print("Logist covid UTI")
+  fitsLogitCovidUTI = runLogistFit(covid_UTI)
+}
 
 ########################
 # SRAG
@@ -148,15 +152,23 @@ fitsLogitSragUTI = runLogistFit(srag_UTI, trim = 2, iter = 4000)
 # Output
 ########################
 
-fits = list(date = data_date,  
-            covid = list(Exp = fitsExpCovid,
-                         Logist = fitsLogistCovid,
-                         UTIExp = fitsExpCovidUTI,
-                         UTILogist = fitsLogitCovidUTI),
-            srag = list(Exp = fitsExpSrag,
-                        Logist = fitsLogistSrag,
-                        UTIExp = fitsExpSragUTI,
-                        UTILogist = fitsLogitSragUTI))
+if(disease == "all"){
+  fits = list(date = data_date,  
+              covid = list(Exp = fitsExpCovid,
+                           Logist = fitsLogistCovid,
+                           UTIExp = fitsExpCovidUTI,
+                           UTILogist = fitsLogitCovidUTI),
+              srag = list(Exp = fitsExpSrag,
+                          Logist = fitsLogistSrag,
+                          UTIExp = fitsExpSragUTI,
+                          UTILogist = fitsLogitSragUTI))
+} else{
+  fits = list(date = data_date,  
+              srag = list(Exp = fitsExpSrag,
+                          Logist = fitsLogistSrag,
+                          UTIExp = fitsExpSragUTI,
+                          UTILogist = fitsLogitSragUTI))
+}
 saveRDS(fits, file = FITSPATH)
 #readRDS(FITSPATH)            
 

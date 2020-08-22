@@ -68,8 +68,9 @@ if(!exists("fix_missing_dates") || fix_missing_dates){
     as.data.frame()
 }
 
-covid.dt = srag.dt %>%
-  dplyr::filter(pcr_sars2 == 1 | classi_fin == 5)   %>%
-  as.data.frame()
-
+if(disease == "all"){
+  covid.dt = srag.dt %>%
+    dplyr::filter(pcr_sars2 == 1 | classi_fin == 5)   %>%
+    as.data.frame()
+}
 say(paste("READ FILES FOR DATE:", format(data_date, "%d %B %Y")), "cat")
