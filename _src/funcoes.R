@@ -19,6 +19,8 @@ if(!require(textclean)){install.packages("textclean")}; library(textclean)
 if(!require(zoo))      {install.packages("zoo")      }; library(zoo)
 if(!require(EpiEstim)) {install.packages("EpiEstim") }; library(EpiEstim)
 if(!require(stringr))  {install.packages("stringr")  }; library(stringr)
+if(!require(cmdstanr)){install.packages("cmdstanr"); install_cmdstan(); library(cmdstanr)}
+if(!require(posterior)){install.packages("posterior"); library(posterior)}
 options(mc.cores = parallel::detectCores())
 
 age_table = structure(list(idade_lower = c(0L, 10L, 20L, 30L, 40L, 50L, 60L, 70L, 80L), 
