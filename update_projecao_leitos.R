@@ -160,6 +160,7 @@ CODEROOT = paste0(PRJROOT, "/_src/projecao_leitos")
 C = function(...) file.path(CODEROOT, ...)	
 
 if(nowcasting){
+  fix_missing_dates = FALSE
   source(C("00-read_process_SIVEP_CSV.R"))
   source(C("01-nowcast_inHospital_byAge.R"))
 }

@@ -42,7 +42,6 @@ srag.dt = srag.20.raw %>%
   mutate(dt_saiuti = if_else(UTI==1 & !is.na(evolucao) & !is.na(dt_evo), 
                              coalesce(dt_saiuti, dt_evo), as.Date(NA))) 
 
-
 if(!exists("fix_missing_dates") || fix_missing_dates){
   if(!exists("fix_missing_dates"))
     warning("'fix_missing_dates' variable is missing, assuming TRUE.")
