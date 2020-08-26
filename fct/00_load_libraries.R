@@ -19,4 +19,11 @@ if(!require(textclean)){install.packages("textclean")}; library(textclean)
 if(!require(zoo))      {install.packages("zoo")      }; library(zoo)
 if(!require(EpiEstim)) {install.packages("EpiEstim") }; library(EpiEstim)
 if(!require(stringr))  {install.packages("stringr")  }; library(stringr)
+if(!require(cmdstanr)){
+  install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", 
+                                         getOption("repos"))) 
+  install_cmdstan(); 
+  library(cmdstanr)
+}
+if(!require(posterior)){install.packages("posterior"); library(posterior)}
 options(mc.cores = parallel::detectCores())
