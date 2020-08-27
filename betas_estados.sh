@@ -9,3 +9,5 @@ do echo
 	Rscript update_nowcasting.R --escala estado --geocode $VARIABLE --outputDir ./Estados_betas/estado_${ESTADOS[$VARIABLE]} --Rmethod Cori --betas TRUE &
 
 done
+wait
+echo "all done"
