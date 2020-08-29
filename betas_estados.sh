@@ -5,6 +5,6 @@ declare -A ESTADOS=([12]=AC [27]=AL [13]=AM [16]=AP [29]=BA [23]=CE [53]=DF [32]
 
 for VARIABLE in ${!ESTADOS[@]}
 	do echo Rscript update_nowcasting.R --escala estado --geocode $VARIABLE --outputDir ./Estados_betas/estado_${ESTADOS[$VARIABLE]} --Rmethod Cori --betas TRUE
-done | parallel --memfree 100M
+done | parallel --memfree 500M
 wait
 echo "all done"
