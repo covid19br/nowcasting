@@ -30,6 +30,7 @@ declare -A ESTADOS=(
 [35]=SP 
 [17]=TO
 )
+# Está assim só pq é mais fácil comentar estados não rodados
 
 for VARIABLE in ${!ESTADOS[@]}
 	do echo Rscript update_nowcasting.R --escala estado --geocode $VARIABLE --outputDir ./Estados_betas/estado_${ESTADOS[$VARIABLE]} --Rmethod Cori --betas TRUE
