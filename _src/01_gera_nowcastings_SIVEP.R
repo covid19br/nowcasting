@@ -72,8 +72,7 @@ if (betas == TRUE) {
     betas.covid <- beta.summary(now.covid$now)
     betas.covid.sum <- beta.cumsum(now.covid$now)
     betas.covid.median <- quantile_delay(betas.covid.sum,
-                                         prob = seq(0.25, 0.95, 0.05))
-    #betas.covid.median$prob<-seq(0.25, 0.95, 0.05)
+                                         prob = c(seq(0.25, 0.95, 0.05)))
     write.csv(betas.covid,
               file = paste0(out.path, "betas_covid_", data, ".csv"),
               row.names = FALSE)
@@ -89,8 +88,7 @@ if (betas == TRUE) {
     betas.srag <- beta.summary(now.srag$now)
     betas.srag.sum <- beta.cumsum(now.srag$now)
     betas.srag.median <- quantile_delay(betas.srag.sum, 
-                                        prob = seq(0.25, 0.95, 0.05))
-    #betas.srag.median$prob<-seq(0.25, 0.95, 0.05)
+                                        prob = c(seq(0.25, 0.95, 0.05)))
     write.csv(betas.srag,
               file = paste0(out.path, "betas_srag_", data, ".csv"),
               row.names = FALSE)
@@ -106,13 +104,12 @@ if (betas == TRUE) {
     betas.ob.covid <- beta.summary(now.ob.covid$now)
     betas.ob.covid.sum <- beta.cumsum(now.ob.covid$now)
     betas.ob.covid.median <- quantile_delay(betas.ob.covid.sum, 
-                                            prob = seq(0.25, 0.95, 0.05))
-    #betas.ob.covid.median$prob<-seq(0.25, 0.95, 0.05)
+                                            prob = c(seq(0.25, 0.95, 0.05)))
     write.csv(betas.ob.covid,
               file = paste0(out.path, "betas_obitos_covid_", data, ".csv"),
               row.names = FALSE)
     write.csv(betas.ob.covid.sum,
-              file = paste0(out.path, "betas_obitos_covid_cumsum", data, ".csv"),
+              file = paste0(out.path, "betas_obitos_covid_cumsum_", data, ".csv"),
               row.names = FALSE)
     write.csv(betas.ob.covid.median,
               file = paste0(out.path, "betas_obitos_covid_median_", data, ".csv"),
@@ -124,8 +121,7 @@ if (betas == TRUE) {
     betas.ob.srag <- beta.summary(now.ob.srag$now)
     betas.ob.srag.sum <- beta.cumsum(now.ob.srag$now)
     betas.ob.srag.median <- quantile_delay(betas.ob.srag.sum, 
-                                           prob = seq(0.25, 0.95, 0.05))
-    #betas.ob.srag.median$prob<-seq(0.25, 0.95, 0.05)
+                                           prob = c(seq(0.25, 0.95, 0.05)))
     write.csv(betas.ob.srag,
               file = paste0(out.path, "betas_obitos_srag_", data, ".csv"),
               row.names = FALSE)
@@ -133,7 +129,7 @@ if (betas == TRUE) {
               file = paste0(out.path, "betas_obitos_srag", data, ".csv"),
               row.names = FALSE)
     write.csv(betas.ob.srag.sum,
-              file = paste0(out.path, "betas_obitos_srag_cumsum", data, ".csv"),
+              file = paste0(out.path, "betas_obitos_srag_cumsum_", data, ".csv"),
               row.names = FALSE)
     write.csv(betas.ob.srag.median,
               file = paste0(out.path, "betas_obitos_srag_median_", data, ".csv"),
