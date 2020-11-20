@@ -70,7 +70,7 @@ gera.nowcasting <- function(dados, # dados
                     filter(!is.na(dt_evoluca)) %>%
                     mutate(dt_encerra = pmax(dt_encerra, dt_digita, dt_evoluca,
                                              na.rm = TRUE)) %>%
-                    select(dt_evoluca, dt_notific, dt_encerra)
+                    select(dt_sin_pri, dt_evoluca, dt_notific, dt_encerra)
             }
             ## Onset date = data do óbito
             if(obito_sin_pri){
@@ -80,7 +80,7 @@ gera.nowcasting <- function(dados, # dados
                     filter(!is.na(dt_sin_pri)) %>%
                     mutate(dt_encerra = pmax(dt_encerra, dt_digita, dt_evoluca,
                                              na.rm = TRUE)) %>%
-                    select(dt_sin_pri, dt_notific, dt_encerra)
+                    select(dt_sin_pri, dt_evoluca, dt_notific, dt_encerra)
             }
         }
         ## 2.2. obitos srag ####
