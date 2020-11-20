@@ -19,7 +19,7 @@ read.sivep <- function(dir, # diretorio onde esta o dado
   # detecta e lida com arquivo zip
   if (endsWith(file.name, '.zip')){
       is_zip = TRUE
-      file.name <- unzip(file.name, basename(gsub('.zip$', '.csv', file.name)))
+      file.name <- utils::unzip(file.name, basename(gsub('.zip$', '.csv', file.name)))
   } else{
       is_zip = FALSE
   }
