@@ -83,7 +83,7 @@ if (sys.nframe() == 0L) {
   make_report <- opt$options$report
   fit_models <- opt$options$fit_models
   nowcasting <- opt$options$nowcasting
-  out.root <- if(is.null(opt$options$out_dir)) {"../dados_processados"} else opt$options$out_dir
+  out.root <- if(is.null(opt$options$out_dir)) {"../site/dados"} else opt$options$out_dir
   report.dir <- opt$options$report_dir
   check_report <- opt$options$check_report
   
@@ -160,6 +160,7 @@ CODEROOT = paste0(PRJROOT, "/_src/projecao_leitos")
 C = function(...) file.path(CODEROOT, ...)	
 
 if(nowcasting){
+  fix_missing_dates = FALSE
   source(C("00-read_process_SIVEP_CSV.R"))
   source(C("01-nowcast_inHospital_byAge.R"))
 }

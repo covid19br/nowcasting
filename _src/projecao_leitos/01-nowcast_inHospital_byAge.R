@@ -15,18 +15,19 @@ load(C("hospitalStatsFits.Rdata"))
 
 ### Nowcasting
 # Covid
-now.Date.covid  <-  max(covid.dt$dt_sin)
-covid.now.day <- NobBS.strat(
-  data = covid.dt,
-  now = now.Date.covid,
-  strata = "age_class",
-  onset_date = "dt_sin",
-  report_date = "dt_rec",
-  units = "1 day",
-  moving_window =  window,
-  specs = list(nAdapt = 6000, nBurnin = 6000, nThin = 1, nSamp = 10000)
-)
-
+if(disease == "all" ){
+  now.Date.covid  <-  max(covid.dt$dt_sin)
+  covid.now.day <- NobBS.strat(
+    data = covid.dt,
+    now = now.Date.covid,
+    strata = "age_class",
+    onset_date = "dt_sin",
+    report_date = "dt_rec",
+    units = "1 day",
+    moving_window =  window,
+    specs = list(nAdapt = 6000, nBurnin = 6000, nThin = 1, nSamp = 10000)
+  )
+}
 # nowcasts.covid <- data.frame(covid.now.day$estimates)
 # p1 <-
 #   ggplot(nowcasts.covid) + geom_line(aes(onset_date,estimate,col="Estimado"),linetype="longdash") +
@@ -60,13 +61,15 @@ srag.now.day <- NobBS.strat(
 
 ## Using Nowcast and survival analysis com complete covid table with unobserved cases
 
-covid.now_casted = fillNowcastedLinesFast(covid.dt, covid.now.day, 
-                                          time_fits1$covid$notUTI, 
-                                          time_fits0$covid$Int, 
-                                          time_fits0$covid$UTI, 
-                                          time_fits0$covid$afterUTI, 
-                                          probsFits$covid$uti[,"Estimate"],
-                                          .parallel = TRUE)
+if(disease == "all"){
+  covid.now_casted = fillNowcastedLinesFast(covid.dt, covid.now.day, 
+                                            time_fits1$covid$notUTI, 
+                                            time_fits0$covid$Int, 
+                                            time_fits0$covid$UTI, 
+                                            time_fits0$covid$afterUTI, 
+                                            probsFits$covid$uti[,"Estimate"],
+                                            .parallel = TRUE)
+}
 srag.now_casted = fillNowcastedLinesFast(srag.dt, srag.now.day, 
                                          time_fits1$srag$notUTI, 
                                          time_fits0$srag$Int, 
@@ -77,24 +80,41 @@ srag.now_casted = fillNowcastedLinesFast(srag.dt, srag.now.day,
 
 start_date = as.Date("2020-03-01")
 march_present = seq(start_date, today(), by = "day")
-march_present.covid = seq(start_date, now.Date.covid, by = "day")
+
 march_present.srag  = seq(start_date, now.Date.srag, by = "day")
-
-covid_in_hospital = lapply(covid.now_casted, makeHospitalTable, march_present.covid)
-covid_in_UTI      = lapply(covid.now_casted, makeHospitalTable, march_present.covid, UTI = TRUE)
-
 srag_in_hospital = lapply(srag.now_casted, makeHospitalTable, march_present.srag)
 srag_in_UTI      = lapply(srag.now_casted, makeHospitalTable, march_present.srag, UTI = TRUE)
-
-hospitalized_totals_covid = data.frame(covid_in_hospital$observed$date, 
-                                       t(laply(covid_in_hospital, function(x) rowSums(x[,-1]))),
-                                       typo = "covid", stringsAsFactors = F)
-names(hospitalized_totals_covid) = c("date", "observed", "estimate", "upper", "lower", "type")
 hospitalized_totals_srag = data.frame(srag_in_hospital$observed$date, 
                                       t(laply(srag_in_hospital, function(x) rowSums(x[,-1]))),
                                       typo = "srag", stringsAsFactors = F)
 names(hospitalized_totals_srag) = c("date", "observed", "estimate", "upper", "lower", "type")
-hospitalized_totals = rbind(hospitalized_totals_covid, hospitalized_totals_srag)
+UTI_totals_srag = data.frame(srag_in_UTI$observed$date, 
+                             t(laply(srag_in_UTI, function(x) rowSums(x[,-1]))),
+                             typo = "srag", stringsAsFactors = F)
+names(UTI_totals_srag) = c("date", "observed", "estimate", "upper", "lower", "type")
+
+if(disease == "all"){
+  march_present.covid = seq(start_date, now.Date.covid, by = "day")
+  covid_in_hospital = lapply(covid.now_casted, makeHospitalTable, march_present.covid)
+  covid_in_UTI      = lapply(covid.now_casted, makeHospitalTable, march_present.covid, UTI = TRUE)
+  hospitalized_totals_covid = data.frame(covid_in_hospital$observed$date, 
+                                         t(laply(covid_in_hospital, function(x) rowSums(x[,-1]))),
+                                         typo = "covid", stringsAsFactors = F)
+  names(hospitalized_totals_covid) = c("date", "observed", "estimate", "upper", "lower", "type")
+  UTI_totals_covid = data.frame(covid_in_UTI$observed$date, 
+                                t(laply(covid_in_UTI, function(x) rowSums(x[,-1]))),
+                                typo = "covid", stringsAsFactors = F)
+  names(UTI_totals_covid) = c("date", "observed", "estimate", "upper", "lower", "type")
+}
+
+
+if(disease == "all"){
+  hospitalized_totals = rbind(hospitalized_totals_covid, hospitalized_totals_srag)
+  UTI_totals = rbind(UTI_totals_covid, UTI_totals_srag)
+} else{
+  hospitalized_totals = hospitalized_totals_srag
+  UTI_totals = UTI_totals_srag
+}
 
 # p3 = ggplot(hospitalized_totals, aes(date, observed, group = type, shape = type, color = type)) +
 #   geom_point(size=2) + geom_line(aes(y = estimate)) +
@@ -110,15 +130,8 @@ hospitalized_totals = rbind(hospitalized_totals_covid, hospitalized_totals_srag)
 #                        paste0("covid_srag_in_hospital_nowcast_", data_date, ".png")), 
 #           p3, base_height = 6.5, base_asp = 1.7)
 
-UTI_totals_covid = data.frame(covid_in_UTI$observed$date, 
-                                       t(laply(covid_in_UTI, function(x) rowSums(x[,-1]))),
-                                       typo = "covid", stringsAsFactors = F)
-names(UTI_totals_covid) = c("date", "observed", "estimate", "upper", "lower", "type")
-UTI_totals_srag = data.frame(srag_in_UTI$observed$date, 
-                                      t(laply(srag_in_UTI, function(x) rowSums(x[,-1]))),
-                                      typo = "srag", stringsAsFactors = F)
-names(UTI_totals_srag) = c("date", "observed", "estimate", "upper", "lower", "type")
-UTI_totals = rbind(UTI_totals_covid, UTI_totals_srag)
+
+
 
 ##################
 # Output
@@ -162,7 +175,8 @@ get_internacoes = function(x){
     filter(!dt_int > today())
 }
 srag_int_por_dia = ldply(srag.now_casted, get_internacoes) %>% pivot_wider(names_from = .id, values_from = internacoes)
-covid_int_por_dia = ldply(covid.now_casted, get_internacoes) %>% pivot_wider(names_from = .id, values_from = internacoes)
 write_csv(srag_int_por_dia, O(paste0("hospitalizados/", data_date, "_internacoes_por_dia_srag.csv")))
-write_csv(covid_int_por_dia, O(paste0("hospitalizados/", data_date, "_internacoes_por_dia_covid.csv")))
-
+if(disease == "all"){
+  covid_int_por_dia = ldply(covid.now_casted, get_internacoes) %>% pivot_wider(names_from = .id, values_from = internacoes)
+  write_csv(covid_int_por_dia, O(paste0("hospitalizados/", data_date, "_internacoes_por_dia_covid.csv")))
+}

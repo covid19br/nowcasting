@@ -130,7 +130,9 @@ all_data = lapply(date_list, readAll)
 names(all_data) = date_list
 latest_data = last(all_data)
 
-covidPlots = lapply(all_data, getCovidPlots)
+if(disease == "all"){
+  covidPlots = lapply(all_data, getCovidPlots)
+}
 sragPlots = lapply(all_data, getSragPlots)
 
 outputLatestPlot = function(plot_list){
@@ -197,8 +199,10 @@ outputPlot = function(c_date, plot_list){
 ##########
 # Covid
 ##########
-outputLatestPlot(covidPlots)
-olderPlotsCovid = lapply(date_list[1:(length(date_list)-1)], outputPlot, covidPlots)
+if(disease == "all"){
+  outputLatestPlot(covidPlots)
+  olderPlotsCovid = lapply(date_list[1:(length(date_list)-1)], outputPlot, covidPlots)
+}
 # report_files = sort(grep("temp_report_2020", dir(P("Curve_fitting/output/plots"), 
 #                                                  full.names = TRUE), value = TRUE), decreasing = T)
 # report_filesE = excape_paths(report_files)
@@ -234,18 +238,19 @@ options(scipen=999)
 
 knitr::opts_chunk$set(echo = FALSE, warning=FALSE, message=FALSE)
 
-data.atual = last(date_list)
-disease = "covid"
-disease_text = "COVID-19"
-label_escala = check.geocode(geocode = geocode, escala = escala, sigla = sigla, nonascii = FALSE)
-if(escala == "municipio") escala = "município"
-plots = last(covidPlots)
-olderPlots = olderPlotsCovid
-render(input = C("relatorio.Rmd"),
-       output_file = paste0(data.atual, "_relatorio_projecoes_demanda_hospitalar_covid.pdf"),
-       output_dir = report.dir,
-       encoding = "utf8")
-
+if(disease == "all"){
+  data.atual = last(date_list)
+  disease = "covid"
+  disease_text = "COVID-19"
+  label_escala = check.geocode(geocode = geocode, escala = escala, sigla = sigla, nonascii = FALSE)
+  if(escala == "municipio") escala = "município"
+  plots = last(covidPlots)
+  olderPlots = olderPlotsCovid
+  render(input = C("relatorio.Rmd"),
+         output_file = paste0(data.atual, "_relatorio_projecoes_demanda_hospitalar_covid.pdf"),
+         output_dir = report.dir,
+         encoding = "utf8")
+}
 data.atual = last(date_list)
 disease = "srag"
 disease_text = "SRAG"

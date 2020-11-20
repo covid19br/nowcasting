@@ -46,7 +46,7 @@ if (file.exists(paste0(out.dir, "/db.info.csv"))) {
   old.db.info <- read.csv(paste0(out.dir, "/db.info.csv"))
   # só datas novas serão analisadas
   old.db.info$data <- as.Date(old.db.info$data)
-  datas <- datas[which(! datas %in% old.db.info$data)]
+  datasn <- datas[which(! datas %in% old.db.info$data)]
 
   old_dados_covid_br <- read.csv(paste0(out.dir, "/dados_covid_br.csv"))
   old_dados_covid_br$dt_sin_pri <- as.Date(old_dados_covid_br$dt_sin_pri)
@@ -75,11 +75,11 @@ if (file.exists(paste0(out.dir, "/db.info.csv"))) {
   }
 }
 
-if (length(datas) == 0) {
+if (length(datasn) == 0) {
   db.info <- old.db.info
 } else {
-  db.info <- data.frame(data = datas,
-                        file = basename(file.names),
+  db.info <- data.frame(data = datasn,
+                        file = basename(file.names[which(datas == datasn)]),
                         size.read = NA,
                         size.file = NA,
                         casos.covid = NA,
@@ -99,7 +99,7 @@ if (facet.estados) {
   dados_obsrag_est <- list()
 }
 
-N <- length(datas)
+N <- length(datasn)
 for (i in seq(length.out = N)) {
   data <- format(db.info[i,"data"], "%Y_%m_%d")
   print(paste("Lendo base de dados de", data))
@@ -190,7 +190,7 @@ for (i in seq(length.out = N)) {
 }
 
 if (N > 0) {
-  data_v <- as.character(datas)
+  data_v <- as.character(datasn)
   names(dados_covid_br) <- data_v
   names(dados_srag_br) <- data_v
   names(dados_obcovid_br) <- data_v
@@ -260,7 +260,7 @@ plot.covid <- ggplot(dados_covid_br,
     xlab("Dia do primeiro sintoma") +
     ylab("Número de novos casos") +
     plot.formatos +
-  scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
+  scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = sort(db.info$data)) +
   NULL
 
 plot.srag <- ggplot(dados_srag_br,
@@ -270,7 +270,7 @@ plot.srag <- ggplot(dados_srag_br,
   xlab("Dia do primeiro sintoma") +
   ylab("Número de novos casos") +
   plot.formatos +
-  scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
+  scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = sort(db.info$data)) +
   NULL
 
 plot.obitos.covid <- ggplot(dados_obcovid_br,
@@ -280,7 +280,7 @@ plot.obitos.covid <- ggplot(dados_obcovid_br,
     xlab("Dia do óbito") +
     ylab("Número de novos óbitos") +
   plot.formatos +
-  scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
+  scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = sort(db.info$data)) +
   NULL
 
 plot.obitos.srag <- ggplot(dados_obsrag_br,
@@ -290,7 +290,7 @@ plot.obitos.srag <- ggplot(dados_obsrag_br,
     xlab("Dia do óbito") +
     ylab("Número de novos óbitos") +
   plot.formatos +
-  scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
+  scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = sort(db.info$data)) +
   NULL
 
 
@@ -304,7 +304,7 @@ if (facet.estados) {
       xlab("Dia do primeiro sintoma") +
       ylab("Número de novos casos") +
       plot.formatos +
-    scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
+    scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = sort(db.info$data)) +
     facet_wrap(~ sg_uf, scales="free", ncol=4) +
     NULL
   
@@ -315,7 +315,7 @@ if (facet.estados) {
     xlab("Dia do primeiro sintoma") +
     ylab("Número de novos casos") +
     plot.formatos +
-    scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
+    scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = sort(db.info$data)) +
     facet_wrap(~ sg_uf, scales="free", ncol=4) +
     NULL
   
@@ -326,7 +326,7 @@ if (facet.estados) {
       xlab("Dia do óbito") +
       ylab("Número de novos óbitos") +
     plot.formatos +
-    scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
+    scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = sort(db.info$data)) +
     facet_wrap(~ sg_uf, scales="free", ncol=4) +
     NULL
   
@@ -337,7 +337,7 @@ if (facet.estados) {
       xlab("Dia do óbito") +
       ylab("Número de novos óbitos") +
     plot.formatos +
-    scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = db.info$data) +
+    scale_colour_manual(name = "data base", values = viridis::viridis(N), labels = sort(db.info$data)) +
     facet_wrap(~ sg_uf, scales="free", ncol=4) +
     NULL
 }

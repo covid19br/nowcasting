@@ -1,8 +1,6 @@
-
 #PRJROOT = rprojroot::find_root(".here")
 #PRJROOT = "~/code"
 #P = function(...) file.path(PRJROOT, ...)
-
 fit_generalizedExp = function(y, trim = 2, iter = 2000, project = 7){
   n_days = length(y)
   used_days = n_days-trim
@@ -12,16 +10,19 @@ fit_generalizedExp = function(y, trim = 2, iter = 2000, project = 7){
                    ts = 1:used_days,
                    ts_p = 1:(n_days + project),
                    initial_y = as.vector(y)[1])
-  model = stan(C("stan_files/generalized_exponential_fit.stan"), 
-               model_name = "g_exponential", data = stan_data, 
-               iter = iter, chains = 4, refresh = -1,
-               control = list(adapt_delta = 0.99, max_treedepth = 12))
-  y_pred = data.frame(summary(model, pars = "cases_pred", 
-                              probs = c(0.025, 0.1, 0.2, 0.5, 0.8, 0.9, 0.975))[[1]])
+  mod <- cmdstan_model(C("stan_files/generalized_exponential_fit.stan"))
+  capture.output(fit <- mod$sample(
+    data = stan_data,
+    chains = 4,
+    parallel_chains = 4,
+    refresh = 0, iter_warmup = iter/2, iter_sampling = iter/2, 
+    adapt_delta = 0.99, max_treedepth = 12
+  ), type = "message")
+  y_pred = fit$summary("cases_pred", "mean", ~quantile(.x, c(0.025, 0.1, 0.2, 0.5, 0.8, 0.9, 0.975)))
+  names(y_pred)[3:9] = c("X2.5.", "X10.", "X20.", "X50.", "X80.", "X90.", "X97.5.")
   y_pred$date = as.Date((1:nrow(y_pred))-1, origin = initial_date)
-  y_pred$type = "covid"
   #list(model=model, pred = y_pred)
-  list(pred = y_pred)
+  list(pred = as.data.frame(y_pred))
 }
 fit_generalizedLogistic = function(y, trim = 2, iter = 2000, project = 7){
   n_days = length(y)
@@ -33,16 +34,19 @@ fit_generalizedLogistic = function(y, trim = 2, iter = 2000, project = 7){
                    ts_p = 1:(n_days + project),
                    initial_y = as.vector(y)[1],
                    K_prior = last(y))
-  model = stan(C("stan_files/generalized_logistic_fit.stan"), 
-               model_name = "g_logistic", data = stan_data, 
-               iter = iter, chains = 4, refresh = -1,
-               control = list(adapt_delta = 0.99, max_treedepth = 12))
-  y_pred = data.frame(summary(model, pars = "cases_pred", 
-                              probs = c(0.025, 0.1, 0.2, 0.5, 0.8, 0.9, 0.975))[[1]])
+  mod <- cmdstan_model(C("stan_files/generalized_logistic_fit.stan"))
+  capture.output(fit <- mod$sample(
+    data = stan_data,
+    chains = 4,
+    parallel_chains = 4,
+    refresh = 0, iter_warmup = iter/2, iter_sampling = iter/2, 
+    adapt_delta = 0.99, max_treedepth = 12
+  ), type = "message")
+  y_pred = fit$summary("cases_pred", "mean", ~quantile(.x, c(0.025, 0.1, 0.2, 0.5, 0.8, 0.9, 0.975)))
+  names(y_pred)[3:9] = c("X2.5.", "X10.", "X20.", "X50.", "X80.", "X90.", "X97.5.")
   y_pred$date = as.Date((1:nrow(y_pred))-1, origin = initial_date)
-  y_pred$type = "covid"
   #list(model=model, pred = y_pred)
-  list(pred = y_pred)
+  list(pred = as.data.frame(y_pred))
 }
 
 runExpFit = function(x, trim = 2, iter = 2000, project = 7){
@@ -91,32 +95,36 @@ hospital_data$date = as.Date(hospital_data$date)
 UTI_data = read.csv(current_UTI_table)
 UTI_data$date = as.Date(UTI_data$date)
 
-covid = hospital_data %>% filter(type == "covid", date >= initial_date)
-covid_UTI = UTI_data %>% filter(type == "covid", date >= initial_date)
+
 srag = hospital_data %>% filter(type == "srag", date >= initial_date)
 srag_UTI = UTI_data %>% filter(type == "srag", date >= initial_date)
 
-########################
-# Covid
-########################
-
-########################
-# Hospitalized
-########################
-
-print("Exp covid")
-fitsExpCovid = runExpFit(covid)    
-print("Logist covid")
-fitsLogistCovid = runLogistFit(covid)
-
-########################
-# UTI
-########################
-
-print("Exp covid UTI")
-fitsExpCovidUTI = runExpFit(covid_UTI)
-print("Logist covid UTI")
-fitsLogitCovidUTI = runLogistFit(covid_UTI)
+if(disease == "all"){
+  covid = hospital_data %>% filter(type == "covid", date >= initial_date)
+  covid_UTI = UTI_data %>% filter(type == "covid", date >= initial_date)
+  
+  ########################
+  # Covid
+  ########################
+  
+  ########################
+  # Hospitalized
+  ########################
+  
+  print("Exp covid")
+  fitsExpCovid = runExpFit(covid)    
+  print("Logist covid")
+  fitsLogistCovid = runLogistFit(covid)
+  
+  ########################
+  # UTI
+  ########################
+  
+  print("Exp covid UTI")
+  fitsExpCovidUTI = runExpFit(covid_UTI)
+  print("Logist covid UTI")
+  fitsLogitCovidUTI = runLogistFit(covid_UTI)
+}
 
 ########################
 # SRAG
@@ -144,15 +152,23 @@ fitsLogitSragUTI = runLogistFit(srag_UTI, trim = 2, iter = 4000)
 # Output
 ########################
 
-fits = list(date = data_date,  
-            covid = list(Exp = fitsExpCovid,
-                         Logist = fitsLogistCovid,
-                         UTIExp = fitsExpCovidUTI,
-                         UTILogist = fitsLogitCovidUTI),
-            srag = list(Exp = fitsExpSrag,
-                        Logist = fitsLogistSrag,
-                        UTIExp = fitsExpSragUTI,
-                        UTILogist = fitsLogitSragUTI))
+if(disease == "all"){
+  fits = list(date = data_date,  
+              covid = list(Exp = fitsExpCovid,
+                           Logist = fitsLogistCovid,
+                           UTIExp = fitsExpCovidUTI,
+                           UTILogist = fitsLogitCovidUTI),
+              srag = list(Exp = fitsExpSrag,
+                          Logist = fitsLogistSrag,
+                          UTIExp = fitsExpSragUTI,
+                          UTILogist = fitsLogitSragUTI))
+} else{
+  fits = list(date = data_date,  
+              srag = list(Exp = fitsExpSrag,
+                          Logist = fitsLogistSrag,
+                          UTIExp = fitsExpSragUTI,
+                          UTILogist = fitsLogitSragUTI))
+}
 saveRDS(fits, file = FITSPATH)
 #readRDS(FITSPATH)            
 
