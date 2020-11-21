@@ -54,12 +54,15 @@ if (sys.nframe() == 0L) {
     make_option("--Rmethod", default = "old_Cori",
                 help = ("Método de cálculo do R efetivo. Default: old_Cori"),
                 metavar = "Rmethod"),
-    make_option("--betas", default = "FALSE",
+    make_option("--betas", default = FALSE,
                 help = ("Guardar betas"),
                 metavar = "betas"),
     make_option("--ncores",
                 help = ("Número de cores a serem utilizados para paralelização."),
-                metavar = "ncores")
+                metavar = "ncores"),
+    make_option("--semanal", default = FALSE,
+                help = ("Fazer o nowcasting por semana? Default: FALSE"),
+                metavar = "semanal")
   )
   parser_object <- OptionParser(usage = "Rscript %prog [Opções] [ARQUIVO]\n",
                                 option_list = option_list,
@@ -90,9 +93,10 @@ if (sys.nframe() == 0L) {
   Rmethod <- opt$options$Rmethod
   betas <- opt$options$betas
   ncores <- opt$options$ncores
+  semanal <- opt$options$semanal
 
   # quit on error when run non-interactively
-  options(error = function() quit(save="no", status=1))
+  options(error = function() quit(save = "no", status = 1))
 }
 ####################################################
 ### to run INTERACTIVELY:

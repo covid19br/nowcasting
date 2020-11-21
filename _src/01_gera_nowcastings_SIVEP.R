@@ -40,26 +40,30 @@ now.covid <- gera.nowcasting(dados = dados,
                              tipo = "covid",
                              trim.now = trim.now,
                              window = window,
-                             trajectories = trajectories)
+                             trajectories = trajectories,
+                             semanal = semanal)
 
 now.srag <- gera.nowcasting(dados = dados,
                             caso = TRUE,
                             tipo = "srag",
                             trim.now = trim.now,
                             window = window,
-                            trajectories = trajectories)
+                            trajectories = trajectories,
+                            semanal = semanal)
 
 now.ob.covid <- gera.nowcasting(dados = dados,
                                 caso = FALSE,
                                 tipo = "covid",
                                 trim.now = trim.now,
-                                window = window)
+                                window = window,
+                                semanal = semanal)
 
 now.ob.srag <- gera.nowcasting(dados = dados,
                                caso = FALSE,
                                tipo = "srag",
                                trim.now = trim.now,
-                               window = window)
+                               window = window,
+                               semanal = semanal)
 
 ################################################################################
 ## Betas
@@ -87,7 +91,7 @@ if (betas == TRUE) {
   if (!is.null(now.srag$now)) {
     betas.srag <- beta.summary(now.srag$now)
     betas.srag.sum <- beta.cumsum(now.srag$now)
-    betas.srag.median <- quantile_delay(betas.srag.sum, 
+    betas.srag.median <- quantile_delay(betas.srag.sum,
                                         prob = c(seq(0.25, 0.95, 0.05)))
     write.csv(betas.srag,
               file = paste0(out.path, "betas_srag_", data, ".csv"),
@@ -103,7 +107,7 @@ if (betas == TRUE) {
   if (!is.null(now.ob.covid$now)) {
     betas.ob.covid <- beta.summary(now.ob.covid$now)
     betas.ob.covid.sum <- beta.cumsum(now.ob.covid$now)
-    betas.ob.covid.median <- quantile_delay(betas.ob.covid.sum, 
+    betas.ob.covid.median <- quantile_delay(betas.ob.covid.sum,
                                             prob = c(seq(0.25, 0.95, 0.05)))
     write.csv(betas.ob.covid,
               file = paste0(out.path, "betas_obitos_covid_", data, ".csv"),
@@ -120,7 +124,7 @@ if (betas == TRUE) {
   if (!is.null(now.ob.covid$now)) {
     betas.ob.srag <- beta.summary(now.ob.srag$now)
     betas.ob.srag.sum <- beta.cumsum(now.ob.srag$now)
-    betas.ob.srag.median <- quantile_delay(betas.ob.srag.sum, 
+    betas.ob.srag.median <- quantile_delay(betas.ob.srag.sum,
                                            prob = c(seq(0.25, 0.95, 0.05)))
     write.csv(betas.ob.srag,
               file = paste0(out.path, "betas_obitos_srag_", data, ".csv"),

@@ -6,10 +6,10 @@ gera.nowcasting <- function(dados, # dados
                             window, # janela para nowcasting
                             trajectories = FALSE, # retorna trajetórias
                             obito_sin_pri = FALSE, # nowcasting obitos pela data de sintoma primario?)
-                            semanal = FALSE){ # nowcasting semanal? 
+                            semanal = FALSE) { # nowcasting semanal?
     ## Variavel para fazer o switch entre nowcasting diario ou semanal
     now.units <- ifelse(semanal, "1 week", "1 day")
-    if(trajectories)
+    if (trajectories)
         NobBS  <- NobBS.posterior
     ## 1. nowcasting de casos ###
     if (caso) {
@@ -31,10 +31,10 @@ gera.nowcasting <- function(dados, # dados
                 select(dt_notific, dt_sin_pri, dt_digita) %>%
                 mutate(dt_pcr_dig = pmax(dt_digita, dt_notific, na.rm = TRUE)) # nome aqui é pcr mas não tem pcr
         }
-        if(semanal){
+        if (semanal) {
             ## Finds the later date that is a Staurday (end of a epi week)
             last.dates <- as.POSIXlt(sort(unique(dados2$dt_sin_pri), decreasing = TRUE)[1:7])
-            max.date <- max(last.dates[last.dates$wday==6])
+            max.date <- max(last.dates[last.dates$wday == 6])
             ## Convert dates to the date of the last onset day of each epiweek (epi weeks in Brazil start on Sundays)
             dados2 %<>%
                 filter(dados2$dt_sin_pri <= max.date) %>%
@@ -42,9 +42,9 @@ gera.nowcasting <- function(dados, # dados
                        dt_sin_pri = week2date(date2week(dt_sin_pri), floor_day=TRUE, week_start = "Sunday")+6,
                        dt_digita = week2date(date2week(dt_digita), floor_day=TRUE, week_start = "Sunday")+6,
                        dt_pcr_dig = week2date(date2week(dt_pcr_dig), floor_day=TRUE, week_start = "Sunday")+6)
-            
+
         }
-        
+
         if (nrow(dados2) != 0) {
             dados.now <- NobBS(
                 data = dados2,
@@ -56,9 +56,9 @@ gera.nowcasting <- function(dados, # dados
         } else {
             dados.now <- NULL
         }
-    }
+    } else {
     ## 2. nowcasting de obitos ####
-    else {
+
         ## 2.1. obitos covid ####
         if (tipo == "covid") {
             ##obitos COVID ####
@@ -73,7 +73,7 @@ gera.nowcasting <- function(dados, # dados
                     select(dt_sin_pri, dt_evoluca, dt_notific, dt_encerra)
             }
             ## Onset date = data do óbito
-            if(obito_sin_pri){
+            if (obito_sin_pri) {
                 dados2 <- dados %>%
                     filter(pcr_sars2 == 1 | classi_fin == 5) %>% # covid com nova classificacao
                     filter(evolucao == 2) %>%
@@ -86,7 +86,7 @@ gera.nowcasting <- function(dados, # dados
         ## 2.2. obitos srag ####
         if (tipo == "srag") {
             ## Onset date = data do óbito
-            if(!obito_sin_pri){
+            if (!obito_sin_pri) {
                 dados2 <- dados %>%
                     filter(evolucao == 2) %>%
                     filter(!is.na(dt_evoluca)) %>%
@@ -104,7 +104,7 @@ gera.nowcasting <- function(dados, # dados
                     select(dt_sin_pri, dt_evoluca, dt_notific, dt_encerra)
             }
         }
-        if(semanal){
+        if (semanal) {
             onset <- ifelse(obito_sin_pri, "dt_sin_pri", "dt_evoluca") ## PIP: define o onset date
             ## Finds the later onset date that is a Staurday (end of a epi week)
             last.dates <- as.POSIXlt(sort(unique(c(dados2[,onset])), decreasing = TRUE)[1:7])
@@ -117,7 +117,7 @@ gera.nowcasting <- function(dados, # dados
                        dt_sin_pri = week2date(date2week(dt_sin_pri), floor_day=TRUE, week_start = "Sunday")+6,
                        dt_encerra = week2date(date2week(dt_encerra), floor_day=TRUE, week_start = "Sunday")+6)
         }
-        
+
         if (nrow(dados2) != 0) {
             onset <- ifelse(obito_sin_pri, "dt_sin_pri", "dt_evoluca") ## PIP: define o onset date
             its.now <- max(dados2[,onset], na.rm=TRUE)
