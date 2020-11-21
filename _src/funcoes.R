@@ -1154,7 +1154,7 @@ NobBS.posterior <- function(data, now, units, onset_date, report_date, moving_wi
   m_post = melt(nowcast.post.samps)
   m_post$sample = 1:nKeep
   trajetoria = pivot_wider(m_post, names_from = sample, values_from = value) %>%
-    dplyr::mutate(variable = as.Date(as.numeric(variable), origin = now-moving_window)) %>%
+    dplyr::mutate(variable = seq(as.Date(now)-w.days,as.Date(now),by=units)) %>%
     dplyr::rename(date = variable)
 
   list(estimates=estimates,estimates.inflated=estimates.inflated, nowcast.post.samps=nowcast.post.samps,params.post=parameter_extract[,2:ncol(parameter_extract)],trajectories=trajetoria)

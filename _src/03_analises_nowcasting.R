@@ -26,12 +26,20 @@ if (existe.covid) {
 
   ## 1.2 Cálculo do R efetivo ####
   if (Rmethod == "old_Cori") {
-    Re.now <- Re.com.data(ncasos = lista.covid$now.pred.zoo$upper.merged,
-                          datas = time(lista.covid$now.pred.zoo),
+    now.pred.zoo.d <- lista.covid$now.pred.zoo$upper.merged
+    if (semanal) {
+      now.pred.zoo.d <- merge.zoo(now.pred.zoo.d/7, zoo(,seq(start(now.pred.zoo.d),end(now.pred.zoo.d),by="day")), all=T)
+      now.pred.zoo.d <- na.approx(now.pred.zoo.d, na.rm=FALSE)
+    }
+    Re.now <- Re.com.data(ncasos = now.pred.zoo.d,
+                          datas = time(now.pred.zoo.d),
                           delay = 7)
   } else if (Rmethod == "Cori") {
     # junta dados consolidados às trajetórias de nowcasting
     now.pred.zoo.preenchido <- merge.zoo(lista.covid$now.pred.zoo, zoo(,seq(start(lista.covid$now.pred.zoo),end(lista.covid$now.pred.zoo),by="day")), all=T)
+    if (semanal) {
+      now.pred.zoo.preenchido <- na.approx(now.pred.zoo.preenchido, na.rm=FALSE)
+    }
     consolidated <- na.fill(now.pred.zoo.preenchido$n.casos[is.na(now.pred.zoo.preenchido$estimate)],
                             fill = 0)
     df.consolidated <- cbind(time(consolidated),
@@ -40,6 +48,12 @@ if (existe.covid) {
                              ncol=dim(lista.covid$trajectories)[2]-1)))
     names(df.consolidated) <- names(lista.covid$trajectories)
     trajectories <- rbind(df.consolidated, lista.covid$trajectories)
+    if (semanal){
+        trajectories.zoo <- zoo(trajectories[,-1], trajectories$date)
+        trajectories.zoo <- merge.zoo(trajectories.zoo, zoo(,seq(start(trajectories.zoo),end(trajectories.zoo),by="day")), all=T)
+        trajectories.zoo <- na.approx(trajectories.zoo, na.rm=FALSE)
+        trajectories <- cbind(date=time(trajectories.zoo), as.data.frame(trajectories.zoo))
+    }
 
     Re.now <- Re.nowcasting(default.R.cori,
                             trajectories,
@@ -51,6 +65,7 @@ if (existe.covid) {
   }
   ## Objeto time series indexado pela data de fim de cada janela de cálculo
   Re.now.zoo <- zoo(Re.now$R[, -(12:13)], Re.now$R[, 13])
+  Re.now.zoo <- Re.now.zoo[time(lista.covid$now.pred.zoo$upper.merged)]
 
   ## 1.3. Cálculo do tempo de duplicação ####
   td.now <- dt.rw(lista.covid$now.pred.zoo$estimate.merged.c, window.width = 5)
@@ -107,8 +122,14 @@ if (existe.srag) {
   ## 2.2 Cálculo do R efetivo ####
   ## SRAG ##
   if (Rmethod == "old_Cori") {
-    Re.now.srag <- Re.com.data(ncasos = lista.srag$now.pred.zoo$upper.merged,
-                               datas = time(lista.srag$now.pred.zoo), delay = 7)
+    now.pred.zoo.d <- lista.srag$now.pred.zoo$upper.merged
+    if (semanal) {
+      now.pred.zoo.d <- merge.zoo(now.pred.zoo.d/7, zoo(,seq(start(now.pred.zoo.d),end(now.pred.zoo.d),by="day")), all=T)
+      now.pred.zoo.d <- na.approx(now.pred.zoo.d, na.rm=FALSE)
+    }
+    Re.now.srag <- Re.com.data(ncasos = now.pred.zoo.d,
+                               datas = time(now.pred.zoo.d),
+                               delay = 7)
   } else if (Rmethod == "Cori") {
     # junta dados consolidados às trajetórias de nowcasting
     now.pred.zoo.preenchido <- merge.zoo(lista.srag$now.pred.zoo, zoo(,seq(start(lista.srag$now.pred.zoo),end(lista.srag$now.pred.zoo),by="day")), all=T)
@@ -120,6 +141,12 @@ if (existe.srag) {
                              ncol=dim(lista.srag$trajectories)[2]-1)))
     names(df.consolidated) <- names(lista.srag$trajectories)
     trajectories <- rbind(df.consolidated, lista.srag$trajectories)
+    if (semanal){
+        trajectories.zoo <- zoo(trajectories[,-1], trajectories$date)
+        trajectories.zoo <- merge.zoo(trajectories.zoo, zoo(,seq(start(trajectories.zoo),end(trajectories.zoo),by="day")), all=T)
+        trajectories.zoo <- na.approx(trajectories.zoo, na.rm=FALSE)
+        trajectories <- cbind(date=time(trajectories.zoo), as.data.frame(trajectories.zoo))
+    }
 
     Re.now.srag <- Re.nowcasting(default.R.cori,
                             trajectories,
@@ -131,6 +158,7 @@ if (existe.srag) {
   }
   ## Objeto time series indexado pela data de fim de cada janela de cálculo
   Re.now.srag.zoo <- zoo(Re.now.srag$R[, -(12:13)], Re.now.srag$R[, 13])
+  Re.now.srag.zoo <- Re.now.srag.zoo[time(lista.srag$now.pred.zoo$upper.merged)]
 
   ## 2.3. Cálculo do tempo de duplicação ####
   td.now.srag <- dt.rw(lista.srag$now.pred.zoo$estimate.merged.c, window.width = 5)
