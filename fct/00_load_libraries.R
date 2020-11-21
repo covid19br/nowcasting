@@ -19,6 +19,7 @@ if(!require(textclean)){install.packages("textclean")}; library(textclean)
 if(!require(zoo))      {install.packages("zoo")      }; library(zoo)
 if(!require(EpiEstim)) {install.packages("EpiEstim") }; library(EpiEstim)
 if(!require(stringr))  {install.packages("stringr")  }; library(stringr)
+if(!require(magrittr))  {install.packages("magrittr")  }; library(magrittr)
 if(!require(cmdstanr)){
   install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", 
                                          getOption("repos"))) 
