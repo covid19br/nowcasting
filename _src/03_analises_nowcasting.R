@@ -41,9 +41,6 @@ if (existe.covid) {
   } else if (Rmethod == "Cori") {
     # junta dados consolidados às trajetórias de nowcasting
     now.pred.zoo.preenchido <- merge.zoo(lista.covid$now.pred.zoo, zoo(,seq(start(lista.covid$now.pred.zoo),end(lista.covid$now.pred.zoo),by="day")), all=T)
-    if (semanal) {
-      now.pred.zoo.preenchido <- na.approx(now.pred.zoo.preenchido/7, na.rm=FALSE)
-    }
     consolidated <- na.fill(now.pred.zoo.preenchido$n.casos[is.na(now.pred.zoo.preenchido$estimate)],
                             fill = 0)
     df.consolidated <- cbind(time(consolidated),
