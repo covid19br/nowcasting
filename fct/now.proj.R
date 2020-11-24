@@ -13,24 +13,35 @@ now.proj <- function(pred,
                      data) {
     data0 <- as.Date(data, "%Y_%m_%d")
     ## N de dias para projetar: 5 dias a partir da data atual
+    ##      caso semanal: n.dias é o n. de semanas pra frente
     ## Adiciona ao forecast dias entre a ultima data de nocasting e o dia atual
-    days.to.forecast <- as.integer(data0 - max(time(pred)) + n.dias)
+    if(semanal)
+        days.to.forecast <- n.dias
+    else
+        days.to.forecast <- as.integer(data0 - max(time(pred)) + n.dias)
     ## Objeto zoo com n de casos previstos pelo nowcasting concatenados com o n de casos
     ## projetado a partir do nowcasting acumulado com regressão Poisson
+    if (semanal)
+        days.before <- 2
+    else
+        days.before <- 4
     now.proj.zoo <- merge(
         now.mean.c = c(forecast.exponential(pred$estimate.merged.c,
-                                            start = length(time(pred)) - 4,
-                                            days.forecast = days.to.forecast)$predito,
+                                            start = length(time(pred)) - days.before,
+                                            days.forecast = days.to.forecast,
+                                            semanal = semanal)$predito,
                        pred$estimate.merged.c),
 
         now.low.c = c(forecast.exponential(pred$lower.merged.c,
-                                           start = length(time(pred)) - 4,
-                                           days.forecast = days.to.forecast)$predito,
+                                           start = length(time(pred)) - days.before,
+                                           days.forecast = days.to.forecast,
+                                           semanal = semanal)$predito,
                       pred$lower.merged.c),
 
         now.upp.c = c(forecast.exponential(pred$upper.merged.c,
-                                           start = length(time(pred)) - 4,
-                                           days.forecast = days.to.forecast)$predito,
+                                           start = length(time(pred)) - days.before,
+                                           days.forecast = days.to.forecast,
+                                           semanal = semanal)$predito,
                       pred$upper.merged.c)
     )
     ## Adiciona vetor com n de casos notificados e os previstos para os proximos dias pela projecao

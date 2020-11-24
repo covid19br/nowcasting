@@ -7,6 +7,8 @@
 # usa funcoes em fct:
 ## 1. now.proj
 ## 2. Re.com.data
+##    Re.nowcasting
+##    default.R.cori
 ##    dt.rw
 ## 3. formata.now.df
 ##    zoo2df :P
@@ -21,15 +23,17 @@ if (existe.covid) {
   now.proj.zoo <- now.proj(pred = lista.covid$now.pred.zoo,
                            pred.original = lista.covid$now.pred.original,
                            now.params.post = lista.covid$now.params.post,
-                           data = data.covid)
+                           data = data.covid,
+                           semanal = semanal,
+                           n.dias = if(semanal) 1 else 5)
 
 
   ## 1.2 Cálculo do R efetivo ####
   if (Rmethod == "old_Cori") {
     now.pred.zoo.d <- lista.covid$now.pred.zoo$upper.merged
     if (semanal) {
-      now.pred.zoo.d <- merge.zoo(now.pred.zoo.d/7, zoo(,seq(start(now.pred.zoo.d),end(now.pred.zoo.d),by="day")), all=T)
-      now.pred.zoo.d <- na.approx(now.pred.zoo.d, na.rm=FALSE)
+      now.pred.zoo.d <- merge.zoo(now.pred.zoo.d, zoo(,seq(start(now.pred.zoo.d),end(now.pred.zoo.d),by="day")), all=T)
+      now.pred.zoo.d <- na.approx(now.pred.zoo.d/7, na.rm=FALSE)
     }
     Re.now <- Re.com.data(ncasos = now.pred.zoo.d,
                           datas = time(now.pred.zoo.d),
@@ -38,7 +42,7 @@ if (existe.covid) {
     # junta dados consolidados às trajetórias de nowcasting
     now.pred.zoo.preenchido <- merge.zoo(lista.covid$now.pred.zoo, zoo(,seq(start(lista.covid$now.pred.zoo),end(lista.covid$now.pred.zoo),by="day")), all=T)
     if (semanal) {
-      now.pred.zoo.preenchido <- na.approx(now.pred.zoo.preenchido, na.rm=FALSE)
+      now.pred.zoo.preenchido <- na.approx(now.pred.zoo.preenchido/7, na.rm=FALSE)
     }
     consolidated <- na.fill(now.pred.zoo.preenchido$n.casos[is.na(now.pred.zoo.preenchido$estimate)],
                             fill = 0)
@@ -51,7 +55,7 @@ if (existe.covid) {
     if (semanal){
         trajectories.zoo <- zoo(trajectories[,-1], trajectories$date)
         trajectories.zoo <- merge.zoo(trajectories.zoo, zoo(,seq(start(trajectories.zoo),end(trajectories.zoo),by="day")), all=T)
-        trajectories.zoo <- na.approx(trajectories.zoo, na.rm=FALSE)
+        trajectories.zoo <- na.approx(trajectories.zoo/7, na.rm=FALSE)
         trajectories <- cbind(date=time(trajectories.zoo), as.data.frame(trajectories.zoo))
     }
 
@@ -117,15 +121,17 @@ if (existe.srag) {
   now.srag.proj.zoo <-  now.proj(pred = lista.srag$now.pred.zoo,
                                  pred.original = lista.srag$now.pred.original,
                                  now.params.post = lista.srag$now.params.post,
-                                 data = data.srag)
+                                 data = data.srag,
+                                 semanal = semanal,
+                                 n.dias = if(semanal) 1 else 5)
 
   ## 2.2 Cálculo do R efetivo ####
   ## SRAG ##
   if (Rmethod == "old_Cori") {
     now.pred.zoo.d <- lista.srag$now.pred.zoo$upper.merged
     if (semanal) {
-      now.pred.zoo.d <- merge.zoo(now.pred.zoo.d/7, zoo(,seq(start(now.pred.zoo.d),end(now.pred.zoo.d),by="day")), all=T)
-      now.pred.zoo.d <- na.approx(now.pred.zoo.d, na.rm=FALSE)
+      now.pred.zoo.d <- merge.zoo(now.pred.zoo.d, zoo(,seq(start(now.pred.zoo.d),end(now.pred.zoo.d),by="day")), all=T)
+      now.pred.zoo.d <- na.approx(now.pred.zoo.d/7, na.rm=FALSE)
     }
     Re.now.srag <- Re.com.data(ncasos = now.pred.zoo.d,
                                datas = time(now.pred.zoo.d),
@@ -144,7 +150,7 @@ if (existe.srag) {
     if (semanal){
         trajectories.zoo <- zoo(trajectories[,-1], trajectories$date)
         trajectories.zoo <- merge.zoo(trajectories.zoo, zoo(,seq(start(trajectories.zoo),end(trajectories.zoo),by="day")), all=T)
-        trajectories.zoo <- na.approx(trajectories.zoo, na.rm=FALSE)
+        trajectories.zoo <- na.approx(trajectories.zoo/7, na.rm=FALSE)
         trajectories <- cbind(date=time(trajectories.zoo), as.data.frame(trajectories.zoo))
     }
 
@@ -208,7 +214,9 @@ if (existe.ob.covid) {
   now.ob.covid.proj.zoo <-  now.proj(pred = lista.ob.covid$now.pred.zoo,
                                      pred.original = lista.ob.covid$now.pred.original,
                                      now.params.post = lista.ob.covid$now.params.post,
-                                     data = data.ob.covid)
+                                     data = data.ob.covid,
+                                     semanal = semanal,
+                                     n.dias = if(semanal) 1 else 5)
 
   ## 3.2. Cálculo do tempo de duplicação ####
   td.now.ob.covid <- dt.rw(lista.ob.covid$now.pred.zoo$estimate.merged.c, window.width = 5)
@@ -256,7 +264,9 @@ if (existe.ob.srag) {
   now.ob.srag.proj.zoo <-  now.proj(pred = lista.ob.srag$now.pred.zoo,
                                     pred.original = lista.ob.srag$now.pred.original,
                                     now.params.post = lista.ob.srag$now.params.post,
-                                    data = data.ob.srag)
+                                    data = data.ob.srag,
+                                    semanal = semanal,
+                                    n.dias = if(semanal) 1 else 5)
 
   ## 4.2. Cálculo do tempo de duplicação ####
   td.now.ob.srag <- dt.rw(lista.ob.srag$now.pred.zoo$estimate.merged.c, window.width = 5)
@@ -306,7 +316,9 @@ if (existe.ob.srag.proaim) {
   now.ob.srag.proj.zoo.proaim <-  now.proj(pred = lista.ob.srag.proaim$now.pred.zoo,
                                            pred.original = lista.ob.srag.proaim$now.pred.original,
                                            now.params.post = lista.ob.srag.proaim$now.params.post,
-                                           data = data.ob.srag.proaim)
+                                           data = data.ob.srag.proaim,
+                                           semanal = semanal,
+                                           n.dias = if(semanal) 1 else 5)
 
   ## 4.2. Cálculo do tempo de duplicação ####
   td.now.ob.srag.proaim <- dt.rw(lista.ob.srag.proaim$now.pred.zoo$estimate.merged.c, window.width = 5)

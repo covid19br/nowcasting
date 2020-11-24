@@ -525,7 +525,7 @@ fixEVODates = function(x, afterUTI_stay_wait_fit, hosp_wait_fit){
   x
 }
 #' Forecast usando regressão Poisson sobre série dos casos acumulados
-forecast.exponential <- function(zoo.obj, start, end = length(zoo.obj), days.forecast, ...){
+forecast.exponential <- function(zoo.obj, start, end = length(zoo.obj), days.forecast, semanal = FALSE, ...){
     if(class(zoo.obj)!="zoo"|!is.null(dim(zoo.obj)))
         stop("'zoo.obj' deve ser um objeto da classe zoo com uma única variável")
     if(is.numeric(start))
@@ -539,10 +539,10 @@ forecast.exponential <- function(zoo.obj, start, end = length(zoo.obj), days.for
     y <- window(zoo.obj, start = inicio, end = fim)
     if(!is.integer(y)) {
         warning("Resposta não está em inteiros, convertendo para inteiro para ajustar glm Poisson")
-        y <- as.integer(y)
+        y <- round(y)
     }
     fit <- fitP.exp(y, only.coef = FALSE)
-    datas.forecast <- fim + (1:days.forecast)
+    datas.forecast <- fim + (1:days.forecast) * (1 + 6 * semanal)
     newdata <- data.frame( ndias = as.vector( datas.forecast - inicio ) )
     pred <- predict(fit, newdata = newdata, se.fit = TRUE)
     df1 <- data.frame(lpred = pred$fit, lse = pred$se.fit)
@@ -1183,27 +1183,39 @@ now.proj <- function(pred,
                      pred.original,
                      now.params.post,
                      n.dias = 5,
-                     data) {
+                     data,
+                     semanal = FALSE) {
     data0 <- as.Date(data, "%Y_%m_%d")
     ## N de dias para projetar: 5 dias a partir da data atual
+    ##      caso semanal: n.dias é o n. de semanas pra frente
     ## Adiciona ao forecast dias entre a ultima data de nocasting e o dia atual
-    days.to.forecast <- as.integer(data0 - max(time(pred)) + n.dias)
+    if(semanal)
+        days.to.forecast <- n.dias
+    else
+        days.to.forecast <- as.integer(data0 - max(time(pred)) + n.dias)
     ## Objeto zoo com n de casos previstos pelo nowcasting concatenados com o n de casos
     ## projetado a partir do nowcasting acumulado com regressão Poisson
+    if (semanal)
+        days.before <- 2
+    else
+        days.before <- 4
     now.proj.zoo <- merge(
         now.mean.c = c(forecast.exponential(pred$estimate.merged.c,
-                                            start = length(time(pred)) - 4,
-                                            days.forecast = days.to.forecast)$predito,
+                                            start = length(time(pred)) - days.before,
+                                            days.forecast = days.to.forecast,
+                                            semanal = semanal)$predito,
                        pred$estimate.merged.c),
 
         now.low.c = c(forecast.exponential(pred$lower.merged.c,
-                                           start = length(time(pred)) - 4,
-                                           days.forecast = days.to.forecast)$predito,
+                                           start = length(time(pred)) - days.before,
+                                           days.forecast = days.to.forecast,
+                                           semanal = semanal)$predito,
                       pred$lower.merged.c),
 
         now.upp.c = c(forecast.exponential(pred$upper.merged.c,
-                                           start = length(time(pred)) - 4,
-                                           days.forecast = days.to.forecast)$predito,
+                                           start = length(time(pred)) - days.before,
+                                           days.forecast = days.to.forecast,
+                                           semanal = semanal)$predito,
                       pred$upper.merged.c)
     )
     ## Adiciona vetor com n de casos notificados e os previstos para os proximos dias pela projecao
