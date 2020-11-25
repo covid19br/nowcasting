@@ -38,7 +38,8 @@ if (existe.covid) {
   lista.covid <- prepara.dados(tipo = "covid",
                                data.base = data.covid,
                                output.dir = out.path,
-                               trajectories = trajectories)
+                               trajectories = trajectories,
+                               semanal = semanal)
     }
 
 ################################################################################
@@ -49,7 +50,8 @@ if (existe.srag) {
     lista.srag <- prepara.dados(tipo = "srag",
                                 data.base = data.srag,
                                 output.dir = out.path,
-                                trajectories = trajectories)
+                                trajectories = trajectories,
+                                semanal = semanal)
   }
 
 ################################################################################
@@ -59,7 +61,8 @@ if (existe.ob.covid) {
       data.ob.covid <- data
       lista.ob.covid <- prepara.dados(tipo = "obitos_covid",
                                       data.base = data.ob.covid,
-                                      output.dir = out.path)
+                                      output.dir = out.path,
+                                      semanal = semanal)
     }
 ################################################################################
 ## Dados e nowcastings SRAG OBITOS
@@ -68,7 +71,8 @@ if (existe.ob.srag) {
     data.ob.srag <- data
     lista.ob.srag <- prepara.dados(tipo = "obitos_srag",
                                    data.base = data.ob.srag,
-                                   output.dir = out.path)
+                                   output.dir = out.path,
+                                   semanal = semanal)
   }
 
 
@@ -76,5 +80,6 @@ if (existe.ob.srag.proaim) {
     data.ob.srag.proaim <- data
     lista.ob.srag.proaim <- prepara.dados(tipo = "proaim_obitos_srag",
                                           data.base = data.ob.srag.proaim,
-                                          output.dir = out.path)
+                                          output.dir = out.path,
+                                          semanal = semanal)
 }

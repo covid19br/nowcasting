@@ -1501,9 +1501,10 @@ prepara.dados <- function(tipo = "covid",
     now.pred.zoo$lower.merged <- with(now.pred.zoo, preenche.now(lower, n.casos))
     now.pred.zoo$upper.merged <- with(now.pred.zoo, preenche.now(upper, n.casos))
     ## Media movel da estimativa e dos limites superior e inferiors
-    now.pred.zoo$estimate.merged.smooth <- rollapply(now.pred.zoo$estimate.merged, width = 10, mean, partial = TRUE)
-    now.pred.zoo$lower.merged.smooth <- rollapply(now.pred.zoo$lower.merged, width = 10, mean, partial = TRUE)
-    now.pred.zoo$upper.merged.smooth <- rollapply(now.pred.zoo$upper.merged, width = 10, mean, partial = TRUE)
+    ma.width = if (semanal) 4 else 10
+    now.pred.zoo$estimate.merged.smooth <- rollapply(now.pred.zoo$estimate.merged, width = ma.width, mean, partial = TRUE)
+    now.pred.zoo$lower.merged.smooth <- rollapply(now.pred.zoo$lower.merged, width = ma.width, mean, partial = TRUE)
+    now.pred.zoo$upper.merged.smooth <- rollapply(now.pred.zoo$upper.merged, width = ma.width, mean, partial = TRUE)
 
     ## n cumulativo
     now.pred.zoo$estimate.merged.c <- cumsum(now.pred.zoo$estimate.merged)
