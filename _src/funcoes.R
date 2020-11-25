@@ -1450,7 +1450,8 @@ prepara.dados <- function(tipo = "covid",
                           data.base,
                           output.dir = output.dir, # tipos possiveis: covid, srag, obitos_covid e obitos_srag
                           trajectories = FALSE,
-                          include.post = TRUE) {
+                          include.post = TRUE,
+                          semanal = FALSE) {
     casos <- c("covid", "srag")
     obitos <- c("obitos_covid", "obitos_srag")
     proaim <- c("proaim_obitos_srag")
