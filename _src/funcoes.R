@@ -644,8 +644,9 @@ gera.nowcasting <- function(dados, # dados
     }
     if (semanal) {
       ## Finds the later date that is a Staurday (end of a epi week)
-      last.dates <- as.POSIXlt(sort(unique(dados2$dt_sin_pri), decreasing = TRUE)[1:7])
-      max.date <- max(last.dates[last.dates$wday == 6])
+      last.date <- max(dados2$dt_sin_pri, na.rm = TRUE)
+      max.date <- last.date + (6-as.POSIXlt(last.date)$wday) -
+          if(as.POSIXlt(last.date)$wday >= 3) 0 else 7
       ## Convert dates to the date of the last onset day of each epiweek (epi weeks in Brazil start on Sundays)
       dados2 %<>%
         filter(dados2$dt_sin_pri <= max.date) %>%
@@ -718,8 +719,9 @@ gera.nowcasting <- function(dados, # dados
     if (semanal) {
       onset <- ifelse(obito_sin_pri, "dt_sin_pri", "dt_evoluca") ## PIP: define o onset date
       ## Finds the later onset date that is a Staurday (end of a epi week)
-      last.dates <- as.POSIXlt(sort(unique(c(dados2[,onset])), decreasing = TRUE)[1:7])
-      max.date <- max(last.dates[last.dates$wday==6])
+      last.date <- max(dados2[,onset], na.rm = TRUE)
+      max.date <- last.date + (6-as.POSIXlt(last.date)$wday) -
+          if(as.POSIXlt(last.date)$wday >= 3) 0 else 7
       ## Convert dates to the date of the last onset day of each epiweek (epi weeks in Brazil start on Sundays)
       dados2 <- dados2[dados2[,onset]<= max.date,]
       dados2 %<>%
