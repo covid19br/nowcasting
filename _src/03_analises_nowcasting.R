@@ -40,7 +40,10 @@ if (existe.covid) {
                           delay = 7)
   } else if (Rmethod == "Cori") {
     # junta dados consolidados às trajetórias de nowcasting
-    now.pred.zoo.preenchido <- merge.zoo(lista.covid$now.pred.zoo, zoo(,seq(start(lista.covid$now.pred.zoo),end(lista.covid$now.pred.zoo),by="day")), all=T)
+    now.pred.zoo.preenchido <- merge.zoo(lista.covid$now.pred.zoo,
+                                         zoo(,seq(start(lista.covid$now.pred.zoo),end(lista.covid$now.pred.zoo),
+                                                  by = if(semanal) "week" else "day")),
+                                             all=T)
     consolidated <- na.fill(now.pred.zoo.preenchido$n.casos[is.na(now.pred.zoo.preenchido$estimate)],
                             fill = 0)
     df.consolidated <- cbind(time(consolidated),
@@ -52,7 +55,7 @@ if (existe.covid) {
     if (semanal){
         trajectories.zoo <- zoo(trajectories[,-1], trajectories$date)
         trajectories.zoo <- merge.zoo(trajectories.zoo, zoo(,seq(start(trajectories.zoo),end(trajectories.zoo),by="day")), all=T)
-        trajectories.zoo <- na.approx(trajectories.zoo/7, na.rm=FALSE)
+        trajectories.zoo <- round(na.approx(trajectories.zoo/7, na.rm=FALSE))
         trajectories <- cbind(date=time(trajectories.zoo), as.data.frame(trajectories.zoo))
     }
 
@@ -135,7 +138,10 @@ if (existe.srag) {
                                delay = 7)
   } else if (Rmethod == "Cori") {
     # junta dados consolidados às trajetórias de nowcasting
-    now.pred.zoo.preenchido <- merge.zoo(lista.srag$now.pred.zoo, zoo(,seq(start(lista.srag$now.pred.zoo),end(lista.srag$now.pred.zoo),by="day")), all=T)
+    now.pred.zoo.preenchido <- merge.zoo(lista.srag$now.pred.zoo,
+                                         zoo(,seq(start(lista.srag$now.pred.zoo),end(lista.srag$now.pred.zoo),
+                                                  by = if(semanal) "week" else "day")),
+                                             all=T)
     consolidated <- na.fill(now.pred.zoo.preenchido$n.casos[is.na(now.pred.zoo.preenchido$estimate)],
                             fill = 0)
     df.consolidated <- cbind(time(consolidated),
@@ -147,7 +153,7 @@ if (existe.srag) {
     if (semanal){
         trajectories.zoo <- zoo(trajectories[,-1], trajectories$date)
         trajectories.zoo <- merge.zoo(trajectories.zoo, zoo(,seq(start(trajectories.zoo),end(trajectories.zoo),by="day")), all=T)
-        trajectories.zoo <- na.approx(trajectories.zoo/7, na.rm=FALSE)
+        trajectories.zoo <- round(na.approx(trajectories.zoo/7, na.rm=FALSE))
         trajectories <- cbind(date=time(trajectories.zoo), as.data.frame(trajectories.zoo))
     }
 
