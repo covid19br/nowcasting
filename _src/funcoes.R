@@ -1504,6 +1504,8 @@ prepara.dados <- function(tipo = "covid",
     ## Media movel da estimativa e dos limites superior e inferiors
     ma.width = if (semanal) 4 else 10
     now.pred.zoo$estimate.merged.smooth <- rollapply(now.pred.zoo$estimate.merged, width = ma.width, mean, partial = TRUE)
+    # não calcula média móvel no caso semanal
+    if (semanal) now.pred.zoo$estimate.merged.smooth <- now.pred.zoo$estimate.merged.smooth + NA
     now.pred.zoo$lower.merged.smooth <- rollapply(now.pred.zoo$lower.merged, width = ma.width, mean, partial = TRUE)
     now.pred.zoo$upper.merged.smooth <- rollapply(now.pred.zoo$upper.merged, width = ma.width, mean, partial = TRUE)
 
