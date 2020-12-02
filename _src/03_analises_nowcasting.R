@@ -72,12 +72,10 @@ if (existe.covid) {
   Re.now.zoo <- Re.now.zoo[time(lista.covid$now.pred.zoo$upper.merged)]
 
   ## 1.3. Cálculo do tempo de duplicação ####
-  if (! semanal) {
-    td.now <- dt.rw(lista.covid$now.pred.zoo$estimate.merged.c, window.width = 5)
-    ## Conveniencia: reordena e renomeia as colunas do objeto resultante
-    td.now <- td.now[, c(1, 3, 2)]
-    names(td.now) <- c("estimativa", "ic.inf", "ic.sup")
-  }
+  td.now <- dt.rw(lista.covid$now.pred.zoo$estimate.merged.c, window.width = 5)
+  ## Conveniencia: reordena e renomeia as colunas do objeto resultante
+  td.now <- td.now[, c(1, 3, 2)]
+  names(td.now) <- c("estimativa", "ic.inf", "ic.sup")
 
   ## 1.4. Corta a partir do dia com >= 10 casos ####
   dia.zero.covid <- time(lista.covid$now.pred.zoo)[min(which(lista.covid$now.pred.zoo$n.casos >= 1, arr.ind = TRUE))]
@@ -85,9 +83,7 @@ if (existe.covid) {
     if (dia.zero.covid < "2020-03-15") dia.zero.covid <- as.Date("2020-03-15")
     now.pred.zoo <- window(lista.covid$now.pred.zoo, start = dia.zero.covid)
     now.proj.zoo <- window(now.proj.zoo, start = dia.zero.covid)
-    if (! semanal) {
-      td.now <- window(td.now, start = dia.zero.covid)
-    }
+    td.now <- window(td.now, start = dia.zero.covid)
   } else {
     now.pred.zoo <- lista.covid$now.pred.zoo
   }
@@ -107,11 +103,9 @@ if (existe.covid) {
   write.csv(df.covid.diario,
             paste0(df.path, "nowcasting_diario_covid_", data.covid, ".csv"),
             row.names = FALSE)
-  if (! semanal) {
-    write.csv(zoo2df(td.now),
+  write.csv(zoo2df(td.now),
             paste0(df.path, "tempo_duplicacao_covid_", data.covid, ".csv"),
             row.names = FALSE)
-  }
   write.csv(zoo2df(Re.now.zoo),
             paste0(df.path, "r_efetivo_covid_", data.covid, ".csv"),
             row.names = FALSE)
@@ -176,12 +170,10 @@ if (existe.srag) {
   Re.now.srag.zoo <- Re.now.srag.zoo[time(lista.srag$now.pred.zoo$upper.merged)]
 
   ## 2.3. Cálculo do tempo de duplicação ####
-  if (! semanal) {
-    td.now.srag <- dt.rw(lista.srag$now.pred.zoo$estimate.merged.c, window.width = 5)
-    ## Conveniencia: reordena e renomeia as colunas do objeto resultante
-    td.now.srag <- td.now.srag[, c(1, 3, 2)]
-    names(td.now.srag) <- c("estimativa", "ic.inf", "ic.sup")
-  }
+  td.now.srag <- dt.rw(lista.srag$now.pred.zoo$estimate.merged.c, window.width = 5)
+  ## Conveniencia: reordena e renomeia as colunas do objeto resultante
+  td.now.srag <- td.now.srag[, c(1, 3, 2)]
+  names(td.now.srag) <- c("estimativa", "ic.inf", "ic.sup")
 
   ## 2.4. Corta a casos >=10
   dia.zero.srag <- time(lista.srag$now.pred.zoo)[min(which(lista.srag$now.pred.zoo$n.casos >= 1,
@@ -190,9 +182,7 @@ if (existe.srag) {
     if (dia.zero.srag < "2020-03-15") dia.zero.srag <- as.Date("2020-03-15")
     now.srag.pred.zoo <- window(lista.srag$now.pred.zoo, start = dia.zero.srag)
     now.srag.proj.zoo <- window(now.srag.proj.zoo, start = dia.zero.srag)
-    if (! semanal) {
-      td.now.srag <- window(td.now.srag, start = dia.zero.srag)
-    }
+    td.now.srag <- window(td.now.srag, start = dia.zero.srag)
   } else {
     now.srag.pred.zoo <- lista.srag$now.pred.zoo
   }
@@ -210,11 +200,9 @@ if (existe.srag) {
   write.csv(df.srag.diario,
             paste0(df.path, "nowcasting_diario_srag_", data.srag, ".csv"),
             row.names = FALSE)
-  if (! semanal) {
-    write.csv(zoo2df(td.now.srag),
+  write.csv(zoo2df(td.now.srag),
             paste0(df.path, "tempo_duplicacao_srag_", data.srag, ".csv"),
             row.names = FALSE)
-  }
   write.csv(zoo2df(Re.now.srag.zoo),
             paste0(df.path, "r_efetivo_srag_", data.srag, ".csv"),
             row.names = FALSE)
@@ -234,12 +222,10 @@ if (existe.ob.covid) {
                                      n.dias = if(semanal) 1 else 5)
 
   ## 3.2. Cálculo do tempo de duplicação ####
-  if (! semanal) {
-    td.now.ob.covid <- dt.rw(lista.ob.covid$now.pred.zoo$estimate.merged.c, window.width = 5)
-    ## Conveniencia: reordena e renomeia as colunas do objeto resultante
-    td.now.ob.covid <- td.now.ob.covid[, c(1, 3, 2)]
-    names(td.now.ob.covid) <- c("estimativa", "ic.inf", "ic.sup")
-  }
+  td.now.ob.covid <- dt.rw(lista.ob.covid$now.pred.zoo$estimate.merged.c, window.width = 5)
+  ## Conveniencia: reordena e renomeia as colunas do objeto resultante
+  td.now.ob.covid <- td.now.ob.covid[, c(1, 3, 2)]
+  names(td.now.ob.covid) <- c("estimativa", "ic.inf", "ic.sup")
 
   ## 3.3. Corta a partir do dia com >= 1 casos ####
   if (!is.na(dia.zero.covid)) {
@@ -252,9 +238,7 @@ if (existe.ob.covid) {
     if (dia.zero.ob.covid < "2020-03-15") dia.zero.ob.covid <- as.Date("2020-03-15")
     now.ob.covid.pred.zoo <- window(lista.ob.covid$now.pred.zoo, start = dia.zero.ob.covid)
     now.ob.covid.proj.zoo  <- window(now.ob.covid.proj.zoo, start = dia.zero.ob.covid)
-    if (! semanal) {
-      td.now.ob.covid <- window(td.now.ob.covid, start = dia.zero.ob.covid)
-    }
+    td.now.ob.covid <- window(td.now.ob.covid, start = dia.zero.ob.covid)
   } else {
     now.ob.covid.pred.zoo <- lista.ob.covid$now.pred.zoo
   }
@@ -272,11 +256,9 @@ if (existe.ob.covid) {
   write.csv(df.ob.covid.diario,
             paste0(df.path, "nowcasting_diario_obitos_covid_", data.ob.covid, ".csv"),
             row.names = FALSE)
-  if (! semanal) {
-    write.csv(zoo2df(td.now.ob.covid),
+  write.csv(zoo2df(td.now.ob.covid),
             paste0(df.path, "tempo_duplicacao_obitos_covid_", data.ob.covid, ".csv"),
             row.names = FALSE)
-  }
 }
 
 #####################
@@ -293,12 +275,10 @@ if (existe.ob.srag) {
                                     n.dias = if(semanal) 1 else 5)
 
   ## 4.2. Cálculo do tempo de duplicação ####
-  if (! semanal) {
-    td.now.ob.srag <- dt.rw(lista.ob.srag$now.pred.zoo$estimate.merged.c, window.width = 5)
-    ## Conveniencia: reordena e renomeia as colunas do objeto resultante
-    td.now.ob.srag <- td.now.ob.srag[, c(1, 3, 2)]
-    names(td.now.ob.srag) <- c("estimativa", "ic.inf", "ic.sup")
-  }
+  td.now.ob.srag <- dt.rw(lista.ob.srag$now.pred.zoo$estimate.merged.c, window.width = 5)
+  ## Conveniencia: reordena e renomeia as colunas do objeto resultante
+  td.now.ob.srag <- td.now.ob.srag[, c(1, 3, 2)]
+  names(td.now.ob.srag) <- c("estimativa", "ic.inf", "ic.sup")
 
   ## 4.3. Corta a casos >=1
   if (!is.na(dia.zero.srag)) {
@@ -311,9 +291,7 @@ if (existe.ob.srag) {
     if (dia.zero.ob.srag < "2020-03-15") dia.zero.ob.srag <- as.Date("2020-03-15")
     now.ob.srag.pred.zoo <- window(lista.ob.srag$now.pred.zoo, start = dia.zero.ob.srag)
     now.ob.srag.proj.zoo <- window(now.ob.srag.proj.zoo, start = dia.zero.ob.srag)
-    if (! semanal) {
-      td.now.ob.srag <- window(td.now.ob.srag, start = dia.zero.srag)
-    }
+    td.now.ob.srag <- window(td.now.ob.srag, start = dia.zero.srag)
   } else {
     now.ob.srag.pred.zoo <- lista.ob.srag$now.pred.zoo
   }
@@ -331,11 +309,9 @@ if (existe.ob.srag) {
   write.csv(df.ob.srag.diario,
             paste0(df.path, "nowcasting_diario_obitos_srag_", data.ob.srag, ".csv"),
             row.names = FALSE)
-  if (! semanal) {
-    write.csv(zoo2df(td.now.ob.srag),
+  write.csv(zoo2df(td.now.ob.srag),
             paste0(df.path, "tempo_duplicacao_obitos_srag_", data.ob.srag, ".csv"),
             row.names = FALSE)
-  }
 }
 
 
@@ -354,12 +330,10 @@ if (existe.ob.srag.proaim) {
                                            n.dias = if(semanal) 1 else 5)
 
   ## 4.2. Cálculo do tempo de duplicação ####
-  if (! semanal) {
-    td.now.ob.srag.proaim <- dt.rw(lista.ob.srag.proaim$now.pred.zoo$estimate.merged.c, window.width = 5)
-    ## Conveniencia: reordena e renomeia as colunas do objeto resultante
-    td.now.ob.srag.proaim <- td.now.ob.srag.proaim[, c(1, 3, 2)]
-    names(td.now.ob.srag.proaim) <- c("estimativa", "ic.inf", "ic.sup")
-  }
+  td.now.ob.srag.proaim <- dt.rw(lista.ob.srag.proaim$now.pred.zoo$estimate.merged.c, window.width = 5)
+  ## Conveniencia: reordena e renomeia as colunas do objeto resultante
+  td.now.ob.srag.proaim <- td.now.ob.srag.proaim[, c(1, 3, 2)]
+  names(td.now.ob.srag.proaim) <- c("estimativa", "ic.inf", "ic.sup")
 
   ## 4.4. Corta a casos >=10
   dia.zero.ob.srag.proaim <- time(lista.ob.srag.proaim$now.pred.zoo)[min(which(lista.ob.srag$now.pred.zoo$n.casos >= 1,
@@ -368,9 +342,7 @@ if (existe.ob.srag.proaim) {
     if (dia.zero.ob.srag.proaim < "2020-03-15") dia.zero.ob.srag.proaim <- as.Date("2020-03-15")
     now.ob.srag.pred.zoo.proaim <- window(lista.ob.srag.proaim$now.pred.zoo, start = dia.zero.ob.srag.proaim)
     now.ob.srag.proj.zoo.proaim <- window(now.ob.srag.proj.zoo.proaim, start = dia.zero.ob.srag.proaim)
-    if (! semanal) {
-      td.now.ob.srag.proaim <- window(td.now.ob.srag.proaim, start = dia.zero.srag.proaim)
-    }
+    td.now.ob.srag.proaim <- window(td.now.ob.srag.proaim, start = dia.zero.srag.proaim)
   } else {
     now.ob.srag.pred.zoo.proaim <- lista.ob.srag$now.pred.zoo.proaim
   }
@@ -388,9 +360,7 @@ if (existe.ob.srag.proaim) {
   write.csv(df.ob.srag.diario.proaim,
             paste0(df.path, "nowcasting_diario_obitos_srag_proaim_", data.ob.srag.proaim, ".csv"),
             row.names = FALSE)
-  if (! semanal) {
-    write.csv(zoo2df(td.now.ob.srag.proaim),
+  write.csv(zoo2df(td.now.ob.srag.proaim),
             paste0(df.path, "tempo_duplicacao_obitos_srag_proaim_", data.ob.srag.proaim, ".csv"),
             row.names = FALSE)
-  }
 }
