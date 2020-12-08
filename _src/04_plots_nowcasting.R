@@ -53,7 +53,7 @@ if (existe.covid) {
   ### tempo de duplicação
   plot.tempo.dupl.covid <- plot.tempo.dupl(df.td.covid)
 
-  ### R efetivo
+    ### R efetivo
   plot.estimate.R0.covid <- plot.estimate.R0(df.re.covid)
 
   # TABELAS ####
@@ -183,14 +183,14 @@ if (existe.ob.srag) {
   plot.nowcast.ob.srag <- df.ob.srag.diario %>%
     dplyr::filter(data > "2020-03-15") %>%
     plot.nowcast.diario() +
-    xlab("Dia") +
+    xlab("Data do óbito") +
     ylab("Número de novos óbitos")
 
   ### acumulado
   plot.nowcast.cum.ob.srag <- df.ob.srag.cum %>%
     dplyr::filter(data > "2020-03-15") %>%
     plot.nowcast.acumulado() +
-    xlab("Dia") +
+    xlab("Data do óbito") +
     ylab("Número acumulado de óbitos")
 
   ### tempo de duplicação

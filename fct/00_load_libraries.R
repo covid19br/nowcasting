@@ -21,10 +21,10 @@ if(!require(EpiEstim)) {install.packages("EpiEstim") }; library(EpiEstim)
 if(!require(stringr))  {install.packages("stringr")  }; library(stringr)
 if(!require(magrittr))  {install.packages("magrittr")  }; library(magrittr)
 if(!require(cmdstanr)){
-  install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", 
-                                         getOption("repos"))) 
-  install_cmdstan(); 
+  install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/",
+                                         getOption("repos")))
   library(cmdstanr)
+  install_cmdstan()
 }
 if(!require(posterior)){install.packages("posterior"); library(posterior)}
 options(mc.cores = parallel::detectCores())

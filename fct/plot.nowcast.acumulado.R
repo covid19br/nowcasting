@@ -1,5 +1,5 @@
 # Funcao para fazer o plot de nowcasting acumulado, com valores estimados e notificados, com projecao para os proximos 5 dias
-plot.nowcast.acumulado <- function(df){
+plot.nowcast.acumulado <- function(df) {
     plot <- df %>%
         mutate(data = as.Date(data)) %>%
         ggplot(aes(x = data)) +
@@ -23,7 +23,7 @@ plot.nowcast.acumulado <- function(df){
         plot.formatos +
         scale_color_discrete(name = "") +
         scale_color_manual(name = "", values = RColorBrewer::brewer.pal(3, "Set1")[1:2]) +
-        xlab("Dia do primeiro sintoma") +
+        xlab("Data do primeiro sintoma") +
         ylab("Número acumulado de casos") +
         theme(legend.position = "none") +
         scale_y_log10()

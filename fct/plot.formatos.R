@@ -1,4 +1,5 @@
-if(!require(ggplot2)){install.packages("ggplot2"); library(ggplot2)}
+## Plot formatos
+if (!require(ggplot2)){install.packages("ggplot2"); library(ggplot2)}
 plot.formatos <- theme_bw() +
   theme(axis.text = element_text(size = 10, face = "plain"),
         axis.title = element_text(size = 10, face = "plain"),
