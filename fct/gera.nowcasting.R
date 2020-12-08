@@ -38,10 +38,10 @@ gera.nowcasting <- function(dados, # dados
             ## Convert dates to the date of the last onset day of each epiweek (epi weeks in Brazil start on Sundays)
             dados2 %<>%
                 filter(dados2$dt_sin_pri <= max.date) %>%
-                mutate(dt_notific = week2date(date2week(dt_notific), floor_day=TRUE, week_start = "Sunday")+6,
-                       dt_sin_pri = week2date(date2week(dt_sin_pri), floor_day=TRUE, week_start = "Sunday")+6,
-                       dt_digita = week2date(date2week(dt_digita), floor_day=TRUE, week_start = "Sunday")+6,
-                       dt_pcr_dig = week2date(date2week(dt_pcr_dig), floor_day=TRUE, week_start = "Sunday")+6)
+                mutate(dt_notific = week2date(date2week(dt_notific), floor_day = TRUE, week_start = "Sunday") + 6,
+                       dt_sin_pri = week2date(date2week(dt_sin_pri), floor_day = TRUE, week_start = "Sunday") + 6,
+                       dt_digita = week2date(date2week(dt_digita), floor_day = TRUE, week_start = "Sunday") + 6,
+                       dt_pcr_dig = week2date(date2week(dt_pcr_dig), floor_day = TRUE, week_start = "Sunday") + 6)
 
         }
 
@@ -95,7 +95,7 @@ gera.nowcasting <- function(dados, # dados
                     select(dt_sin_pri, dt_evoluca, dt_notific, dt_encerra)
             }
             ## Onset date = data do óbito
-            if(obito_sin_pri){
+            if (obito_sin_pri) {
                 dados2 <- dados %>%
                     filter(evolucao == 2) %>%
                     filter(!is.na(dt_sin_pri)) %>%
@@ -108,19 +108,19 @@ gera.nowcasting <- function(dados, # dados
             onset <- ifelse(obito_sin_pri, "dt_sin_pri", "dt_evoluca") ## PIP: define o onset date
             ## Finds the later onset date that is a Staurday (end of a epi week)
             last.dates <- as.POSIXlt(sort(unique(c(dados2[,onset])), decreasing = TRUE)[1:7])
-            max.date <- max(last.dates[last.dates$wday==6])
+            max.date <- max(last.dates[last.dates$wday == 6])
             ## Convert dates to the date of the last onset day of each epiweek (epi weeks in Brazil start on Sundays)
-            dados2 <- dados2[dados2[,onset]<= max.date,]
+            dados2 <- dados2[dados2[,onset] <= max.date,]
             dados2 %<>%
-                mutate(dt_notific = week2date(date2week(dt_notific), floor_day=TRUE, week_start = "Sunday")+6,
-                       dt_evoluca = week2date(date2week(dt_evoluca), floor_day=TRUE, week_start = "Sunday")+6,
-                       dt_sin_pri = week2date(date2week(dt_sin_pri), floor_day=TRUE, week_start = "Sunday")+6,
-                       dt_encerra = week2date(date2week(dt_encerra), floor_day=TRUE, week_start = "Sunday")+6)
+                mutate(dt_notific = week2date(date2week(dt_notific), floor_day = TRUE, week_start = "Sunday") + 6,
+                       dt_evoluca = week2date(date2week(dt_evoluca), floor_day = TRUE, week_start = "Sunday") + 6,
+                       dt_sin_pri = week2date(date2week(dt_sin_pri), floor_day = TRUE,  week_start = "Sunday") + 6,
+                       dt_encerra = week2date(date2week(dt_encerra), floor_day = TRUE,  week_start = "Sunday") + 6)
         }
 
         if (nrow(dados2) != 0) {
             onset <- ifelse(obito_sin_pri, "dt_sin_pri", "dt_evoluca") ## PIP: define o onset date
-            its.now <- max(dados2[,onset], na.rm=TRUE)
+            its.now <- max(dados2[,onset], na.rm = TRUE)
             dados.now <- NobBS(
                 data = dados2,
                 now = its.now - trim.now, ##PIP: nocwasting vai até última data de onset, que pdoe ser a do obito ou do sintoma primario (novo argumento obit_sin_pri)

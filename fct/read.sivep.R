@@ -17,7 +17,7 @@ read.sivep <- function(dir, # diretorio onde esta o dado
   # múltiplos matches são possíveis
   file.name <- file.name[1]
   # detecta e lida com arquivo zip
-  if (endsWith(file.name, '.zip')){
+  if (endsWith(file.name, '.zip')) {
       is_zip = TRUE
       file.name <- utils::unzip(file.name, basename(gsub('.zip$', '.csv', file.name)))
   } else{
@@ -91,8 +91,11 @@ read.sivep <- function(dir, # diretorio onde esta o dado
       names(estados) <- c('AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','PB','PE','PI','PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO')
       if (!is.null(sigla) & is.null(geocode)) geocode <-  estados[names(estados) == sigla]#o geocode nao importa tanto para estados porque tem sg_uf
       if (is.null(sigla) & !is.null(geocode)) sigla <- names(estados[estados == geocode])
-      dados <- dados[dados$sg_uf == sigla, ]
-    }
+      if (residentes)
+        dados <- dados[dados$sg_uf == sigla, ]
+       else
+        dados <- dados[dados$sg_uf_not == sigla, ]
+      }
     if (escala == "micro") {
       co.muns <- municipio.code[micro.code == geocode]
       if(residentes)
