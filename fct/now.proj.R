@@ -10,7 +10,8 @@ now.proj <- function(pred,
                      pred.original,
                      now.params.post,
                      n.dias = 5,
-                     data) {
+                     data,
+                     semanal = FALSE) {
     data0 <- as.Date(data, "%Y_%m_%d")
     ## N de dias para projetar: 5 dias a partir da data atual
     ##      caso semanal: n.dias é o n. de semanas pra frente
