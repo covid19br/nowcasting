@@ -141,12 +141,12 @@ if (existe.ob.covid) {
   ## N de novos casos observados e por nowcasting
   ## Com linha de média móvel
   plot.nowcast.ob.covid <- plot.nowcast.diario(df.ob.covid.diario) +
-    xlab("Dia") +
+    xlab("Data do óbito") +
     ylab("Número de novos óbitos")
 
   ### acumulado
   plot.nowcast.cum.ob.covid <- plot.nowcast.acumulado(df.ob.covid.cum) +
-    xlab("Dia") +
+    xlab("Data do óbito") +
     ylab("Número acumulado de óbitos")
 
   ### tempo de duplicação
