@@ -85,7 +85,7 @@ if (existe.covid) {
     if (dia.zero.covid < "2020-03-15") dia.zero.covid <- as.Date("2020-03-15")
     now.pred.zoo <- window(lista.covid$now.pred.zoo, start = dia.zero.covid)
     now.proj.zoo <- window(now.proj.zoo, start = dia.zero.covid)
-    if (! semanal) {
+    if (!semanal) {
       td.now <- window(td.now, start = dia.zero.covid)
     }
   } else {
@@ -95,10 +95,10 @@ if (existe.covid) {
   ## 1.5 Gera df para grafico ####
   df.covid <- formata.now.df(now.pred.zoo,
                              now.proj.zoo,
-                             lista.covid)
+                             lista.covid,
+                             recent.notifications = recent)
   df.covid.diario <- df.covid$diario
   df.covid.cum <- df.covid$acumulado
-
   # salva o df em csv
 
   write.csv(df.covid.cum,
@@ -200,7 +200,8 @@ if (existe.srag) {
   ## 2.5. Gera df para grafico ####
   df.srag <- formata.now.df(now.srag.pred.zoo,
                             now.srag.proj.zoo,
-                            lista.srag)
+                            lista.srag,
+                            recent.notifications = recent)
   df.srag.diario <- df.srag$diario
   df.srag.cum <- df.srag$acumulado
 
@@ -262,7 +263,8 @@ if (existe.ob.covid) {
   ## 3.4. Gera df para grafico ####
   df.ob.covid <- formata.now.df(now.ob.covid.pred.zoo,
                                 now.ob.covid.proj.zoo,
-                                lista.ob.covid)
+                                lista.ob.covid,
+                                recent.notifications = recent)
   df.ob.covid.diario <- df.ob.covid$diario
   df.ob.covid.cum <- df.ob.covid$acumulado
 
@@ -321,7 +323,8 @@ if (existe.ob.srag) {
   ## 4.4. Gera df para grafico
   df.ob.srag <- formata.now.df(now.ob.srag.pred.zoo,
                                now.ob.srag.proj.zoo,
-                               lista.ob.srag)
+                               lista.ob.srag,
+                               recent.notifications = recent)
   df.ob.srag.diario <- df.ob.srag$diario
   df.ob.srag.cum <- df.ob.srag$acumulado
 
@@ -378,7 +381,8 @@ if (existe.ob.srag.proaim) {
   ## 4.4. Gera df para grafico
   df.ob.srag.proaim <- formata.now.df(now.ob.srag.pred.zoo.proaim,
                                       now.ob.srag.proj.zoo.proaim,
-                                      lista.ob.srag.proaim)
+                                      lista.ob.srag.proaim,
+                                      recent.notifications = recent)
   df.ob.srag.diario.proaim <- df.ob.srag.proaim$diario
   df.ob.srag.cum.proaim <- df.ob.srag.proaim$acumulado
 

@@ -1,9 +1,10 @@
 ## Funcao para formatar data.frame para o grafico de nowcasting casos diarios e acumulados
-formata.now.df <- function(now.pred.zoo, 
+formata.now.df <- function(now.pred.zoo,
                            now.proj.zoo,
+                           recent.notifications,
                            lista) { # aceita "caso" para casos diarios ou "cum" para acumulados
     # Helper function
-    end.time <- function(pred.zoo, pred.zoo.original){
+    end.time <- function(pred.zoo, pred.zoo.original) {
         if (min(time(pred.zoo.original)) < min(time(pred.zoo))) {
             end.time <- min(time(pred.zoo))
         } else {
@@ -12,11 +13,15 @@ formata.now.df <- function(now.pred.zoo,
         return(end.time)
     }
     ## PARA O PLOT CASOS DIARIOS ####
-    end.time.now <- end.time(now.pred.zoo, lista$now.pred.zoo.original)
     time.now <- time(now.pred.zoo)
     df.zoo <- cbind(as.data.frame(now.pred.zoo), data = as.character(time.now))
+
     # notificados
-    df.not <- as.data.frame(window(now.pred.zoo, end = end.time.now))
+    if (!recent.notifications) {
+      end.time.now <- end.time(now.pred.zoo, lista$now.pred.zoo.original)
+      df.not <- as.data.frame(window(now.pred.zoo, end = end.time.now))
+    } else
+    df.not <- as.data.frame(now.pred.zoo)
     df.not$tipo <- "Notificado"
     df.not$data <- row.names(df.not)
     # nowcasting
@@ -33,10 +38,10 @@ formata.now.df <- function(now.pred.zoo,
         full_join(., df.pred[, c('data', 'lower.merged.pred', 'upper.merged.pred')]) %>%
         mutate(data = as.Date(data))
     # PARA O PLOT CASOS ACUMULADOS
-    select.cols <- c("data", 
-                     'now.mean.c', 
+    select.cols <- c("data",
+                     'now.mean.c',
                      'now.mean.c.proj', 'now.low.c.proj', 'now.upp.c.proj',
-                     'not.mean.c', 
+                     'not.mean.c',
                      'not.mean.c.proj', 'not.low.c.proj', 'not.upp.c.proj')
     # estimados
     df.cum1 <- as.data.frame(window(now.proj.zoo, end = max(time(now.pred.zoo))))
@@ -46,7 +51,7 @@ formata.now.df <- function(now.pred.zoo,
     names(df.cum2) <- paste0(names(df.cum2), ".proj")
     df.cum2$data <- row.names(df.cum2)
     # gera o df para casos acumulados
-    df.cum <- full_join(df.cum1, 
+    df.cum <- full_join(df.cum1,
                         df.cum2) %>%
         select(select.cols) %>%
         mutate(data = as.Date(data)) %>%

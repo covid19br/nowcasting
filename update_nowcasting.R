@@ -62,7 +62,10 @@ if (sys.nframe() == 0L) {
                 metavar = "ncores"),
     make_option("--semanal", default = FALSE,
                 help = ("Fazer o nowcasting por semana? Default: FALSE"),
-                metavar = "semanal")
+                metavar = "semanal"),
+    make_option("--recent", default = FALSE,
+                help = ("Plotar os casos notificados recentes"),
+                metavar = "recent")
   )
   parser_object <- OptionParser(usage = "Rscript %prog [Opções] [ARQUIVO]\n",
                                 option_list = option_list,
@@ -94,24 +97,31 @@ if (sys.nframe() == 0L) {
   betas <- opt$options$betas
   ncores <- opt$options$ncores
   semanal <- opt$options$semanal
+  recent <- opt$options$recent
 
-  # quit on error when run non-interactively
-  options(error = function() quit(save = "no", status = 1))
+  # quit on error when run non-interactively #small change because this is killing my local sessions T_T
+  if (!interactive()) options(error = function() quit(save = "no", status = 1))
 }
 ####################################################
 ### to run INTERACTIVELY:
 #You only have to set up the variables that are not already set up above or the ones that you would like to change #
 #geocode <- "3550308" # municipio SP
-#data <- "2020_05_20"
 #######################################################
 
 if (!exists('geocode')) {
   print("Geocode não definido")
   quit(status = 1)
 }
+
+if (semanal) {
+  print("Nowcasting semanal: trim = 0")
+  trim.now <- 0
+}
+
 # sets paths
 name_path <- check.geocode(escala = escala,
-                           geocode = geocode, sigla = sigla)
+                           geocode = geocode,
+                           sigla = sigla)
 
 output.dir <- paste0(out.dir, "/", name_path, "/")
 # só para o output
