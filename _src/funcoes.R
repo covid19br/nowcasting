@@ -24,15 +24,15 @@ if(!require(cmdstanr)){
   install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/",
                                          getOption("repos")))
   library(cmdstanr)
-  install_cmdstan();
+  install_cmdstan()
 }
 if(!require(posterior)){install.packages("posterior"); library(posterior)}
 options(mc.cores = parallel::detectCores())
 
-age_table = structure(list(idade_lower = c(0L, 10L, 20L, 30L, 40L, 50L, 60L, 70L, 80L),
-                           idade_upper = c(9L, 19L, 29L, 39L, 49L, 59L, 69L, 79L, 100L),
-                           ID = c("age_1", "age_2", "age_3", "age_4", "age_5", "age_6", "age_7", "age_8", "age_9"),
-                           faixas = c("0 a 9", "10 a 19", "20 a 29", "30 a 39",
+age_table = structure(list(idade_lower = c(0L, 10L, 20L, 30L, 40L, 50L, 60L, 70L, 80L), 
+                           idade_upper = c(9L, 19L, 29L, 39L, 49L, 59L, 69L, 79L, 100L), 
+                           ID = c("age_1", "age_2", "age_3", "age_4", "age_5", "age_6", "age_7", "age_8", "age_9"), 
+                           faixas = c("0 a 9", "10 a 19", "20 a 29", "30 a 39", 
                                       "40 a 49", "50 a 59", "60 a 69", "70 a 79", "80+")),
                       class = "data.frame", row.names = c(NA, -9L))
 
@@ -48,7 +48,7 @@ classifyAgeFast = function(x){
 #' @param parB Number of bootstraps
 #' @return the 2 cases series, the original one and the
 #' the back-projected
-#'@importFrom surveillance new backprojNP
+#'@importFrom surveillance new backprojNP 
 bckprj<-function(nowc,
                  dmax=25,
                  parB){
@@ -132,7 +132,7 @@ beta.summary <- function(NobBS.output, NobBS.params.post){
                mean = exp(apply(df1, 2, mean)),
                lower = exp(apply(df1, 2, quantile, 0.025)),
                upper = exp(apply(df1, 2, quantile, 0.975)),
-               row.names = names(df1))
+               row.names = names(df1))    
 }
 
 #' Função para extrair nome do path a partir do geocode
@@ -316,7 +316,7 @@ estima.not <- function(vetor.casos, NobBS.output, NobBS.params.post, from = leng
     else
         betas <- beta.summary(NobBS.params.post = NobBS.params.post)$mean
     i <- length(vetor.casos)-length(betas)
-    if(i<0) stop(paste("vetor.casos deve ter comprimento maior ou igual a", length(betas)))
+    if(i<0) stop(paste("vetor.casos deve ter comprimento maior ou igual a", length(betas))) 
     else if(i>0)
         y <- vetor.casos[(i+1):length(vetor.casos)]
     else
@@ -331,7 +331,7 @@ estima.not <- function(vetor.casos, NobBS.output, NobBS.params.post, from = leng
 ###############################################################################
 ## - the mean of the SI comes from a Normal(4.8, 0.71), truncated at 3.8 and 6.1
 ## - the sd of the SI comes from  a Normal(2.3, 0.58), truncated at 1.6 and 3.5
-##
+## 
 ##   day0 : day to start the analysis
 ##   delay : 7 #number of days
 estimate.R0 <- function(novos.casos, day0=8, delay=7, ...){
@@ -370,22 +370,22 @@ existe.nowcasting <- function(tipo,
 }
 
 fill.dates <- function(data, column){
-
+  
   if(class(column) == "character"){cases = data[,column]}
   if(class(column) == "numeric"){cases = data[,column]}
-
+  
   sequence = seq(min(data$onset), max(data$onset), by = 1)
   incidence = rep(0, length(sequence))
-
+  
   for(i in 1:length(cases)){
     incidence[which(data$onset[i] == sequence)] = cases[i]
   }
-
+  
   return(data.frame(dates = sequence, incidence = incidence))
 }
 
 ## Using Nowcast and survival analysis to complete covid table with unobserved cases
-fillNowcastedLines = function(df, nowcast, hosp_wait_fit, int_wait_fit,
+fillNowcastedLines = function(df, nowcast, hosp_wait_fit, int_wait_fit, 
                               UTI_stay_wait_fit, UTI_after_wait_fit, prob_UTI, ...){
   df.now_casted = dplyr::select(df, dt_sin, dt_int, dt_evo, UTI, dt_entuti, dt_saiuti, age_class)
   nowcasts = data.frame(nowcast$estimates)
@@ -400,11 +400,11 @@ fillNowcastedLines = function(df, nowcast, hosp_wait_fit, int_wait_fit,
     missing[missing < 0] = 0
     names(missing) = current_now_cast$stratum
     n_missing = sum(missing, na.rm = TRUE)
-    new.df = data.frame(dt_sin    = as.Date(rep("1859-11-24", n_missing)),
-                        dt_int    = as.Date(rep("1859-11-24", n_missing)),
-                        dt_evo    = as.Date(rep("1859-11-24", n_missing)),
-                        UTI       = as.numeric(rep(NA, n_missing)),
-                        dt_entuti = as.Date(rep("1859-11-24", n_missing)),
+    new.df = data.frame(dt_sin    = as.Date(rep("1859-11-24", n_missing)), 
+                        dt_int    = as.Date(rep("1859-11-24", n_missing)), 
+                        dt_evo    = as.Date(rep("1859-11-24", n_missing)), 
+                        UTI       = as.numeric(rep(NA, n_missing)), 
+                        dt_entuti = as.Date(rep("1859-11-24", n_missing)), 
                         dt_saiuti = as.Date(rep("1859-11-24", n_missing)),
                         age_class = as.character(rep("OOS", n_missing)), stringsAsFactors = F)
     ll = 1
@@ -439,7 +439,7 @@ fillNowcastedLines = function(df, nowcast, hosp_wait_fit, int_wait_fit,
 }
 
 # df = covid.dt
-# nowcast = covid.now.day
+# nowcast = covid.now.day 
 # hosp_wait_fit = time_fits1$covid$notUTI
 # int_wait_fit = time_fits0$covid$Int
 # UTI_stay_wait_fit = time_fits0$covid$UTI
@@ -447,7 +447,7 @@ fillNowcastedLines = function(df, nowcast, hosp_wait_fit, int_wait_fit,
 # prob_UTI = probsFits$covid$uti[,"Estimate"]
 
 ## Using Nowcast and survival analysis to complete covid table with unobserved cases
-fillNowcastedLinesFast = function(df, nowcast, hosp_wait_fit, int_wait_fit,
+fillNowcastedLinesFast = function(df, nowcast, hosp_wait_fit, int_wait_fit, 
                               UTI_stay_wait_fit, UTI_after_wait_fit, prob_UTI, ...){
   df.now_casted = dplyr::select(df, dt_sin, dt_int, dt_evo, UTI, dt_entuti, dt_saiuti, age_class)
   nowcasts = data.frame(nowcast$estimates)
@@ -462,11 +462,11 @@ fillNowcastedLinesFast = function(df, nowcast, hosp_wait_fit, int_wait_fit,
     missing[missing < 0] = 0
     names(missing) = current_now_cast$stratum
     n_missing = sum(missing, na.rm = TRUE)
-    new.df = data.frame(dt_sin    = as.Date(rep("1859-11-24", n_missing)),
-                        dt_int    = as.Date(rep("1859-11-24", n_missing)),
-                        dt_evo    = as.Date(rep("1859-11-24", n_missing)),
-                        UTI       = as.numeric(rep(NA, n_missing)),
-                        dt_entuti = as.Date(rep("1859-11-24", n_missing)),
+    new.df = data.frame(dt_sin    = as.Date(rep("1859-11-24", n_missing)), 
+                        dt_int    = as.Date(rep("1859-11-24", n_missing)), 
+                        dt_evo    = as.Date(rep("1859-11-24", n_missing)), 
+                        UTI       = as.numeric(rep(NA, n_missing)), 
+                        dt_entuti = as.Date(rep("1859-11-24", n_missing)), 
                         dt_saiuti = as.Date(rep("1859-11-24", n_missing)),
                         age_class = as.character(rep("OOS", n_missing)), stringsAsFactors = F)
     ll = 1
@@ -478,15 +478,15 @@ fillNowcastedLinesFast = function(df, nowcast, hosp_wait_fit, int_wait_fit,
         new.df$dt_int[current_lines] = as.Date(new.df$dt_sin[ll] + rwaittime(to_add[current_age], int_wait_fit))
         new.df$dt_evo[current_lines] = as.Date(new.df$dt_int[current_lines] + rwaittime_age(to_add[current_age], current_age, hosp_wait_fit))
         new.df$UTI[current_lines] = as.numeric(rbernoulli(to_add[current_age], prob_UTI[age_table$ID == current_age]))
-        new.df$dt_entuti[current_lines] = if_else(as.logical(new.df$UTI[current_lines]),
-                                                  as.Date(new.df$dt_int[current_lines] + 1),
+        new.df$dt_entuti[current_lines] = if_else(as.logical(new.df$UTI[current_lines]), 
+                                                  as.Date(new.df$dt_int[current_lines] + 1), 
                                                   NA_Date_)
-        new.df$dt_saiuti[current_lines] = if_else(as.logical(new.df$UTI[current_lines]),
-                                                  as.Date(new.df$dt_entuti[current_lines] +
-                                                            rwaittime(to_add[current_age], UTI_stay_wait_fit)),
+        new.df$dt_saiuti[current_lines] = if_else(as.logical(new.df$UTI[current_lines]), 
+                                                  as.Date(new.df$dt_entuti[current_lines] + 
+                                                            rwaittime(to_add[current_age], UTI_stay_wait_fit)), 
                                                   NA_Date_)
-        new.df$dt_evo[current_lines] = if_else(as.logical(new.df$UTI[current_lines]),
-                                               as.Date(new.df$dt_saiuti[current_lines] + rwaittime(to_add[current_age], UTI_after_wait_fit) - 1),
+        new.df$dt_evo[current_lines] = if_else(as.logical(new.df$UTI[current_lines]), 
+                                               as.Date(new.df$dt_saiuti[current_lines] + rwaittime(to_add[current_age], UTI_after_wait_fit) - 1), 
                                                new.df$dt_evo[current_lines])
         new.df$UTI[current_lines] = if_else(as.logical(new.df$UTI[current_lines]), 1, 2)
         new.df$age_class[current_lines] = as.character(current_age)
@@ -542,7 +542,7 @@ fixUTIDates = function(x, UTI_stay_wait_fit){
   if(!is.na(x$UTI) & x$UTI==1 & is.na(x$dt_saiuti) & !is.na(x$evolucao))
     if(is.na(x$dt_evo)){
       x$dt_saiuti = as.Date(x$dt_entuti + rwaittime(1, UTI_stay_wait_fit))
-    }
+    } 
   x
 }
 fixEVODates = function(x, afterUTI_stay_wait_fit, hosp_wait_fit){
@@ -588,61 +588,61 @@ formata.now.df <- function(now.pred.zoo,
                            now.proj.zoo,
                            recent.notifications,
                            lista) { # aceita "caso" para casos diarios ou "cum" para acumulados
-  # Helper function
-  end.time <- function(pred.zoo, pred.zoo.original) {
-    if (min(time(pred.zoo.original)) < min(time(pred.zoo))) {
-      end.time <- min(time(pred.zoo))
-    } else {
-      end.time <- min(time(pred.zoo.original))
+    # Helper function
+    end.time <- function(pred.zoo, pred.zoo.original) {
+        if (min(time(pred.zoo.original)) < min(time(pred.zoo))) {
+            end.time <- min(time(pred.zoo))
+        } else {
+            end.time <- min(time(pred.zoo.original))
+        }
+        return(end.time)
     }
-    return(end.time)
-  }
-  ## PARA O PLOT CASOS DIARIOS ####
-  time.now <- time(now.pred.zoo)
-  df.zoo <- cbind(as.data.frame(now.pred.zoo), data = as.character(time.now))
+    ## PARA O PLOT CASOS DIARIOS ####
+    time.now <- time(now.pred.zoo)
+    df.zoo <- cbind(as.data.frame(now.pred.zoo), data = as.character(time.now))
 
-  # notificados
-  if (!recent.notifications) {
-    end.time.now <- end.time(now.pred.zoo, lista$now.pred.zoo.original)
-    df.not <- as.data.frame(window(now.pred.zoo, end = end.time.now))
-  } else
+    # notificados
+    if (!recent.notifications) {
+      end.time.now <- end.time(now.pred.zoo, lista$now.pred.zoo.original)
+      df.not <- as.data.frame(window(now.pred.zoo, end = end.time.now))
+    } else
     df.not <- as.data.frame(now.pred.zoo)
-  df.not$tipo <- "Notificado"
-  df.not$data <- row.names(df.not)
-  # nowcasting
-  df.now <- as.data.frame(window(now.pred.zoo, start = min(time(lista$now.pred.zoo.original)) + 1))
-  df.now$tipo <- "Nowcasting"
-  df.now$data <- row.names(df.now)
-  # predict
-  df.pred <- as.data.frame(window(now.pred.zoo, start = min(time(lista$now.pred.zoo.original)) + 1))
-  names(df.pred) <- paste0(names(df.pred), ".pred")
-  df.pred$data <- row.names(df.pred)
-  ## finalmente gera o df diario
-  df.diario <- full_join(df.not[, c('data', 'n.casos')], df.now[, c('data', 'estimate')]) %>%
-    full_join(., df.zoo[, c('data', 'estimate.merged', 'estimate.merged.smooth')]) %>%
-    full_join(., df.pred[, c('data', 'lower.merged.pred', 'upper.merged.pred')]) %>%
-    mutate(data = as.Date(data))
-  # PARA O PLOT CASOS ACUMULADOS
-  select.cols <- c("data",
-                   'now.mean.c',
-                   'now.mean.c.proj', 'now.low.c.proj', 'now.upp.c.proj',
-                   'not.mean.c',
-                   'not.mean.c.proj', 'not.low.c.proj', 'not.upp.c.proj')
-  # estimados
-  df.cum1 <- as.data.frame(window(now.proj.zoo, end = max(time(now.pred.zoo))))
-  df.cum1$data <- row.names(df.cum1)
-  # notificados
-  df.cum2 <- as.data.frame(window(now.proj.zoo, start = max(time(now.pred.zoo))))
-  names(df.cum2) <- paste0(names(df.cum2), ".proj")
-  df.cum2$data <- row.names(df.cum2)
-  # gera o df para casos acumulados
-  df.cum <- full_join(df.cum1,
-                      df.cum2) %>%
-    select(select.cols) %>%
-    mutate(data = as.Date(data)) %>%
-    mutate_all(funs(round(., 0)))
-  lista.plot <- list(diario = df.diario, acumulado = df.cum)
-  return(lista.plot)
+    df.not$tipo <- "Notificado"
+    df.not$data <- row.names(df.not)
+    # nowcasting
+    df.now <- as.data.frame(window(now.pred.zoo, start = min(time(lista$now.pred.zoo.original)) + 1))
+    df.now$tipo <- "Nowcasting"
+    df.now$data <- row.names(df.now)
+    # predict
+    df.pred <- as.data.frame(window(now.pred.zoo, start = min(time(lista$now.pred.zoo.original)) + 1))
+    names(df.pred) <- paste0(names(df.pred), ".pred")
+    df.pred$data <- row.names(df.pred)
+    ## finalmente gera o df diario
+    df.diario <- full_join(df.not[, c('data', 'n.casos')], df.now[, c('data', 'estimate')]) %>%
+        full_join(., df.zoo[, c('data', 'estimate.merged', 'estimate.merged.smooth')]) %>%
+        full_join(., df.pred[, c('data', 'lower.merged.pred', 'upper.merged.pred')]) %>%
+        mutate(data = as.Date(data))
+    # PARA O PLOT CASOS ACUMULADOS
+    select.cols <- c("data",
+                     'now.mean.c',
+                     'now.mean.c.proj', 'now.low.c.proj', 'now.upp.c.proj',
+                     'not.mean.c',
+                     'not.mean.c.proj', 'not.low.c.proj', 'not.upp.c.proj')
+    # estimados
+    df.cum1 <- as.data.frame(window(now.proj.zoo, end = max(time(now.pred.zoo))))
+    df.cum1$data <- row.names(df.cum1)
+    # notificados
+    df.cum2 <- as.data.frame(window(now.proj.zoo, start = max(time(now.pred.zoo))))
+    names(df.cum2) <- paste0(names(df.cum2), ".proj")
+    df.cum2$data <- row.names(df.cum2)
+    # gera o df para casos acumulados
+    df.cum <- full_join(df.cum1,
+                        df.cum2) %>%
+        select(select.cols) %>%
+        mutate(data = as.Date(data)) %>%
+        mutate_all(funs(round(., 0)))
+    lista.plot <- list(diario = df.diario, acumulado = df.cum)
+    return(lista.plot)
 }
 
 gera.nowcasting <- function(dados, # dados
@@ -788,17 +788,17 @@ gera.nowcasting <- function(dados, # dados
 
 getCurrentInBed = function(df, date, UTI){
   if(!UTI){
-    df = df %>%
+    df = df %>% 
       filter(dt_int <= date & (dt_evo >= date | is.na(dt_evo)))
   }else{
-    df = df %>%
+    df = df %>% 
       filter(UTI == 1, dt_entuti <= date & (dt_saiuti >= date | is.na(dt_saiuti)))
   }
 }
 # extrai a data mais recente de nowcasting
 get.data.base2 <- function(adm, sigla.adm, tipo) {
   nome.dir <- paste0("../dados/", adm, "_", sigla.adm, "/tabelas_nowcasting_para_grafico/")
-  data.base <- dir(nome.dir, pattern = paste0("nowcasting_acumulado_", tipo, "_20")) %>%
+  data.base <- dir(nome.dir, pattern = paste0("nowcasting_acumulado_", tipo, "_20")) %>% 
     stringr::str_extract("(19|20)\\d\\d[_ /.](0[1-9]|1[012])[_ /.](0[1-9]|[12][0-9]|3[01])") %>% #prfct
     as.Date(format = "%Y_%m_%d") %>%
     max() %>%
@@ -832,19 +832,19 @@ getProbUTI = function(df){
   df.UTI = filter(df, !is.na(UTI) & UTI!=9)
   UTI_table = as.matrix(table(df.UTI$age_class, df.UTI$UTI))
   UTI_data = data.frame(UTIadmissions = UTI_table[,1], trials = rowSums(UTI_table), age_class = age_table$ID)
-
+  
   UTI_prob_model = brm(data = UTI_data, family = binomial,
                        UTIadmissions | trials(trials) ~ 1 + (1|age_class),
                        c(prior("normal(0, 1)", class = "Intercept"),
                          prior("normal(0, 1)", class = "sd")),
                        control = list(adapt_delta = 0.99))
-
+  
   out = coef(UTI_prob_model) %>%
     {inv_logit_scaled(.$age_class)}
   data.frame(out[,,"Intercept"])
 }
 
-# probabilidade de morte de hospitalizado comum, e em UTI,
+# probabilidade de morte de hospitalizado comum, e em UTI, 
 getProbDeath = function(df, UTI = FALSE){
   if(UTI){
     df.filtered = filter(df, UTI==1, !is.na(evolucao) & evolucao!=9)
@@ -852,7 +852,7 @@ getProbDeath = function(df, UTI = FALSE){
     df.filtered = filter(df, UTI!=1, !is.na(evolucao) & evolucao!=9)
   }
   case_table = as.matrix(table(df.filtered$age_class, df.filtered$evolucao))
-
+  
   trial_data = data.frame(deaths = 0, trials = 0, age_class = age_table$ID)
   trial_data[match(rownames(case_table), age_table$ID),1] = case_table[,2]
   trial_data[match(rownames(case_table), age_table$ID),2] = rowSums(case_table)
@@ -875,19 +875,19 @@ get.last.date <- function(dir) {
     format("%Y_%m_%d")
 }
 
-getTimes = function(x, late, early, censored = FALSE){
+getTimes = function(x, late, early, censored = FALSE){  
   if(!censored){
     time = as.numeric(x[[late]] - x[[early]])
-    data.frame(ID = x$ID, time = time, age_class = x$age_class,
+    data.frame(ID = x$ID, time = time, age_class = x$age_class, 
                early =  x[[early]], late = x[[late]])
   } else{
-    if(is.na(x[[late]])){
+    if(is.na(x[[late]])){ 
       time = as.numeric(today() - x[[early]])
       censored = 0
     } else{
       time = as.numeric(x[[late]] -x[[early]])
       censored = 1
-    }
+    } 
     data.frame(ID = x$ID, evolucao = x$evolucao, time = time, age_class = x$age_class, censored = censored,
                early =  x[[early]], late = x[[late]])
   }
@@ -911,8 +911,8 @@ join_nowcasting <- function(nowcasting, notified){
 }
 
 makeHospitalTable = function(df.table, dates, UTI = FALSE){
-  hospital_table = ldply(dates,
-                         function (date) cbind(data.frame(date = date),
+  hospital_table = ldply(dates, 
+                         function (date) cbind(data.frame(date = date), 
                                                countByAgeClass(getCurrentInBed(df.table, date, UTI = UTI))))
   hospital_table[is.na(hospital_table)] = 0
   hospital_table
@@ -996,24 +996,24 @@ NobBS.posterior <- function(data, now, units, onset_date, report_date, moving_wi
                     nBurnin=1000,
                     nThin=1,
                     nSamp=10000)) {
-
+  
   # Check that "now" is entered as a Date
   if(inherits(now, "Date")==FALSE){
     stop("'Now' argument must be of datatype Date (as.Date)")
   }
-
+  
   # Check that "now" is possible in the sequence of reporting data
   if(dplyr::last(seq(min(data[,onset_date]),now,by=units))!=now){
     stop("The date `now` is not possible to estimate: the possible nowcast dates are seq(unique(data[,onset_date])[1],now,by=units).")
   }
-
+  
   # Print date
   message(paste("Computing a nowcast for ",now))
   # Define "T", the length of dates between the first date of data and "now", making sure that "T" is unaffected by skipped-over dates in the time series
   # If the moving window is specified, "T" considers only the dates within the moving window; otherwise considers all historical data
   now.T <- ifelse(is.null(moving_window),length(seq(min(data[,onset_date]),as.Date(now),by=units)),
                   moving_window)
-
+  
   # Check the default arguments
   if (is.null(moving_window)) {
     moving_window <- now.T
@@ -1030,12 +1030,12 @@ NobBS.posterior <- function(data, now, units, onset_date, report_date, moving_wi
   if(quiet==FALSE){
     progress.bar <- "text"
   }
-
+  
   # Check that proportion_reported is between 0,1
   if (proportion_reported > 1 | proportion_reported<=0){
     stop("The proportion_reported must be a number between (0,1].")
   }
-
+  
   # Manipulate the control arguments
   if ("Poisson"%in%(specs[["dist",exact=TRUE]])) { # if no distribution specified, take Poisson as default
     specs$dist <- "Poisson"
@@ -1085,31 +1085,31 @@ NobBS.posterior <- function(data, now, units, onset_date, report_date, moving_wi
   if (is.null(specs[["nSamp",exact=TRUE]])) {
     specs$nSamp <- 10000
   }
-
+  
   # Warnings
   if(max_D>(moving_window-1)){
     stop("Maximum delay cannot be greater than the length of the moving window minus 1 time unit")
   }
-
+  
   # Prep the data: filter only to observable cases reported at or before "now"
   unit.num <- switch(units, "1 day"=1,"1 week"=7)
   w.days <- max((moving_window-1)*unit.num,(now.T-1)*unit.num) # moving window converted to days
-
+  
   realtime.data <- subset(data,(data[,onset_date]<=now) & (data[,onset_date]>=now-w.days) & (data[,report_date]<=now) & (data[,report_date]>=now-w.days))
   realtime.data$week.t <- (as.numeric(realtime.data[,onset_date]-min(realtime.data[,onset_date]))/unit.num)+1
   realtime.data$delay <- as.numeric(realtime.data[,report_date]-realtime.data[,onset_date])/unit.num
-
+  
   if(cutoff_D==FALSE){
     realtime.data$delay <- ifelse(realtime.data$delay>=max_D,max_D,realtime.data$delay)
   }
-
+  
   if(length(unique(realtime.data$week.t))!=now.T){
     warning("Warning! The line list has zero case reports for one or more possible onset dates at one or more delays. Proceeding under the assumption that the true number of cases at the associated delay(s) and week(s) is zero.")
   }
-
+  
   # Build the reporting triangle, fill with NAs where unobservable
   reporting.triangle <- matrix(NA, nrow=now.T,ncol=(max_D+1))
-
+  
   for(t in 1:now.T){
     for(d in 0:max_D){
       reporting.triangle[t,(d+1)] <- nrow(realtime.data[which(realtime.data$week.t==t & realtime.data$delay==d),])
@@ -1118,9 +1118,9 @@ NobBS.posterior <- function(data, now, units, onset_date, report_date, moving_wi
       }
     }
   }
-
+  
   # Run the JAGS model
-
+  
   if(specs[["dist"]]=="Poisson"){
     params=c( "lambda","alpha","beta.logged","tau2.alpha","n","sum.n","sum.lambda")
   }
@@ -1133,7 +1133,7 @@ NobBS.posterior <- function(data, now, units, onset_date, report_date, moving_wi
   nThin = specs[["nThin"]] # default=1
   nKeep = specs[["nSamp"]] # default=10,000
   nIter = nKeep * nThin
-
+  
   if(specs[["dist"]]=="Poisson"){
     dataList = list(Today = now.T,
                     D = max_D,
@@ -1144,7 +1144,7 @@ NobBS.posterior <- function(data, now, units, onset_date, report_date, moving_wi
                     alphat.shape.prior=specs$alphat.shape.prior,
                     beta.priors=specs$beta.priors)
   }
-
+  
   if(specs[["dist"]]=="NB"){
     dataList = list(Today = now.T,
                     D = max_D,
@@ -1157,10 +1157,10 @@ NobBS.posterior <- function(data, now, units, onset_date, report_date, moving_wi
                     dispersion.prior.shape=specs$dispersion.prior[1],
                     dispersion.prior.rate=specs$dispersion.prior[2])
   }
-
+  
   JAGSmodPois <- (system.file("JAGS", "nowcastPois.txt", package="NobBS")) # file.path(path.package('NobBS'),"nowcastPois.txt")
   JAGSmodNB <- (system.file("JAGS", "nowcastNB.txt", package="NobBS")) #file.path(path.package('NobBS'),"nowcastNB.txt")
-
+  
   nowcastmodel = rjags::jags.model(
     file = ifelse(specs[["dist"]]=="Poisson",JAGSmodPois,JAGSmodNB),
     data = dataList,
@@ -1168,9 +1168,9 @@ NobBS.posterior <- function(data, now, units, onset_date, report_date, moving_wi
     n.adapt = nAdapt,
     inits=list(.RNG.seed=1,.RNG.name="base::Super-Duper"),
     quiet=quiet)
-
+  
   update( object = nowcastmodel, n.iter = nBurnin , progress.bar = progress.bar)
-
+  
   lambda.output = coda.samples(
     model = nowcastmodel,
     variable.names =  if("sum.n"%in%specs$param_names) c(specs$param_names) else c(specs$param_names,"sum.n"),
@@ -1178,20 +1178,20 @@ NobBS.posterior <- function(data, now, units, onset_date, report_date, moving_wi
     thin = nThin,
     quiet=quiet,
     progress.bar=progress.bar)
-
+  
   mymod.mcmc <- as.mcmc(lambda.output)
   mymod.dat <- as.data.frame(as.matrix(mymod.mcmc))
-
+  
   # Extract all hindcasts and 95% credible intervals
   t.extract <- (now.T-(now.T-1)):(now.T) # nowcast all weeks up through the present
-
+  
   estimates <- matrix(NA, ncol=3, nrow=now.T,dimnames=list(NULL,c("estimate","lower","upper")))
   for(v in t.extract){
     estimates[v,1] <- median(mymod.dat[, grep(paste("sum.n[",v,"]",sep=""), colnames(mymod.dat), fixed=TRUE)])
     estimates[v,2] <- quantile((mymod.dat[, grep(paste("sum.n[",v,"]",sep=""), colnames(mymod.dat), fixed=TRUE)]),probs = c((1-specs$conf)/2,1-((1-specs$conf)/2)))[1]
     estimates[v,3] <- quantile((mymod.dat[, grep(paste("sum.n[",v,"]",sep=""), colnames(mymod.dat), fixed=TRUE)]),probs = c((1-specs$conf)/2,1-((1-specs$conf)/2)))[2]
   }
-
+  
   # Estimates inflated by proportion reported
   estimates.inflated <- matrix(NA, ncol=3, nrow=now.T,dimnames=list(NULL,c("estimate_inflated","lower","upper")))
   for(v in t.extract){
@@ -1199,7 +1199,7 @@ NobBS.posterior <- function(data, now, units, onset_date, report_date, moving_wi
     estimates.inflated[v,2] <- quantile((mymod.dat[, grep(paste("sum.n[",v,"]",sep=""), colnames(mymod.dat), fixed=TRUE)]),probs = c((1-specs$conf)/2,1-((1-specs$conf)/2)))[1]/proportion_reported
     estimates.inflated[v,3] <- quantile((mymod.dat[, grep(paste("sum.n[",v,"]",sep=""), colnames(mymod.dat), fixed=TRUE)]),probs = c((1-specs$conf)/2,1-((1-specs$conf)/2)))[2]/proportion_reported
   }
-
+  
   # Combine nowcast estimates with: dates, number of cases reported at each date
   reported <- data.frame(
     realtime.data %>%
@@ -1207,18 +1207,18 @@ NobBS.posterior <- function(data, now, units, onset_date, report_date, moving_wi
       summarise(n.reported=n())
   )
   names(reported)[1] <- "onset_date"
-
+  
   # # # # #
   estimates <- data.frame(estimates, onset_date=(seq(as.Date(now)-w.days,as.Date(now),by=units))) %>%
     left_join(reported,by="onset_date")
-
+  
   estimates.inflated <- data.frame(estimates.inflated, onset_date=(seq(as.Date(now)-w.days,as.Date(now),by=units))) %>%
     left_join(reported,by="onset_date")
-
+  
   t <- now.T
-
+  
   parameter_extract <- matrix(NA, nrow=10000)
-
+  
   if("lambda"%in%specs$param_names){
     parameter_extract <- cbind(parameter_extract,mymod.dat %>% dplyr::select(select_vars(names(mymod.dat),starts_with(paste("lambda[",t,",",sep="")))))
   }
@@ -1236,16 +1236,16 @@ NobBS.posterior <- function(data, now, units, onset_date, report_date, moving_wi
   if("tau2.alpha"%in%specs$param_names){
     parameter_extract <- cbind(parameter_extract,mymod.dat %>% dplyr::select(select_vars(names(mymod.dat),starts_with("tau2.alpha"))))
   }
-
+  
   #log.beta.td1 <- mymod.dat %>% dplyr::select(select_vars(names(mymod.dat),starts_with(paste("beta.logged[1]",sep=""))))
   #log.beta.td2 <- mymod.dat %>% dplyr::select(select_vars(names(mymod.dat),starts_with(paste("beta.logged[2]",sep=""))))
   #log.beta.td3 <- mymod.dat %>% dplyr::select(select_vars(names(mymod.dat),starts_with(paste("beta.logged[3]",sep=""))))
   #alpha.last <- mymod.dat %>% dplyr::select(select_vars(names(mymod.dat),starts_with(paste("alpha[",t,sep=""))))
   #tau2.alpha <- mymod.dat %>% dplyr::select(select_vars(names(mymod.dat),starts_with("tau2.alpha")))
-
+  
   #parameter_extract <- cbind(pi.logged.td1,pi.logged.td2,pi.logged.td3,
   #                          alpha.last,tau2.alpha)
-
+  
   nowcast.post.samps <- (mymod.dat %>% dplyr::select(select_vars(names(mymod.dat),starts_with("sum.n"))))
   colnames(nowcast.post.samps) = 1:moving_window
   m_post = melt(nowcast.post.samps)
@@ -1341,22 +1341,22 @@ now.proj <- function(pred,
 
 # Funcao para plot do R efetivo
 plot.estimate.R0 <- function(df.re){ # df com r efetivo
-  plot <- df.re %>%
-    mutate(data = as.Date(data)) %>%
-    ggplot(aes(x = data, y = Mean.R)) +
-    geom_ribbon(aes(ymin = Quantile.0.025.R, ymax = Quantile.0.975.R), fill = "lightgrey") +
-    geom_line(size = 1.25, colour = RColorBrewer::brewer.pal(4, "Dark2")[3]) +
-    scale_x_date( date_labels = "%d/%b", name = "") +
-    ylim(min(c(0.8, min(df.re$Quantile.0.025.R))), max(df.re$Quantile.0.975.R)) +
-    geom_hline(yintercept = 1, linetype = "dashed", col = "red", size = 1) +
-    ylab("Número de reprodução da epidemia") +
-    xlab("Data") +
-    plot.formatos
-  plot
+    plot <- df.re %>%
+        mutate(data = as.Date(data)) %>%
+        ggplot(aes(x = data, y = Mean.R)) +
+        geom_ribbon(aes(ymin = Quantile.0.025.R, ymax = Quantile.0.975.R), fill = "lightgrey") +
+        geom_line(size = 1.25, colour = RColorBrewer::brewer.pal(4, "Dark2")[3]) +
+        scale_x_date( date_labels = "%d/%b", name = "") +
+        ylim(min(c(0.8, min(df.re$Quantile.0.025.R))), max(df.re$Quantile.0.975.R)) +
+        geom_hline(yintercept = 1, linetype = "dashed", col = "red", size = 1) +
+        ylab("Número de reprodução da epidemia") +
+        xlab("Data") +
+        plot.formatos
+    plot
 }
 
-
-if(!require(ggplot2)){install.packages("ggplot2"); library(ggplot2)}
+## Plot formatos
+if (!require(ggplot2)){install.packages("ggplot2"); library(ggplot2)}
 plot.formatos <- theme_bw() +
   theme(axis.text = element_text(size = 10, face = "plain"),
         axis.title = element_text(size = 10, face = "plain"),
@@ -1367,6 +1367,7 @@ plot.formatos <- theme_bw() +
         panel.grid = element_line(size = 0.25),
         panel.grid.minor = element_blank(),
         panel.grid.major.x = element_blank())
+
 # Funcao para fazer o plot de nowcasting acumulado, com valores estimados e notificados, com projecao para os proximos 5 dias
 plot.nowcast.acumulado <- function(df) {
     plot <- df %>%
@@ -1409,9 +1410,9 @@ plot.nowcast.diario <- function(df) {
         geom_line(aes(y = estimate.merged), lty = 2, col = "grey") +
         geom_point(aes(y = n.casos, col = "Notificado"), size = 2) +
         geom_point(aes(y = estimate, col = "Nowcasting"), size = 2) +
-        (if (! is.na(df$estimate.merged.smooth[1]))
-          geom_line(aes(y = estimate.merged.smooth), alpha = 0.6, size = 2)
-         else NULL) +
+      (if (! is.na(df$estimate.merged.smooth[1]))
+        geom_line(aes(y = estimate.merged.smooth), alpha = 0.6, size = 2)
+       else NULL) +
         scale_x_date(date_labels = "%d/%b") +
         scale_color_manual(name = "", values = RColorBrewer::brewer.pal(3, "Set1")[2:1]) +
         xlab("Data do primeiro sintoma") +
@@ -1420,7 +1421,6 @@ plot.nowcast.diario <- function(df) {
         theme(legend.position = "none")
     plot
 }
-
 
 # Funcao para calcular o tempo de duplicacao
 plot.tempo.dupl <- function(df.td) {#data.frame com tempo de duplicacao
@@ -1446,16 +1446,16 @@ plotTimesValidation = function(times_table, fit1, age = TRUE){
     times_table$sim = sim_times
     times_table$age = age_table$faixas[match(times_table$age_class, age_table$ID)]
     d = pivot_longer(times_table, c(sim, time))
-    ggplot(data = d, aes(x = value, group = name, fill = name)) +
-      geom_density(alpha= 0.5) + facet_wrap(~age) +
-      theme_cowplot() + scale_fill_discrete(labels = c("Simulado", "Observado"), name = "Categoria")
+    ggplot(data = d, aes(x = value, group = name, fill = name)) + 
+      geom_density(alpha= 0.5) + facet_wrap(~age) + 
+      theme_cowplot() + scale_fill_discrete(labels = c("Simulado", "Observado"), name = "Categoria") 
   } else{
     sim_times = rwaittime(nrow(times_table), fit1)
     times_table$sim = sim_times
     d = pivot_longer(times_table, c(sim, time))
-    ggplot(data = d, aes(x = value, group = name, fill = name)) +
-      geom_density(alpha= 0.5) +
-      theme_cowplot() + scale_fill_discrete(labels = c("Simulado", "Observado"), name = "Categoria")
+    ggplot(data = d, aes(x = value, group = name, fill = name)) + 
+      geom_density(alpha= 0.5) + 
+      theme_cowplot() + scale_fill_discrete(labels = c("Simulado", "Observado"), name = "Categoria") 
   }
 }
 # Estimate posterior probabilities for nowcasting AND SI variation
@@ -1516,7 +1516,7 @@ posteriors <- function(data){
       "Quantile.0.975(R)"
   )
 
-  return(results)
+  return(results)  
 }
 
 #' Preenche NA's iniciais do vetor de estimado pelo nowcasting
@@ -1598,7 +1598,7 @@ prepara_dados2 <- function(lista.now,
     ## PIP: argumento que permite incluir ou não as posteriores dos parâmetros do nowcasting
     ## if(include.post)
     ##     pred[["now.params.post"]] <- read.csv(paste0(nome.dir, "nowcasting_", tipo, "_post_", data.base, ".csv"))
-
+    
     ## ## Data frame com as trajetórias de projeções do Nowcasting
     ## if (trajectories) {
     ##     pred[["trajectories"]] <- read.csv(paste0(nome.dir, "nowcasting_", tipo, "_traj_", data.base, ".csv"))
@@ -1702,7 +1702,7 @@ prepara.dados <- function(tipo = "covid",
     ## PIP: argumento que permite incluir ou não as posteriores dos parâmetros do nowcasting
     if(include.post)
         pred[["now.params.post"]] <- read.csv(paste0(nome.dir, "nowcasting_", tipo, "_post_", data.base, ".csv"))
-
+    
     ## Data frame com as trajetórias de projeções do Nowcasting
     if (trajectories) {
         pred[["trajectories"]] <- read.csv(paste0(nome.dir, "nowcasting_", tipo, "_traj_", data.base, ".csv"))
@@ -1718,81 +1718,81 @@ require(coda)
 nd <- read.table("./dados/nishi_si_table.txt", header = TRUE)
 nishi_si <- read.table("./dados/nishi_si_posterior.txt", header = TRUE)
 
-estimate.R0.cori <- function(novos.casos, day0 = NA, delay=7, method, parameter.table,
+estimate.R0.cori <- function(novos.casos, day0 = NA, delay=7, method, parameter.table, 
                              p.distribution, bayes.control, si.data, si.sample, modified = FALSE, n2 = NA, ...) {
 
   if(is.na(day0)){
     mdif = mean(si.data$SL - si.data$EL) # empirical SI
-    day0= min(which(cumsum(novos.casos) > 12 &
-                      1:length(novos.casos) > ceiling(mdif)
-                    & 1:length(novos.casos) > delay))
-
+    day0= min(which(cumsum(novos.casos) > 12 & 
+                      1:length(novos.casos) > ceiling(mdif) 
+                    & 1:length(novos.casos) > delay)) 
+    
   }
-
+  
   if(method == "uncertain_si")  {
-
+    
     parameter.list  <- lapply(parameter.table, function(x) x=x)
-    parameter.list$si_parametric_distr = p.distribution
+    parameter.list$si_parametric_distr = p.distribution 
     parameter.list$t_start = seq(day0,length(novos.casos)-delay)
     parameter.list$t_end = seq(delay+day0,length(novos.casos))
-
+    
     config <- make_config(parameter.list)
     return(estimate_R(novos.casos, method = method, config = config))
   }
-
+  
   if(method == "parametric_si"){
-
+    
     parameter.list  <- lapply(parameter.table, function(x) x=x)
     parameter.list$si_parametric_distr =  p.distribution
     parameter.list$t_start = seq(day0,length(novos.casos)-delay)
     parameter.list$t_end = seq(delay+day0,length(novos.casos))
-
+    
     config <- make_config(parameter.list)
     return(estimate_R(novos.casos, method = "parametric_si", config = config))
   }
-
+  
   if (method == "si_from_data") {
-  config <- make_config(incid = novos.casos,
-                        method = method,
+  config <- make_config(incid = novos.casos, 
+                        method = method, 
                         list(si_parametric_distr = p.distribution,
-                             mcmc_control = make_mcmc_control(burnin = bayes_control$burnin,
+                             mcmc_control = make_mcmc_control(burnin = bayes_control$burnin, 
                                                               thin = bayes_control$thin),
                              mean_prior = 5,
                              std_prior = 5,
-                             n1 = bayes_control$n1,
+                             n1 = bayes_control$n1, 
                              n2 = bayes_control$n2,
                              t_start = seq(day0,length(novos.casos)-delay),
                              t_end = seq(delay+day0,length(novos.casos))))
-
-  return(estimate_R(novos.casos, method = method,
+  
+  return(estimate_R(novos.casos, method = method, 
                     si_data = si.data, config = config))
   }
-
+  
   if(method == "si_from_sample"){
-
+    
     parameter.list  <- list()
     parameter.list$t_start = seq(day0,length(novos.casos)-delay)
     parameter.list$t_end = seq(delay+day0,length(novos.casos))
-
+    
     if(is.na(n2)){
     parameter.list$n2 = 50 } else {
-    parameter.list$n2 = n2
+    parameter.list$n2 = n2  
     }
-
+    
     config <- make_config(parameter.list)
-
+    
     if(modified == FALSE){
     return(estimate_R(novos.casos, method = method,
-                                   si_sample = si.sample,
+                                   si_sample = si.sample, 
                                    config = config)) } else {
     return(estimate_R_modified(novos.casos, method = method,
-                                   si_sample = si.sample,
+                                   si_sample = si.sample, 
                                    config = config))
                                    }
-
-
+    
+    
   }
-
+  
 }
 
 estimate_R_modified <- function(incid,
@@ -1804,17 +1804,17 @@ estimate_R_modified <- function(incid,
                        si_data = NULL,
                        si_sample = NULL,
                        config = make_config(incid = incid, method = method)) {
-
+  
   method <- match.arg(method)
   config <- make_config(incid = incid, method = method, config = config)
   config <- EpiEstim:::process_config(config)
   EpiEstim:::check_config(config, method)
-
+  
   if (method == "si_from_data") {
     ## Warning if the expected set of parameters is not adequate
     si_data <- EpiEstim:::process_si_data(si_data)
     config <- EpiEstim:::process_config_si_from_data(config, si_data)
-
+    
     ## estimate serial interval from serial interval data first
     if (!is.null(config$mcmc_control$seed)) {
       cdt <- dic.fit.mcmc(
@@ -1834,27 +1834,27 @@ estimate_R_modified <- function(incid,
         init.pars = config$mcmc_control$init_pars
       )
     }
-
+    
     ## check convergence of the MCMC and print warning if not converged
     MCMC_conv <- check_cdt_samples_convergence(cdt@samples)
-
+    
     ## thin the chain, and turn the two parameters of the SI distribution into a
     ## whole discrete distribution
     c2e <- coarse2estim(cdt, thin = config$mcmc_control$thin)
-
+    
     cat(paste(
       "\n\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",
       "\nEstimating the reproduction number for these serial interval",
       "estimates...\n",
       "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     ))
-
+    
     ## then estimate R for these serial intervals
-
+    
     if (!is.null(config$seed)) {
       set.seed(config$seed)
     }
-
+    
     out <- estimate_R_func(
       incid = incid,
       method = "si_from_data",
@@ -1866,7 +1866,7 @@ estimate_R_modified <- function(incid,
     if (!is.null(config$seed)) {
       set.seed(config$seed)
     }
-
+    
     out <- estimate_R_func(
       incid = incid, method = method, si_sample = si_sample,
       config = config
@@ -1891,23 +1891,23 @@ estimate_R_func <- function(incid,
                               "uncertain_si", "si_from_data", "si_from_sample"
                             ),
                             config) {
-
+  
   #########################################################
   # Calculates the cumulative incidence over time steps   #
   #########################################################
-
+  
   calc_incidence_per_time_step <- function(incid, t_start, t_end) {
     nb_time_periods <- length(t_start)
-    incidence_per_time_step <- EpiEstim:::vnapply(seq_len(nb_time_periods), function(i)
+    incidence_per_time_step <- EpiEstim:::vnapply(seq_len(nb_time_periods), function(i) 
       sum(incid[seq(t_start[i], t_end[i]), c("local", "imported")]))
     return(incidence_per_time_step)
   }
-
+  
   #########################################################
   # Calculates the parameters of the Gamma posterior      #
   # distribution from the discrete SI distribution        #
   #########################################################
-
+  
   posterior_from_si_distr <- function(incid, si_distr, a_prior, b_prior,
                                       t_start, t_end) {
     nb_time_periods <- length(t_start)
@@ -1918,7 +1918,7 @@ estimate_R_func <- function(incid,
     b_posterior <- vector()
     a_posterior <- EpiEstim:::vnapply(seq_len(nb_time_periods), function(t) if (t_end[t] >
                                                                      final_mean_si) {
-      a_prior + sum(incid[seq(t_start[t], t_end[t]), "local"])
+      a_prior + sum(incid[seq(t_start[t], t_end[t]), "local"]) 
       ## only counting local cases on the "numerator"
     }
     else {
@@ -1933,21 +1933,21 @@ estimate_R_func <- function(incid,
     })
     return(list(a_posterior, b_posterior))
   }
-
+  
   #########################################################
   # Samples from the Gamma posterior distribution for a   #
   # given mean SI and std SI                              #
   #########################################################
-
+  
   sample_from_posterior <- function(sample_size, incid, mean_si, std_si,
                                     si_distr = NULL,
                                     a_prior, b_prior, t_start, t_end) {
     nb_time_periods <- length(t_start)
-
+    
     if (is.null(si_distr)) {
       si_distr <- discr_si(seq(0, T - 1), mean_si, std_si)
     }
-
+    
     final_mean_si <- sum(si_distr * (seq(0, length(si_distr) -
                                            1)))
     lambda <- overall_infectivity(incid, si_distr)
@@ -1955,7 +1955,7 @@ estimate_R_func <- function(incid,
     b_posterior <- vector()
     a_posterior <- EpiEstim:::vnapply(seq_len(nb_time_periods), function(t) if (t_end[t] >
                                                                      final_mean_si) {
-      a_prior + sum(incid[seq(t_start[t], t_end[t]), "local"])
+      a_prior + sum(incid[seq(t_start[t], t_end[t]), "local"]) 
       ## only counting local cases on the "numerator"
     }
     else {
@@ -1968,7 +1968,7 @@ estimate_R_func <- function(incid,
     else {
       NA
     })
-    sample_r_posterior <- vapply(seq_len(nb_time_periods), function(t)
+    sample_r_posterior <- vapply(seq_len(nb_time_periods), function(t) 
       if (!is.na(a_posterior[t])) {
         rgamma(sample_size,
                shape = unlist(a_posterior[t]),
@@ -1983,25 +1983,25 @@ estimate_R_func <- function(incid,
     }
     return(list(sample_r_posterior, si_distr))
   }
-
+  
   method <- match.arg(method)
-
+  
   incid <- EpiEstim:::process_I(incid)
   T <- nrow(incid)
-
+  
   a_prior <- (config$mean_prior / config$std_prior)^2
   b_prior <- config$std_prior^2 / config$mean_prior
-
+  
   EpiEstim:::check_times(config$t_start, config$t_end, T)
   nb_time_periods <- length(config$t_start)
-
+  
   if (method == "si_from_sample") {
     if (is.null(config$n2)) {
       stop("method si_from_sample requires to specify the config$n2 argument.")
     }
     si_sample <- EpiEstim:::process_si_sample(si_sample)
   }
-
+  
   min_nb_cases_per_time_period <- ceiling(1 / config$cv_posterior^2 - a_prior)
   incidence_per_time_step <- calc_incidence_per_time_step(
     incid, config$t_start,
@@ -2011,7 +2011,7 @@ estimate_R_func <- function(incid,
     warning("You're estimating R too early in the epidemic to get the desired
             posterior CV.")
   }
-
+  
   if (method == "non_parametric_si") {
     si_uncertainty <- "N"
     parametric_si <- "N"
@@ -2094,10 +2094,10 @@ estimate_R_func <- function(incid,
       mean_si_sample <- rep(-1, config$n1)
       std_si_sample <- rep(-1, config$n1)
       for (k in seq_len(config$n1)) {
-        mean_si_sample[k] <- sum((seq_len(dim(si_sample)[1]) - 1) *
+        mean_si_sample[k] <- sum((seq_len(dim(si_sample)[1]) - 1) * 
                                    si_sample[, k])
-        std_si_sample[k] <- sqrt(sum(si_sample[, k] *
-                                       ((seq_len(dim(si_sample)[1]) - 1) -
+        std_si_sample[k] <- sqrt(sum(si_sample[, k] * 
+                                       ((seq_len(dim(si_sample)[1]) - 1) - 
                                           mean_si_sample[k])^2))
       }
       temp <- lapply(seq_len(config$n1), function(k) sample_from_posterior(config$n2,
@@ -2106,7 +2106,7 @@ estimate_R_func <- function(incid,
                                                                            b_prior, config$t_start, config$t_end
       ))
       config$si_distr <- cbind(
-        t(vapply(seq_len(config$n1), function(k) (temp[[k]])[[2]],
+        t(vapply(seq_len(config$n1), function(k) (temp[[k]])[[2]], 
                  numeric(nrow(si_sample)))),
         rep(0, config$n1)
       )
@@ -2160,7 +2160,7 @@ estimate_R_func <- function(incid,
       incid, config$si_distr, a_prior, b_prior,
       config$t_start, config$t_end
     )
-
+    
     a_posterior <- unlist(post[[1]])
     b_posterior <- unlist(post[[2]])
     mean_posterior <- a_posterior * b_posterior
@@ -2194,14 +2194,14 @@ estimate_R_func <- function(incid,
                                        scale = b_posterior, lower.tail = TRUE, log.p = FALSE
     )
   }
-
+  
   results <- list(R = as.data.frame(cbind(
     config$t_start, config$t_end, mean_posterior,
     std_posterior, quantile_0.025_posterior, quantile_0.05_posterior,
     quantile_0.25_posterior, median_posterior, quantile_0.25_posterior,
     quantile_0.25_posterior, quantile_0.975_posterior
   )))
-
+  
   names(results$R) <- c(
     "t_start", "t_end", "Mean(R)", "Std(R)",
     "Quantile.0.025(R)", "Quantile.0.05(R)", "Quantile.0.25(R)",
@@ -2227,8 +2227,8 @@ estimate_R_func <- function(incid,
     ))
   }
   names(results$SI.Moments) <- c("Mean", "Std")
-
-
+  
+  
   if (!is.null(incid$dates)) {
     results$dates <- EpiEstim:::check_dates(incid)
   } else {
@@ -2237,9 +2237,9 @@ estimate_R_func <- function(incid,
   results$I <- rowSums(incid[, c("local", "imported")])
   results$I_local <- incid$local
   results$I_imported <- incid$imported
-
+  
   results$r_sample <- r_sample
-
+  
   class(results) <- "estimate_R"
   return(results)
 }
@@ -2249,7 +2249,7 @@ default.R.cori <- partial(estimate.R0.cori,
                           delay = 7,
                           day0 = NA,
                           method = "si_from_sample",
-                          si.data = nd,
+                          si.data = nd, 
                           si.sample = nishi_si[,sample(1:ncol(nishi_si), 1)], # Samples 1 SI interval
                           p.distribution = "G",
                           modified = TRUE,
@@ -2272,8 +2272,9 @@ read.sivep <- function(dir, # diretorio onde esta o dado
                        residentes = TRUE,
                        ...) {
   # lendo os dados
-  file.name <- list.files(dir, pattern = paste0(".*", data, ".(csv|zip)"), full.names = TRUE)
-  # múltiplos matches são possíveis
+  file.name <- list.files(dir, pattern = paste0(".*", data, ".(csv|zip|csv.xz)"), full.names = TRUE)
+  # múltiplos matches são possíveis (geralmente retorna em ordem alfabética,
+  # então a ordem preferida será csv, csv.xz, zip)
   file.name <- file.name[1]
   # detecta e lida com arquivo zip
   if (endsWith(file.name, '.zip')) {
@@ -2523,19 +2524,19 @@ rwaittime_age = function(n, age, fit){
 write.notificacoes.data <- function(dados,
                                     output.dir="./",
                                     tipo = c("covid", "srag", "obitos_covid", "obitos_srag",
-                                             "obitos_covid_data_sin", "obitos_srag_data_sin"),
+                                             "obitos_covid_data_sin", "obitos_srag_data_sin"),    
                                     data="_",
                                     write.arq = TRUE) {
     tipo <- match.arg(tipo)
     obitos <- c("obitos_covid", "obitos_srag") ## PI: casos em que o onset date é a data de evolução
-
+    
     n.notificacoes <- dados %>%
         group_by(dt_notific) %>%
         dplyr::summarise(n.notific = n()) %>%
         as.data.frame()
-
+    
     nome.not <- paste0(output.dir, "notificacoes_", tipo, "_", data, ".csv")
-
+    
     if (tipo %in% obitos) {
         n.data  <- dados %>%
             group_by(dt_evoluca) %>%
@@ -2553,7 +2554,7 @@ write.notificacoes.data <- function(dados,
         write.csv(n.notificacoes,
                   nome.not,
                   row.names = FALSE)
-
+        
         write.csv(n.data,
                   nome.data,
                   row.names = FALSE)

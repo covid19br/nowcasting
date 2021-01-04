@@ -13,8 +13,9 @@ read.sivep <- function(dir, # diretorio onde esta o dado
                        residentes = TRUE,
                        ...) {
   # lendo os dados
-  file.name <- list.files(dir, pattern = paste0(".*", data, ".(csv|zip)"), full.names = TRUE)
-  # múltiplos matches são possíveis
+  file.name <- list.files(dir, pattern = paste0(".*", data, ".(csv|zip|csv.xz)"), full.names = TRUE)
+  # múltiplos matches são possíveis (geralmente retorna em ordem alfabética,
+  # então a ordem preferida será csv, csv.xz, zip)
   file.name <- file.name[1]
   # detecta e lida com arquivo zip
   if (endsWith(file.name, '.zip')) {
