@@ -13,7 +13,7 @@ read.sivep <- function(dir, # diretorio onde esta o dado
                        residentes = TRUE,
                        ...) {
   # lendo os dados
-  file.name <- list.files(dir, pattern = paste0(".*", data, ".(csv|zip|csv.xz)"), full.names = TRUE)
+  file.name <- list.files(dir, pattern = paste0(".*", data, ".(csv|zip|csv.xz)$"), full.names = TRUE)
   # múltiplos matches são possíveis (geralmente retorna em ordem alfabética,
   # então a ordem preferida será csv, csv.xz, zip)
   file.name <- file.name[1]
@@ -31,6 +31,8 @@ read.sivep <- function(dir, # diretorio onde esta o dado
       sep <- ','
   } else
       sep <- ';'
+
+  # pré-processa 1o arquivo para pegar colunas
   #dados <- read_delim(file = file.name, delim = sep, ...)
   dados <- read_delim(file = file.name,
                       delim = sep,
@@ -41,12 +43,26 @@ read.sivep <- function(dir, # diretorio onde esta o dado
   cols <- rep("c", length(nomes))
   names(cols) <- nomes
   cols.list <- as.list(cols)
-  dados <- read_delim(file = file.name,
-                      delim = sep,
-                      col_types = cols.list,
-                      escape_double = FALSE,
-                      trim_ws = TRUE)
-  dados <- data.frame(dados)
+
+  # detecta arquivos quebrados
+  if (endsWith(file.name, '.csv.xz')) {
+    all.files <- list.files(dir, pattern = stringr::str_replace(basename(file.name), '.csv.xz', '.csv.*.xz'), full.names = TRUE)
+  } else {
+    all.files = file.name
+  }
+
+  dados <- NULL
+  for (i in seq(length(all.files))) {
+    # assume que colunas serão as mesmas em todos os arquivos
+    di <- read_delim(file = all.files[i],
+                     delim = sep,
+                     col_types = cols.list,
+                     escape_double = FALSE,
+                     trim_ws = TRUE)
+    di <- data.frame(di)
+    dados <- rbind(dados, di)
+  }
+
   # conveniencia mudando para minusculas
   names(dados) <- tolower(names(dados))
   names(dados) <- gsub(" ", "_", names(dados))
