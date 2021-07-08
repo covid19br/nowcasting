@@ -2319,8 +2319,9 @@ read.sivep <- function(dir, # diretorio onde esta o dado
                      escape_double = FALSE,
                      trim_ws = TRUE)
     di <- data.frame(di)
-    dados <- rbind(dados, di)
+    dados <- dplyr::bind_rows(dados, di)
   }
+  rm(di)
 
   # conveniencia mudando para minusculas
   names(dados) <- tolower(names(dados))
