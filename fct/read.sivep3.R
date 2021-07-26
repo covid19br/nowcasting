@@ -1,14 +1,16 @@
 #' Função para ler base da sivep
 #' 
 #' Esta versão tenta ser mais econômica e eficiente em termos de memória,
-#' pré-selecionando as colunas e usando vroom ao invés de readr, ao mesmo tempo
-#' em que preserva os filtros de escala, regiões etc.
+#' pré-selecionando as colunas, ao mesmo tempo em que preserva os filtros de
+#' escala, regiões etc.
 #' 
 #' @param dir Caractere. Caminho relativo para o diretório onde está o dado
-#' @param escala Caractere. Escala de análise aceita: `"pais"`, `"estado"`, `"municipio"` #ö micro e meso um dia
-#' @param geocode Caractere. Geocode IBGE do estado ou município. Município pde ter 6 ou 7 dígitos
+#' @param escala Caractere. Escala de análise aceita: `"pais"`, `"estado"`, `"municipio"`, `"micro"`, `"meso"`, `"macro"`, `"drs"`
+#' @param sigla Caractere. Sigla do estado - alternativa ao geocode se `escala = "estado"`, obrigatório caso `escala = "drs"`
+#' @param geocode Caractere. Geocode IBGE do estado ou município. Município pode ter 6 ou 7 dígitos
 #' @param data Caractere. Data no formato  "%Y_%m_%d". Quando NULL (padrão) pega a data mais recente
 #' @param residentes Filtar por residentes ou por local da notificação
+#' @param extra_cols Colunas extras que devem ser lidas. São caracteres por padrão, campos começados por "dt_" são convertidos para data
 #' @param ... Qualquer parâmetro de `read.csv()`
 library(readr)
 library(lubridate)
