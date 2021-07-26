@@ -21,7 +21,7 @@ read.sivep <- function(dir, # diretorio onde esta o dado
                        extra_cols = NULL,
                        ...) {
     # lendo os dados
-    file.name <- list.files(dir, pattern = paste0(".*", data, ".(csv|zip|csv.xz)"), full.names = TRUE)
+    file.name <- list.files(dir, pattern = paste0(".*", data, ".(csv|zip|csv.xz)$"), full.names = TRUE)
     # múltiplos matches são possíveis (geralmente retorna em ordem alfabética,
     # então a ordem preferida será csv, csv.xz, zip)
     file.name <- file.name[1]
@@ -50,12 +50,33 @@ read.sivep <- function(dir, # diretorio onde esta o dado
     col_list$CLASSI_FIN = "d"
     col_list$EVOLUCAO = "d"
 
-    dados <- read_delim(file = file.name,
-                        delim = sep,
-                        escape_double = FALSE,
-                        trim_ws = TRUE,
-                        col_types = do.call(cols_only, col_list))
-    dados <- data.frame(dados)
+    # detecta arquivos quebrados
+    if (endsWith(file.name, '.csv.xz')) {
+        all.files <- list.files(dir, pattern = stringr::str_replace(basename(file.name), '.csv.xz', '.csv.*.xz'), full.names = TRUE)
+    } else {
+        all.files = file.name
+    }
+
+    if (length(all.files) == 1) {
+        dados <- read_delim(file = file.name,
+                            delim = sep,
+                            escape_double = FALSE,
+                            trim_ws = TRUE,
+                            col_types = do.call(cols_only, col_list))
+        dados <- as.data.frame(dados)
+    } else {
+        dados <- NULL
+        for (i in seq(length(all.files))) {
+            di <- read_delim(file = all.files[i],
+                             delim = sep,
+                             escape_double = FALSE,
+                             trim_ws = TRUE,
+                             col_types = do.call(cols_only, col_list))
+            di <- as.data.frame(di)
+            dados <- dplyr::bind_rows(dados, di)
+        }
+        rm(di)
+    }
     # conveniencia mudando para minusculas
     names(dados) <- tolower(names(dados))
     names(dados) <- gsub(" ", "_", names(dados))
