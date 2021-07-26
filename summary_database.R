@@ -20,7 +20,7 @@ if (sys.nframe() == 0L) {
                     help = ("Data da base de dados, formato 'yyyy_mm_dd'"),
                     metavar = "dataBase"),
         make_option("--outputDir",
-                    default = "../dados_processados/sum_SIVEP",
+                    default = "../dados/sumario_SIVEP",
                     help = ("Diretório de destino"),
                     metavar = "outputDir"),
         make_option("--updateGit", default = "FALSE",
