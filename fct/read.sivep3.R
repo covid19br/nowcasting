@@ -10,7 +10,8 @@
 #' @param geocode Caractere. Geocode IBGE do estado ou município. Município pode ter 6 ou 7 dígitos
 #' @param data Caractere. Data no formato  "%Y_%m_%d". Quando NULL (padrão) pega a data mais recente
 #' @param residentes Filtar por residentes ou por local da notificação
-#' @param extra_cols Colunas extras que devem ser lidas. São caracteres por padrão, campos começados por "dt_" são convertidos para data
+#' @param extra_cols Colunas extras que devem ser lidas. O vetor tem que ser tipo Character com todos os nomes em maiusculas.
+#' São caracteres por padrão, campos começados por "dt_" são convertidos para data
 #' @param ... Qualquer parâmetro de `read.csv()`
 library(readr)
 library(lubridate)
@@ -90,7 +91,7 @@ read.sivep <- function(dir, # diretorio onde esta o dado
     # filtro por estados ou municipio
     ## ö dá pra implementar meso e microrregiao ast: super dá, por enquanto tirei filtro
     if (escala != "pais") {
-        df <- read.csv("./dados/geocode_ibge.csv")
+        df <- read.csv("./dados/geocode_ibge.csv") # Tem que estar no Central-Covid
         #geocode <- as.numeric(geocode)
         municipio.code <- sapply(df$id, function(x) substr(x, start = 1, stop = 6))
         micro.code   <- df$microrregiao.id
