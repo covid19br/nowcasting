@@ -1,8 +1,15 @@
 require(incidence)
 require(coarseDataTools)
 require(coda)
-nd <- read.table("./dados/nishi_si_table.txt", header = TRUE)
-nishi_si <- read.table("./dados/nishi_si_posterior.txt", header = TRUE)
+require(vroom)
+
+## Taking SI tables and posteriors from file
+#nd <- read.table("./dados/nishi_si_table.txt", header = TRUE)
+#nishi_si <- read.table("./dados/nishi_si_posterior.txt", header = TRUE)
+
+## Taking SI tables and posteriors from online repository
+nd<-vroom('https://raw.githubusercontent.com/covid19br/nowcasting/master/dados/nishi_si_table.txt')
+nishi_si<-vroom('https://raw.githubusercontent.com/covid19br/nowcasting/master/dados/nishi_si_posterior.txt')
 
 estimate.R0.cori <- function(novos.casos, day0 = NA, delay=7, method, parameter.table, 
                              p.distribution, bayes.control, si.data, si.sample, modified = FALSE, n2 = NA, ...) {
